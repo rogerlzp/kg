@@ -3,6 +3,7 @@ package com.abc.huoyun;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 import com.abc.huoyun.utility.CellSiteApplication;
@@ -30,6 +31,14 @@ public class BaseActivity extends Activity {
 		app = (CellSiteApplication) getApplication();
 
 	}
+	
+	public void onBackButton(View v)
+	{
+		finish();
+	//	onBackPressed();
+	}
+	
+	
 	
 	@Override
 	public void onBackPressed() {

@@ -23,7 +23,7 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.abc.huoyun.MainActivity.HorderType;
-import com.abc.huoyun.MainActivity.TruckType;
+import com.abc.huoyun.MainActivity.Trucks;
 import com.abc.huoyun.model.Truck;
 import com.abc.huoyun.model.User;
 
@@ -71,8 +71,22 @@ public class CellSiteApplication extends Application {
 	HorderType[] gHorderType = new HorderType[3];
 	
 	// Truck Cache
-	TruckType gTruckType;// = new TruckType(); 
+	Trucks gTrucks;// = new Trucks(); 
 	
+	
+	Bitmap mPortaritBitmap = null;
+
+	
+	
+	public Bitmap getPortaritBitmap() {
+		return mPortaritBitmap;
+	}
+
+
+
+	public void setPortaritBitmap(Bitmap mPortaritBitmap) {
+		this.mPortaritBitmap = mPortaritBitmap;
+	}
 	
 	@Override
 	public void onCreate() {
@@ -106,7 +120,10 @@ public class CellSiteApplication extends Application {
 				CellSiteConstants.CELLSITE_CONFIG, MODE_PRIVATE);
 		String username = sp.getString(CellSiteConstants.USER_NAME, null);
 		String userId = sp.getString(CellSiteConstants.USER_ID, null);
-
+		String mobileNum = sp.getString(CellSiteConstants.MOBILE, null);
+		String name = sp.getString(CellSiteConstants.NAME, null);
+		String profileImageUrl = sp.getString(CellSiteConstants.PROFILE_IMAGE_URL, null);
+		
 		user = new User();
 		if (username != null) 
 		{
@@ -115,6 +132,10 @@ public class CellSiteApplication extends Application {
 					user.setId(Long.parseLong(sp.getString(
 							CellSiteConstants.USER_ID, null)));
 				}
+				user.setMobileNum(mobileNum);
+				user.setProfileImageUrl(profileImageUrl);
+				user.setName(name);
+				this.attachUser(user);
 		} else 
 		{ // visitor mode
 			user.setId(User.INVALID_ID);
@@ -384,14 +405,14 @@ public class CellSiteApplication extends Application {
 			return gHorderType[aIndex];		
 		}
 		
-		public void setTruckTypeCache(TruckType aTruckTypeCache)
+		public void setTrucksCache(Trucks aTrucksCache)
 		{
-			gTruckType = aTruckTypeCache;		
+			gTrucks = aTrucksCache;		
 		}
 		
-		public TruckType getTruckTypeCache()
+		public Trucks getTrucksCache()
 		{
-			return gTruckType;		
+			return gTrucks;		
 		}
 
 }

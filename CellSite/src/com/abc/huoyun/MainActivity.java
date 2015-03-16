@@ -18,6 +18,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
@@ -149,6 +150,7 @@ public class MainActivity extends BaseActivity {
 	PullToRefreshListView mTruckLv;
   	ViewGroup mTruckMore;
 	TextView mTruckMoreTv;
+	Trucks mTrucks = new Trucks();
 	boolean isForceRefreshTruck = false;
 	Boolean mHasExceptionTruck = false;
 	int mLvHistoryPosTruck = 0;
@@ -159,24 +161,24 @@ public class MainActivity extends BaseActivity {
 		// / @Override
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
-			ArrayList<HashMap<String, Object>> aHorders = mHorderTypes[mCurrRadioIdx].nHorders;
+			ArrayList<HashMap<String, Object>> aTrucks = mTrucks.nTrucks;
 
 			position--; // for the header view has taken the first position, so
 						// all the data view must decrease 1.
 
-			if (position == aHorders.size()) {
-				if (mHorderTypes[mCurrRadioIdx].hasShowAllHorders) {
+			if (position == aTrucks.size()) {
+				if (mTrucks.hasShowAllTrucks) {
 					mMoreTv.setText(R.string.hasShowAll);
 				} else {
-					mLvHistoryPos = mHorderLv.getFirstVisiblePosition();
-					mHorderDownLoadTask = new HorderDownLoadTask();
-					mHorderDownLoadTask
+					mLvHistoryPosTruck = mTruckLv.getFirstVisiblePosition();
+					mTruckDownLoadTask = new TruckDownLoadTask();
+					mTruckDownLoadTask
 							.execute(CellSiteConstants.MORE_OPERATION);
 				}
 				return;
 			}
 
-			String partyId = (String) aHorders.get(position).get("party_id");
+			String partyId = (String) aTrucks.get(position).get("party_id");
 			// boolean hasJoined = (Boolean) parties.get(position).get(
 			// "has_joined");
 
@@ -188,6 +190,13 @@ public class MainActivity extends BaseActivity {
 		}
 	};
 
+	// 个人信息
+		TextView mNameTv;
+		TextView mMobileTv;
+		ImageView mPortraitIv;
+		DownloadImageTask mDownloadImageTask;
+		
+	
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -255,6 +264,65 @@ public class MainActivity extends BaseActivity {
 
 		initData();
 	}
+	
+	// 
+		public void initMeView(){
+			 mNameTv = (TextView)findViewById(R.id.name_tv);
+			 mMobileTv =  (TextView)findViewById(R.id.mobile_tv);
+			 mPortraitIv = (ImageView)findViewById(R.id.portrait_iv);
+			 
+			// init Data
+			 if(app.getUser().getName() != null) {
+			 mNameTv.setText(app.getUser().getName());
+			 }
+			 if(app.getUser().getMobileNum() != null) {
+			 mMobileTv.setText(app.getUser().getMobileNum());
+			 }
+			 setPortraitImage();
+		}
+		
+		public void setPortraitImage() {
+
+			String profileImageUrl = app.getUser().getProfileImageUrl();
+			
+			Log.d(TAG, "setPortraitImage");
+
+			if (profileImageUrl == null || profileImageUrl.equalsIgnoreCase("null")) {
+
+				
+				mPortraitIv.setImageResource(R.drawable.ic_launcher); // TODO: 更新默认图片
+
+			} else {
+				mDownloadImageTask = new DownloadImageTask();
+				mDownloadImageTask.execute(profileImageUrl, app.regUserPath);
+			}
+		}
+
+		class DownloadImageTask extends AsyncTask<String, Integer, Boolean> {
+
+			@Override
+			protected Boolean doInBackground(String... params) {
+				Log.d(TAG, "URL=" + (String) params[0]);
+				app.setPortaritBitmap(app
+						.downloadBmpByUrl((String) params[0], params[1]));
+				return true;
+			}
+
+			@Override
+			protected void onPostExecute(Boolean result) {
+
+				super.onPostExecute(result);
+				if (!this.isCancelled()) {
+					if (app.getPortaritBitmap() != null) {
+						mPortraitIv.setImageDrawable(new BitmapDrawable(
+								app.getPortaritBitmap() ));
+						// TODO
+					}
+				}
+			}
+		}
+
+		
 
 	public void initHorders() {
 
@@ -287,6 +355,37 @@ public class MainActivity extends BaseActivity {
 		});
 
 	}
+	
+	public void initTrucks() {
+
+		mTrucks = new Trucks();
+		
+
+		mTruckMore = (ViewGroup) LayoutInflater.from(MainActivity.this)
+				.inflate(R.layout.more_list, null);
+		mTruckMore.setVisibility(View.GONE);
+
+		mTruckMoreTv = (TextView) mTruckMore.getChildAt(0);
+
+		mTruckLv.addFooterView(mTruckMore);
+		mTruckLv.setOnItemClickListener(mTruckDetailListener);
+		mTruckLv.setAdapter(mTrucks.nTruckAdapter);
+		// Set a listener to be invoked when the list should be refreshed.
+		mTruckLv.setOnRefreshListener(new OnRefreshListener() {
+
+			public void onRefresh() {
+				// TODO Auto-generated method stub
+				isForceRefreshTruck = true;
+				mTrucks = new Trucks();
+
+				mTruckDownLoadTask = new TruckDownLoadTask();
+				mTruckDownLoadTask.execute(CellSiteConstants.NORMAL_OPERATION);
+			}
+
+		});
+
+	}
+
 
 	public void initData() {
 
@@ -380,6 +479,24 @@ public class MainActivity extends BaseActivity {
 					mTab4.setImageDrawable(getResources().getDrawable(
 							R.drawable.tab_settings_normal));
 				}
+				
+				mTruckLv = (PullToRefreshListView) findViewById(R.id.trucks_lv);
+				initTrucks();
+				mTruckMore.setVisibility(View.INVISIBLE);
+				mTruckMoreTv.setText(R.string.show_more);
+
+				if (mProgressdialog == null || !mProgressdialog.isShowing()) {
+					mProgressdialog = new ProgressDialog(MainActivity.this);
+					mProgressdialog.setMessage("??????????????????");
+					mProgressdialog.setIndeterminate(true);
+					mProgressdialog.setCancelable(true);
+					mProgressdialog.show();
+				}
+
+				mTruckLv.setAdapter(mTrucks.nTruckAdapter);
+
+				mTruckDownLoadTask = new TruckDownLoadTask();
+				mTruckDownLoadTask.execute(CellSiteConstants.NORMAL_OPERATION);
 				break;
 			case 2:
 				mTab3.setImageDrawable(getResources().getDrawable(
@@ -1158,14 +1275,14 @@ public class MainActivity extends BaseActivity {
 	
 	
 	
-	public class TruckType {
+	public class Trucks {
 		public ArrayList<HashMap<String, Object>> nTrucks;
 		public TruckAdapter nTruckAdapter;
 
 		int nDisplayNum;
 		Boolean hasShowAllTrucks;
 
-		public TruckType() {
+		public Trucks() {
 			nTrucks = new ArrayList<HashMap<String, Object>>();
 			hasShowAllTrucks = false;
 			nTruckAdapter = new TruckAdapter(MainActivity.this);
@@ -1253,28 +1370,24 @@ public class MainActivity extends BaseActivity {
 			int moreOperation = params[0];
 
 			try {
-				if (isForceRefresh
+				if (isForceRefreshTruck
 						|| moreOperation == CellSiteConstants.MORE_OPERATION
-						|| app.getTruckTypeCache() == null) {
+						|| app.getTrucksCache() == null) {
 					Log.d(TAG,
 							"Will connect the network and download the parties");
 					getTruck();
 
-					if (mHorderTypes[mCurrRadioIdx].nHorders.size() < mHorderTypes[mCurrRadioIdx].nDisplayNum
+					if (mTrucks.nTrucks.size() < mTrucks.nDisplayNum
 							+ CellSiteConstants.PAGE_COUNT
-							&& !mHasExceptionHorder) {
-						mHorderTypes[mCurrRadioIdx].hasShowAllHorders = true;
+							&& !mHasExceptionTruck) {
+						mTrucks.hasShowAllTrucks = true;
 					}
-					Log.d(TAG, "after download the parties");
+					
 				} else {
-					Log.d(TAG, "Will use the cache, current radio index "
-							+ mCurrRadioIdx);
-					;
-
-					mHorderTypes[mCurrRadioIdx] = app
-							.getHorderTypeCache(mCurrRadioIdx);
-					Log.d(TAG, "++++++++++++++++Number of My Parties :"
-							+ mHorderTypes[mCurrRadioIdx].nHorders.size());
+				
+					mTrucks = app
+							.getTrucksCache();
+					
 				}
 
 			} catch (Exception e) {
@@ -1290,51 +1403,45 @@ public class MainActivity extends BaseActivity {
 		protected void onPostExecute(String result) {
 			// TODO Auto-generated method stub
 			super.onPostExecute(result);
-
-			Log.d(TAG, "PartyDownLoadTask onPostExecute()");
 			if (!this.isCancelled()) {
 				if (mProgressdialog != null) {
 					Log.d(TAG, "Cancel the progress dialog");
 					mProgressdialog.cancel();
 				}
 
-				if (isForceRefresh) {
-					isForceRefresh = false;
-					mHorderLv.onRefreshComplete();
+				if (isForceRefreshTruck) {
+					isForceRefreshTruck = false;
+					mTruckLv.onRefreshComplete();
 				}
-				mHorderTypes[mCurrRadioIdx].nHorderAdapter
-						.setParties(mHorderTypes[mCurrRadioIdx].nHorders);
-				mHorderLv
-						.setAdapter(mHorderTypes[mCurrRadioIdx].nHorderAdapter);
-				mHorderTypes[mCurrRadioIdx].nHorderAdapter
+				mTrucks.nTruckAdapter
+						.setTrucks(mTrucks.nTrucks);
+				mTruckLv
+						.setAdapter(mTrucks.nTruckAdapter);
+				mTrucks.nTruckAdapter
 						.notifyDataSetChanged();
 
-				mPartyMore.setVisibility(View.VISIBLE);
+				mTruckMore.setVisibility(View.VISIBLE);
 
-				if (mHorderTypes[mCurrRadioIdx].hasShowAllHorders) {
-					mMoreTv.setText(R.string.hasShowAll);
+				if (mTrucks.hasShowAllTrucks) {
+					mTruckMoreTv.setText(R.string.hasShowAll);
 				} else {
-					mMoreTv.setText(R.string.show_more);
+					mTruckMoreTv.setText(R.string.show_more);
 				}
 
-				mHorderTypes[mCurrRadioIdx].nDisplayNum = mHorderTypes[mCurrRadioIdx].nHorders
+				mTrucks.nDisplayNum = mTrucks.nTrucks
 						.size();
-				Log.d(TAG,
-						"++++++++++++++++onPostExecute() Number of My Parties to save :"
-								+ mHorderTypes[mCurrRadioIdx].nHorders.size());
-				app.setHorderTypeCache(mHorderTypes[mCurrRadioIdx],
-						mCurrRadioIdx);
-				Log.d(TAG, "++++++++++++++++onPostExecute() saved in the app :"
-						+ app.getHorderTypeCache(mCurrRadioIdx).nHorders.size());
-
-				if (mHorderTypes[mCurrRadioIdx].nDisplayNum > 0) {
-					mMoreTv.setVisibility(View.VISIBLE);
+				
+				app.setTrucksCache(mTrucks
+						);
+			
+				if (mTrucks.nDisplayNum > 0) {
+					mTruckMoreTv.setVisibility(View.VISIBLE);
 				} else {
-					mMoreTv.setVisibility(View.INVISIBLE);
+					mTruckMoreTv.setVisibility(View.INVISIBLE);
 				}
-				if (mLvHistoryPos > 0) {
-					mHorderLv.setSelectionFromTop(mLvHistoryPos, 0);
-					mLvHistoryPos = 0;
+				if (mLvHistoryPosTruck > 0) {
+					mTruckLv.setSelectionFromTop(mLvHistoryPosTruck, 0);
+					mLvHistoryPosTruck = 0;
 				}
 
 			}
@@ -1349,13 +1456,13 @@ public class MainActivity extends BaseActivity {
 				+ app.getUser().getId()));
 		
 		postParameters.add(new BasicNameValuePair("offset", String
-				.valueOf(mHorderTypes[mCurrRadioIdx].nDisplayNum)));
+				.valueOf(mTrucks.nDisplayNum)));
 		postParameters.add(new BasicNameValuePair("pagecount", String
 				.valueOf(CellSiteConstants.PAGE_COUNT)));
 		JSONObject response = null;
 		try {
 			response = CellSiteHttpClient.executeHttpPost(
-					CellSiteConstants.GET_MY_HORDER_URL, postParameters);
+					CellSiteConstants.GET_TRUCKS_URL, postParameters);
 			int resultCode = response.getInt(CellSiteConstants.RESULT_CODE);
 			if (CellSiteConstants.RESULT_SUC == resultCode) {
 				parseTruckJson(response);
@@ -1368,32 +1475,49 @@ public class MainActivity extends BaseActivity {
 		return response;
 	}
 
-
+/**
+ * Trucks result
+ *  trucks:[{"id":8,"user_id":9,"tstatus_id":0,"taudit_status_id":0,
+ *  "tweight_id":0,"tlength_id":11,"ttype_id":8,"tmobile_num":"","tlicense":"",
+ *  "tl_image_url":"\/img\/users\/upload\/9_8_1425992634.jpg",
+ *  "tphoto_image_url":null,"created_at":"2015-03-10 13:03:55",
+ *  "updated_at":"2015-03-10 13:03:55"}] 
+ * @param jsonResult
+ */
 	public void parseTruckJson(JSONObject jsonResult) {
-		HashMap<String, Object> mHorder;
+		HashMap<String, Object> mTruck;
 		try {
-			if (jsonResult.get("horders") != JSONObject.NULL) {
-				JSONArray results = jsonResult.getJSONArray("horders");
+			if (jsonResult.get("trucks") != JSONObject.NULL) {
+				JSONArray results = jsonResult.getJSONArray("trucks");
 				if (results.length() < CellSiteConstants.PAGE_COUNT) {
-					mHorderTypes[mCurrRadioIdx].hasShowAllHorders = true;
+					mTrucks.hasShowAllTrucks = true;
 				}
 
 				for (int i = 0; i < results.length(); i++) {
 					try {
 						JSONObject resultObj = (JSONObject) results.get(i);
-						mHorder = new HashMap<String, Object>();
-						mHorder.put(
-								CellSiteConstants.SHIPPER_USERNAME,
+						mTruck = new HashMap<String, Object>();
+						mTruck.put(
+								CellSiteConstants.TRUCK_ID,
 								resultObj
-										.getString(CellSiteConstants.SHIPPER_USERNAME));
-						mHorder.put("horder_id",
-								(resultObj).getString(CellSiteConstants.ID));
-						// TODO : ????????????????????????
-						int counter = 0;
+										.getString(CellSiteConstants.ID));
+						mTruck.put(CellSiteConstants.TRUCK_LENGTH,
+								(resultObj).getString(CellSiteConstants.TRUCK_LENGTH));
+						mTruck.put(CellSiteConstants.TRUCK_TYPE,
+								(resultObj).getString(CellSiteConstants.TRUCK_TYPE));
+						mTruck.put(CellSiteConstants.TRUCK_IMAGE_URL,
+								(resultObj).getString(CellSiteConstants.TRUCK_IMAGE_URL));
+						mTruck.put(CellSiteConstants.TRUCK_LICENSE_URL,
+								(resultObj).getString(CellSiteConstants.TRUCK_LICENSE_URL));
+						mTruck.put(CellSiteConstants.TRUCK_LICENSE,
+								(resultObj).getString(CellSiteConstants.TRUCK_LICENSE));
+						mTruck.put(CellSiteConstants.TRUCK_MOBILE_NUM,
+								(resultObj).getString(CellSiteConstants.TRUCK_MOBILE_NUM));
+						// down load image 
 
-						mHorderTypes[mCurrRadioIdx].nHorders.add(mHorder);
+						mTrucks.nTrucks.add(mTruck);
 					} catch (Exception e) {
-						mHasExceptionHorder = true;
+						mHasExceptionTruck = true;
 						continue;
 					}
 
