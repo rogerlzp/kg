@@ -24,158 +24,130 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="@string/horder_detail"
-            android:textColor="#ffffff"
-            android:textSize="20sp" />
-
-        <TextView
-            android:layout_width="67dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerInParent="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="5dp"
-            android:clickable="true"
-            android:onClick="delHorder"
-            android:text="@string/delete"
+            android:text="@string/truck_detail"
             android:textColor="#ffffff"
             android:textSize="20sp" />
     </RelativeLayout>
 
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="5px"
+        android:background="#aaaaaa" />
 
     <RelativeLayout
-        android:id="@+id/shipper_address"
+        android:id="@+id/driver_detail"
         android:layout_width="fill_parent"
-        android:layout_height="45dp"
+        android:layout_height="80dp"
         android:gravity="center_vertical" >
 
-        <Button
-            android:id="@+id/shipper_address_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <ImageView
+            android:id="@+id/driver_portrait_iv"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
             android:layout_alignParentLeft="true"
-            android:onClick="chooseAddress"
-            android:text="@string/shipper_address" />
+            android:layout_alignParentStart="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
+            android:src="@drawable/user_dp" />
 
         <TextView
-            android:id="@+id/shipper_address_tv"
-            android:layout_width="220dp"
-            android:layout_height="fill_parent"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="20dp"
-            android:clickable="true"
-            android:onClick="chooseAddress"
-            android:text="测试" />
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/consignee_address"
-        android:layout_width="fill_parent"
-        android:layout_height="45dp"
-        android:gravity="center_vertical" >
-
-        <Button
-            android:id="@+id/consignee_address_btn"
+            android:id="@+id/name_tv"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="chooseAddress"
-            android:text="@string/consignee_address" />
+            android:layout_height="18dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="15dp"
+            android:layout_toRightOf="@id/driver_portrait_iv"
+            android:text="@string/driver"
+            android:textSize="20sp" />
 
         <TextView
-            android:id="@+id/consignee_address_tv"
-            android:layout_width="220dp"
-            android:layout_height="fill_parent"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="20dp"
-            android:clickable="true"
-            android:onClick="chooseAddress"
-            android:text="测试" />
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/shipper_date"
-        android:layout_width="fill_parent"
-        android:layout_height="45dp"
-        android:gravity="center_vertical" >
-
-        <Button
-            android:id="@+id/shipper_date_btn"
+            android:id="@+id/plate_number_tv"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="chooseDate"
-            android:text="@string/shipper_date" />
-
-        <TextView
-            android:id="@+id/shipper_date_tv"
-            android:layout_width="220dp"
-            android:layout_height="fill_parent"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="20dp"
-            android:clickable="true"
-            android:onClick="chooseDate"
-            android:text="测试" />
+            android:layout_height="18dp"
+            android:layout_below="@id/name_tv"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="5dp"
+            android:layout_toRightOf="@id/driver_portrait_iv"
+            android:text="@string/plate_number"
+            android:textSize="20sp" >
+        </TextView>
     </RelativeLayout>
 
-    <RelativeLayout
-        android:id="@+id/cargo_detail"
+    <View
         android:layout_width="fill_parent"
-        android:layout_height="45dp"
-        android:gravity="center_vertical" >
-
-        <Button
-            android:id="@+id/cargo_type_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/cargo_detail" />
-
-        <TextView
-            android:id="@+id/cargo_type_tv"
-            android:layout_width="220dp"
-            android:layout_height="fill_parent"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="20dp"
-            android:text="@string/cargo_detail" />
-    </RelativeLayout>
+        android:layout_height="5px"
+        android:background="#aaaaaa" />
 
     <RelativeLayout
         android:id="@+id/truck_detail"
         android:layout_width="fill_parent"
-        android:layout_height="45dp"
+        android:layout_height="120dp"
         android:gravity="center_vertical" >
 
-        <Button
-            android:id="@+id/truck_type_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/truck_detail" />
+        <ImageView
+            android:id="@+id/truck_image_iv"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
+            android:src="@drawable/user_dp" />
 
         <TextView
             android:id="@+id/truck_type_tv"
-            android:layout_width="220dp"
-            android:layout_height="fill_parent"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="20dp"
-            android:text="@string/truck_detail" />
+            android:layout_width="wrap_content"
+            android:layout_height="18dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="15dp"
+            android:layout_toRightOf="@id/truck_image_iv"
+            android:text="@string/driver"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/truck_length_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="18dp"
+            android:layout_below="@id/truck_type_tv"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="5dp"
+            android:layout_toRightOf="@id/truck_image_iv"
+            android:text="@string/plate_number"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/truck_weight_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="18dp"
+            android:layout_below="@id/truck_length_tv"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="15dp"
+            android:layout_toRightOf="@id/truck_image_iv"
+            android:text="@string/plate_number"
+            android:textSize="20sp" >
+        </TextView>
     </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/horder_description"
         android:layout_width="fill_parent"
         android:layout_height="45dp"
+        android:layout_marginBottom="10dp"
         android:gravity="center_vertical" >
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/horder_desc" />
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="20dp"
+            android:text="@string/contact" />
 
-        <TextView
-            android:id="@+id/horder_description_et"
-            android:layout_width="220dp"
-            android:layout_height="fill_parent"
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_marginRight="20dp"
-            android:hint="@string/horder_desc" />
+            android:text="@string/tuisong_huo" />
     </RelativeLayout>
 
 </LinearLayout>

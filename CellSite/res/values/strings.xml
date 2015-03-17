@@ -150,13 +150,18 @@
     <string name="horder_detail">货源详情</string>
     <string name="delete">删除</string>
     <string name="cargo_detail">货源描述</string>
-    <string name="truck_detail">车型描述</string>
+    <string name="truck_desc">车型描述</string>
+    <string name="truck_detail">货车详情</string>
     <string name="huoyun_list">货单列表</string>
     <string name="find_huoyun">找货</string>
     <string name="reg_truck">发车</string>
 
     <!-- PULL_TO_REFRESH_listview end -->
-        <string name="truck_list">货车列表</string>
-    
+    <string name="truck_list">货车列表</string>
+    <string name="truck_location">货车位置</string>
+    <string name="driver">司机</string>
+    <string name="plate_number">车牌号</string>
+    <string name="contact">电话联系</string>
+    <string name="tuisong_huo">推送货源</string>
 
 </resources>

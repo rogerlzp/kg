@@ -144,11 +144,10 @@ public class MainActivity extends BaseActivity {
 		}
 	};
 
-	
-	//货车列表
+	// 货车列表
 
 	PullToRefreshListView mTruckLv;
-  	ViewGroup mTruckMore;
+	ViewGroup mTruckMore;
 	TextView mTruckMoreTv;
 	Trucks mTrucks = new Trucks();
 	boolean isForceRefreshTruck = false;
@@ -156,7 +155,8 @@ public class MainActivity extends BaseActivity {
 	int mLvHistoryPosTruck = 0;
 
 	TruckDownLoadTask mTruckDownLoadTask;
-
+	ProgressDialog mProgressdialogTruck;
+	
 	OnItemClickListener mTruckDetailListener = new OnItemClickListener() {
 		// / @Override
 		public void onItemClick(AdapterView<?> parent, View view, int position,
@@ -178,26 +178,23 @@ public class MainActivity extends BaseActivity {
 				return;
 			}
 
-			String partyId = (String) aTrucks.get(position).get("party_id");
-			// boolean hasJoined = (Boolean) parties.get(position).get(
-			// "has_joined");
-
+			String truckId = (String) aTrucks.get(position).get(CellSiteConstants.TRUCK_ID);
+			
 			Intent intent = new Intent(MainActivity.this,
-					HorderDetailActivity.class);
+					TruckDetailActivity.class);
+			 intent.putExtra(CellSiteConstants.TRUCK_ID, truckId);
 			startActivity(intent);
-			// intent.putExtra(PartyActivity.PARTY_ID, );
+
 
 		}
 	};
 
 	// 个人信息
-		TextView mNameTv;
-		TextView mMobileTv;
-		ImageView mPortraitIv;
-		DownloadImageTask mDownloadImageTask;
-		
-	
-	
+	TextView mNameTv;
+	TextView mMobileTv;
+	ImageView mPortraitIv;
+	DownloadImageTask mDownloadImageTask;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -264,65 +261,63 @@ public class MainActivity extends BaseActivity {
 
 		initData();
 	}
-	
-	// 
-		public void initMeView(){
-			 mNameTv = (TextView)findViewById(R.id.name_tv);
-			 mMobileTv =  (TextView)findViewById(R.id.mobile_tv);
-			 mPortraitIv = (ImageView)findViewById(R.id.portrait_iv);
-			 
-			// init Data
-			 if(app.getUser().getName() != null) {
-			 mNameTv.setText(app.getUser().getName());
-			 }
-			 if(app.getUser().getMobileNum() != null) {
-			 mMobileTv.setText(app.getUser().getMobileNum());
-			 }
-			 setPortraitImage();
+
+	//
+	public void initMeView() {
+		mNameTv = (TextView) findViewById(R.id.name_tv);
+		mMobileTv = (TextView) findViewById(R.id.mobile_tv);
+		mPortraitIv = (ImageView) findViewById(R.id.portrait_iv);
+
+		// init Data
+		if (app.getUser().getName() != null) {
+			mNameTv.setText(app.getUser().getName());
 		}
-		
-		public void setPortraitImage() {
+		if (app.getUser().getMobileNum() != null) {
+			mMobileTv.setText(app.getUser().getMobileNum());
+		}
+		setPortraitImage();
+	}
 
-			String profileImageUrl = app.getUser().getProfileImageUrl();
-			
-			Log.d(TAG, "setPortraitImage");
+	public void setPortraitImage() {
 
-			if (profileImageUrl == null || profileImageUrl.equalsIgnoreCase("null")) {
+		String profileImageUrl = app.getUser().getProfileImageUrl();
 
-				
-				mPortraitIv.setImageResource(R.drawable.ic_launcher); // TODO: 更新默认图片
+		Log.d(TAG, "setPortraitImage");
 
-			} else {
-				mDownloadImageTask = new DownloadImageTask();
-				mDownloadImageTask.execute(profileImageUrl, app.regUserPath);
-			}
+		if (profileImageUrl == null || profileImageUrl.equalsIgnoreCase("null")) {
+
+			mPortraitIv.setImageResource(R.drawable.ic_launcher); // TODO:
+																	// 更新默认图片
+
+		} else {
+			mDownloadImageTask = new DownloadImageTask();
+			mDownloadImageTask.execute(profileImageUrl, app.regUserPath);
+		}
+	}
+
+	class DownloadImageTask extends AsyncTask<String, Integer, Boolean> {
+
+		@Override
+		protected Boolean doInBackground(String... params) {
+			Log.d(TAG, "URL=" + (String) params[0]);
+			app.setPortaritBitmap(app.downloadBmpByUrl((String) params[0],
+					params[1]));
+			return true;
 		}
 
-		class DownloadImageTask extends AsyncTask<String, Integer, Boolean> {
+		@Override
+		protected void onPostExecute(Boolean result) {
 
-			@Override
-			protected Boolean doInBackground(String... params) {
-				Log.d(TAG, "URL=" + (String) params[0]);
-				app.setPortaritBitmap(app
-						.downloadBmpByUrl((String) params[0], params[1]));
-				return true;
-			}
-
-			@Override
-			protected void onPostExecute(Boolean result) {
-
-				super.onPostExecute(result);
-				if (!this.isCancelled()) {
-					if (app.getPortaritBitmap() != null) {
-						mPortraitIv.setImageDrawable(new BitmapDrawable(
-								app.getPortaritBitmap() ));
-						// TODO
-					}
+			super.onPostExecute(result);
+			if (!this.isCancelled()) {
+				if (app.getPortaritBitmap() != null) {
+					mPortraitIv.setImageDrawable(new BitmapDrawable(app
+							.getPortaritBitmap()));
+					// TODO
 				}
 			}
 		}
-
-		
+	}
 
 	public void initHorders() {
 
@@ -355,11 +350,10 @@ public class MainActivity extends BaseActivity {
 		});
 
 	}
-	
+
 	public void initTrucks() {
 
 		mTrucks = new Trucks();
-		
 
 		mTruckMore = (ViewGroup) LayoutInflater.from(MainActivity.this)
 				.inflate(R.layout.more_list, null);
@@ -385,7 +379,6 @@ public class MainActivity extends BaseActivity {
 		});
 
 	}
-
 
 	public void initData() {
 
@@ -479,18 +472,18 @@ public class MainActivity extends BaseActivity {
 					mTab4.setImageDrawable(getResources().getDrawable(
 							R.drawable.tab_settings_normal));
 				}
-				
+
 				mTruckLv = (PullToRefreshListView) findViewById(R.id.trucks_lv);
 				initTrucks();
 				mTruckMore.setVisibility(View.INVISIBLE);
 				mTruckMoreTv.setText(R.string.show_more);
 
-				if (mProgressdialog == null || !mProgressdialog.isShowing()) {
-					mProgressdialog = new ProgressDialog(MainActivity.this);
-					mProgressdialog.setMessage("??????????????????");
-					mProgressdialog.setIndeterminate(true);
-					mProgressdialog.setCancelable(true);
-					mProgressdialog.show();
+				if (mProgressdialogTruck == null || !mProgressdialogTruck.isShowing()) {
+					mProgressdialogTruck = new ProgressDialog(MainActivity.this);
+					mProgressdialogTruck.setMessage("正在加载数据");
+					mProgressdialogTruck.setIndeterminate(true);
+					mProgressdialogTruck.setCancelable(true);
+					mProgressdialogTruck.show();
 				}
 
 				mTruckLv.setAdapter(mTrucks.nTruckAdapter);
@@ -1267,14 +1260,7 @@ public class MainActivity extends BaseActivity {
 		}
 
 	}
-	
-	
-	
-	
-	
-	
-	
-	
+
 	public class Trucks {
 		public ArrayList<HashMap<String, Object>> nTrucks;
 		public TruckAdapter nTruckAdapter;
@@ -1308,16 +1294,21 @@ public class MainActivity extends BaseActivity {
 						.from(MainActivity.this).inflate(R.layout.truck_item,
 								null);
 				holder = new ViewHolder();
-				holder.tv_location = (TextView) convertView
-						.findViewById(R.id.location_tv);
-				holder.tv_horder_id = (TextView) convertView
-						.findViewById(R.id.horder_id_tv);
-				holder.tv_distance = (TextView) convertView
-						.findViewById(R.id.tvParty_distance);
-				holder.tv_attendee = (TextView) convertView
-						.findViewById(R.id.tvParty_attendee);
-				holder.progress = (ViewGroup) convertView
-						.findViewById(R.id.progressLayout);
+				holder.tv_truck_id = (TextView) convertView
+						.findViewById(R.id.truck_id_tv);
+				holder.tv_name = (TextView) convertView
+						.findViewById(R.id.name_tv);
+
+				holder.iv_truck_phpoto = (ImageView) convertView
+						.findViewById(R.id.truck_phpoto_iv);
+				holder.tv_type = (TextView) convertView
+						.findViewById(R.id.truck_tv);
+				holder.tv_truck_location = (TextView) convertView
+						.findViewById(R.id.truck_location_tv);
+				holder.tv_contact = (TextView) convertView
+						.findViewById(R.id.contact_tv);
+				holder.tv_tuisong = (TextView) convertView
+						.findViewById(R.id.tuisong_tv);
 
 				convertView.setTag(holder);
 
@@ -1325,21 +1316,28 @@ public class MainActivity extends BaseActivity {
 				holder = (ViewHolder) convertView.getTag();
 			}
 
-			HashMap<String, Object> partyData = nTrucks.get(position);
-			holder.tv_distance.setText((String) partyData.get("distance"));
-			holder.progress.setVisibility(View.INVISIBLE);
-			holder.tv_horder_id.setText((String) partyData.get("horder_id"));
+			HashMap<String, Object> truckData = nTrucks.get(position);
+			holder.tv_name.setText("TODO");// TODO: add name
+
+			holder.tv_truck_id.setText((String) truckData
+					.get(CellSiteConstants.TRUCK_ID));
+			holder.tv_type.setText((String) truckData
+					.get(CellSiteConstants.TRUCK_TYPE)
+					+ " "
+					+ (String) truckData.get(CellSiteConstants.TRUCK_LENGTH));
+
 			return convertView;
 		}
 
 		private class ViewHolder {
-			ImageView organizerPortrait;
-			TextView tv_location;
-			TextView tv_horder_id;
-			TextView tv_distance;
-			TextView tv_time;
-			TextView tv_attendee;
-			ViewGroup progress;
+			TextView tv_truck_id;
+			ImageView iv_truck_phpoto;
+			TextView tv_name;
+			TextView tv_type;
+			TextView tv_truck_location;
+			TextView tv_contact;
+			TextView tv_tuisong;
+
 		}
 
 		public int getCount() {
@@ -1358,7 +1356,6 @@ public class MainActivity extends BaseActivity {
 		}
 	}
 
-
 	class TruckDownLoadTask extends AsyncTask<Integer, String, String> {
 		static final String TAG_FAIL = "FAIL";
 		static final String TAG_SUCC = "SUCCESS";
@@ -1375,19 +1372,18 @@ public class MainActivity extends BaseActivity {
 						|| app.getTrucksCache() == null) {
 					Log.d(TAG,
 							"Will connect the network and download the parties");
-					getTruck();
+					getTrucks();
 
 					if (mTrucks.nTrucks.size() < mTrucks.nDisplayNum
 							+ CellSiteConstants.PAGE_COUNT
 							&& !mHasExceptionTruck) {
 						mTrucks.hasShowAllTrucks = true;
 					}
-					
+
 				} else {
-				
-					mTrucks = app
-							.getTrucksCache();
-					
+
+					mTrucks = app.getTrucksCache();
+
 				}
 
 			} catch (Exception e) {
@@ -1404,21 +1400,18 @@ public class MainActivity extends BaseActivity {
 			// TODO Auto-generated method stub
 			super.onPostExecute(result);
 			if (!this.isCancelled()) {
-				if (mProgressdialog != null) {
-					Log.d(TAG, "Cancel the progress dialog");
-					mProgressdialog.cancel();
+				if (mProgressdialogTruck != null) {
+					Log.d(TAG, "Cancel the progress truck dialog");
+					mProgressdialogTruck.cancel();
 				}
 
 				if (isForceRefreshTruck) {
 					isForceRefreshTruck = false;
 					mTruckLv.onRefreshComplete();
 				}
-				mTrucks.nTruckAdapter
-						.setTrucks(mTrucks.nTrucks);
-				mTruckLv
-						.setAdapter(mTrucks.nTruckAdapter);
-				mTrucks.nTruckAdapter
-						.notifyDataSetChanged();
+				mTrucks.nTruckAdapter.setTrucks(mTrucks.nTrucks);
+				mTruckLv.setAdapter(mTrucks.nTruckAdapter);
+				mTrucks.nTruckAdapter.notifyDataSetChanged();
 
 				mTruckMore.setVisibility(View.VISIBLE);
 
@@ -1428,12 +1421,10 @@ public class MainActivity extends BaseActivity {
 					mTruckMoreTv.setText(R.string.show_more);
 				}
 
-				mTrucks.nDisplayNum = mTrucks.nTrucks
-						.size();
-				
-				app.setTrucksCache(mTrucks
-						);
-			
+				mTrucks.nDisplayNum = mTrucks.nTrucks.size();
+
+				app.setTrucksCache(mTrucks);
+
 				if (mTrucks.nDisplayNum > 0) {
 					mTruckMoreTv.setVisibility(View.VISIBLE);
 				} else {
@@ -1449,12 +1440,12 @@ public class MainActivity extends BaseActivity {
 		}
 	}
 
-	public JSONObject getTruck() {
+	public JSONObject getTrucks() {
 		ArrayList<NameValuePair> postParameters = new ArrayList<NameValuePair>();
 
 		postParameters.add(new BasicNameValuePair(CellSiteConstants.USER_ID, ""
 				+ app.getUser().getId()));
-		
+
 		postParameters.add(new BasicNameValuePair("offset", String
 				.valueOf(mTrucks.nDisplayNum)));
 		postParameters.add(new BasicNameValuePair("pagecount", String
@@ -1475,15 +1466,17 @@ public class MainActivity extends BaseActivity {
 		return response;
 	}
 
-/**
- * Trucks result
- *  trucks:[{"id":8,"user_id":9,"tstatus_id":0,"taudit_status_id":0,
- *  "tweight_id":0,"tlength_id":11,"ttype_id":8,"tmobile_num":"","tlicense":"",
- *  "tl_image_url":"\/img\/users\/upload\/9_8_1425992634.jpg",
- *  "tphoto_image_url":null,"created_at":"2015-03-10 13:03:55",
- *  "updated_at":"2015-03-10 13:03:55"}] 
- * @param jsonResult
- */
+	/**
+	 * Trucks result
+	 * trucks:[{"id":8,"user_id":9,"tstatus_id":0,"taudit_status_id":0,
+	 * "tweight_id"
+	 * :0,"tlength_id":11,"ttype_id":8,"tmobile_num":"","tlicense":"",
+	 * "tl_image_url":"\/img\/users\/upload\/9_8_1425992634.jpg",
+	 * "tphoto_image_url":null,"created_at":"2015-03-10 13:03:55",
+	 * "updated_at":"2015-03-10 13:03:55"}]
+	 * 
+	 * @param jsonResult
+	 */
 	public void parseTruckJson(JSONObject jsonResult) {
 		HashMap<String, Object> mTruck;
 		try {
@@ -1497,23 +1490,27 @@ public class MainActivity extends BaseActivity {
 					try {
 						JSONObject resultObj = (JSONObject) results.get(i);
 						mTruck = new HashMap<String, Object>();
+						mTruck.put(CellSiteConstants.TRUCK_ID,
+								resultObj.getString(CellSiteConstants.ID));
+						mTruck.put(CellSiteConstants.TRUCK_LENGTH, (resultObj)
+								.getString(CellSiteConstants.TRUCK_LENGTH));
+						mTruck.put(CellSiteConstants.TRUCK_TYPE, (resultObj)
+								.getString(CellSiteConstants.TRUCK_TYPE));
 						mTruck.put(
-								CellSiteConstants.TRUCK_ID,
-								resultObj
-										.getString(CellSiteConstants.ID));
-						mTruck.put(CellSiteConstants.TRUCK_LENGTH,
-								(resultObj).getString(CellSiteConstants.TRUCK_LENGTH));
-						mTruck.put(CellSiteConstants.TRUCK_TYPE,
-								(resultObj).getString(CellSiteConstants.TRUCK_TYPE));
-						mTruck.put(CellSiteConstants.TRUCK_IMAGE_URL,
-								(resultObj).getString(CellSiteConstants.TRUCK_IMAGE_URL));
-						mTruck.put(CellSiteConstants.TRUCK_LICENSE_URL,
-								(resultObj).getString(CellSiteConstants.TRUCK_LICENSE_URL));
-						mTruck.put(CellSiteConstants.TRUCK_LICENSE,
-								(resultObj).getString(CellSiteConstants.TRUCK_LICENSE));
-						mTruck.put(CellSiteConstants.TRUCK_MOBILE_NUM,
-								(resultObj).getString(CellSiteConstants.TRUCK_MOBILE_NUM));
-						// down load image 
+								CellSiteConstants.TRUCK_IMAGE_URL,
+								(resultObj)
+										.getString(CellSiteConstants.TRUCK_IMAGE_URL));
+						mTruck.put(
+								CellSiteConstants.TRUCK_LICENSE_URL,
+								(resultObj)
+										.getString(CellSiteConstants.TRUCK_LICENSE_URL));
+						mTruck.put(CellSiteConstants.TRUCK_LICENSE, (resultObj)
+								.getString(CellSiteConstants.TRUCK_LICENSE));
+						mTruck.put(
+								CellSiteConstants.TRUCK_MOBILE_NUM,
+								(resultObj)
+										.getString(CellSiteConstants.TRUCK_MOBILE_NUM));
+						// down load image
 
 						mTrucks.nTrucks.add(mTruck);
 					} catch (Exception e) {
