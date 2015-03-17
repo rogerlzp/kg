@@ -47,7 +47,7 @@ public class PersonalActivity extends BaseActivity {
 	ImageView portraitIv, identityIv, driverLicenseIv;
 	TextView nameTv, driverLicenseTv, mobileNumTv;
 
-	Bitmap  mIdentityImage, mDriverLicenseImage;
+	Bitmap mIdentityImage, mDriverLicenseImage;
 
 	// SigleBmpDownLoadTask mSwitchDownloadTask;
 
@@ -78,7 +78,13 @@ public class PersonalActivity extends BaseActivity {
 		nameTv = (TextView) findViewById(R.id.name_tv);
 		driverLicenseTv = (TextView) findViewById(R.id.driver_license_tv);
 		mobileNumTv = (TextView) findViewById(R.id.mobile_tv);
-
+		Log.d(TAG, "user name changed" + app.getUser().getName());
+	}
+	
+	public void initViewData() {
+		nameTv.setText(app.getUser().getName());
+		mobileNumTv.setTag(app.getUser().getMobileNum());
+	
 	}
 
 	public void initData() {
@@ -88,12 +94,11 @@ public class PersonalActivity extends BaseActivity {
 
 	public void setPortraitImage() {
 
-		if (app.getPortaritBitmap() != null) 
-		{
-			portraitIv.setImageDrawable(new BitmapDrawable(
-					app.getPortaritBitmap()));
+		if (app.getPortaritBitmap() != null) {
+			portraitIv.setImageDrawable(new BitmapDrawable(app
+					.getPortaritBitmap()));
 		}
-	}	
+	}
 
 	private class MyUserDownLoadTask extends AsyncTask<Long, Integer, Integer> {
 		@Override
@@ -114,7 +119,7 @@ public class PersonalActivity extends BaseActivity {
 			}
 
 			if (result == CellSiteConstants.RESULT_SUC) {
-				// initView();
+				 initViewData();
 				setPortraitImage();
 			}
 		}
@@ -166,8 +171,14 @@ public class PersonalActivity extends BaseActivity {
 								profileJson
 										.getString(CellSiteConstants.DRIVER_LICENSE_URL));
 			}
-
-
+			if (profileJson.get(CellSiteConstants.NAME) != JSONObject.NULL) {
+				app.getUser().setName(
+						profileJson.getString(CellSiteConstants.NAME));
+			}
+			if (userJson.get(CellSiteConstants.MOBILE) != JSONObject.NULL) {
+				app.getUser().setMobileNum(
+						userJson.getString(CellSiteConstants.MOBILE));
+			}
 
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -451,6 +462,16 @@ public class PersonalActivity extends BaseActivity {
 			}
 			return CellSiteConstants.UNKNOWN_ERROR;
 		}
+	}
+
+	/**
+	 * 跳转到ChangeNameActivity去修改名字
+	 */
+	public void changeName(View v) {
+		Intent intent = new Intent(PersonalActivity.this,
+				ChangeNameActivity.class);
+		startActivity(intent);
+
 	}
 
 }

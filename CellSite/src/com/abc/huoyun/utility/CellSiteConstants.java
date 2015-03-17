@@ -92,8 +92,8 @@ public class CellSiteConstants {
 
 	// �������� URL
 	// public static final String HOST = "http://20120328.welives.sinaapp.com/";
-	// public static final String HOST = "http://115.28.175.222:9091/";
-	 public static final String HOST = "http://192.168.2.106:9009/";
+	 public static final String HOST = "http://115.28.175.222:9091/";
+	// public static final String HOST = "http://192.168.2.106:9003/";
 	public static final String LOGIN_URL = HOST + "login/fmobile";
 	public static final String CHANGE_PASSWORD_URL = HOST
 			+ "changePassword.php";
@@ -105,7 +105,8 @@ public class CellSiteConstants {
 			+ "updateDriverLicense/fmobile";
 	public final static String UPDATE_USER_PORTRAIT_URL = HOST
 			+ "updateUserPortrait/fmobile";
-	
+	public final static String UPDATE_USERNAME_URL = HOST
+			+ "updateUsername/fmobile";
 	
 	
 

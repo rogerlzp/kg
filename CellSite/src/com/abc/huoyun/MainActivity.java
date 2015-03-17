@@ -527,6 +527,7 @@ public class MainActivity extends BaseActivity {
 					mTab3.setImageDrawable(getResources().getDrawable(
 							R.drawable.tab_find_frd_normal));
 				}
+				initMeView();
 				// download Truck information
 				mUpdateTruckTask = new UpdateTruckTask();
 				mUpdateTruckTask.execute("" + app.getUser().getId());
