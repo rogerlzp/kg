@@ -1197,7 +1197,7 @@ public class MainActivity extends BaseActivity {
 			int resultCode = response.getInt(CellSiteConstants.RESULT_CODE);
 			if (CellSiteConstants.RESULT_SUC == resultCode) {
 				parseJson(response);
-			} else if (CellSiteConstants.REGISTER_FAIL == resultCode) {
+			} else {
 				Log.d(TAG, "QUERY RESULT FAILED");
 			}
 		} catch (Exception e) {
@@ -1458,7 +1458,7 @@ public class MainActivity extends BaseActivity {
 			int resultCode = response.getInt(CellSiteConstants.RESULT_CODE);
 			if (CellSiteConstants.RESULT_SUC == resultCode) {
 				parseTruckJson(response);
-			} else if (CellSiteConstants.REGISTER_FAIL == resultCode) {
+			} else  {
 				Log.d(TAG, "QUERY RESULT FAILED");
 			}
 		} catch (Exception e) {

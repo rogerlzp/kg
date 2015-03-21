@@ -26,6 +26,7 @@ import com.abc.huoyun.utility.CellSiteConstants;
 import com.abc.huoyun.utility.CellSiteDefException;
 import com.abc.huoyun.utility.PasswordService;
 import com.abc.huoyun.utility.Utils;
+import com.tencent.android.tpush.XGPushConfig;
 
 public class LoginActivity extends BaseActivity {
 
@@ -47,6 +48,7 @@ public class LoginActivity extends BaseActivity {
 		if (app.ConnectNetwork() == NETWORK_STATUS.OFFLINE) {
 			Utils.createNetworkStatusDlg(LoginActivity.this);
 		}
+		deviceToken = XGPushConfig.getToken(this);
 	}
 
 	public void initView() {
@@ -103,7 +105,7 @@ public class LoginActivity extends BaseActivity {
 			finish();
 
 			mNormalLoginTask = new NormalLoginTask();
-			mNormalLoginTask.execute(new String[] { username, password,
+			mNormalLoginTask.execute(new String[] { username, password, deviceToken,
 					loginType });
 		}
 	}
@@ -111,7 +113,7 @@ public class LoginActivity extends BaseActivity {
 	private class NormalLoginTask extends AsyncTask<String, String, Integer> {
 		@Override
 		public Integer doInBackground(String... params) {
-			return normalLogin(params[0], params[1], params[2]);
+			return normalLogin(params[0], params[1], params[2], params[3] );
 		}
 
 		@Override
@@ -124,29 +126,22 @@ public class LoginActivity extends BaseActivity {
 			if (this.isCancelled()) {
 				return;
 			}
-			Integer resCode = result;// Integer.parseInt(result);
-			if (resCode == CellSiteConstants.LOGIN_SUCC) {
+
+			if (result == CellSiteConstants.RESULT_SUC) {
 				// TODO: set for different user
-				// app.setUserMode(CellSiteConstants.NORMAL_USER_MODE);
 				Intent intent = new Intent(LoginActivity.this,
 						MainActivity.class);
 				startActivity(intent);
 				finish();
-			} else if (resCode == CellSiteConstants.LOGIN_BAD_PASSWORD) {
+			} else if (result == CellSiteConstants.LOGIN_FAILED) {
 				Log.d(TAG, "Correct Username, but wrong Password");
 				passwordEt.setText("");
-				Toast.makeText(getApplicationContext(), "�����������������",
+				Toast.makeText(getApplicationContext(), "用户名或者密码错误",
 						Toast.LENGTH_LONG).show();
-			} else if (resCode == CellSiteConstants.LOGIN_BAD_USERNAME) {
-				Log.d(TAG, "wrong username");
-				usernameEt.setText("");
-				passwordEt.setText("");
-				Toast.makeText(getApplicationContext(), "�û����������������",
-						Toast.LENGTH_LONG).show();
-			}
+			} 
 		}
 
-		protected Integer normalLogin(String _username, String _password,
+		protected Integer normalLogin(String _username, String _password, 	String _deviceToken, 
 				String account_type) {
 			String passwordHash = "";
 			try {
@@ -162,6 +157,11 @@ public class LoginActivity extends BaseActivity {
 			postParameters
 					.add(new BasicNameValuePair("password", passwordHash));
 
+			postParameters.add(new BasicNameValuePair(
+					CellSiteConstants.DEVICE_TOKEN, _deviceToken));
+			postParameters.add(new BasicNameValuePair(
+					CellSiteConstants.ROLE_ID, ""
+							+ CellSiteConstants.HUOZHU_ROLE_ID));
 			Log.d(TAG, "password: " + passwordHash);
 
 			JSONObject response = null;

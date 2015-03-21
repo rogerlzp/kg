@@ -61,8 +61,7 @@ public class LaunchActivity extends BaseActivity {
 	     Context context = getApplicationContext();
 	     XGPushManager.registerPush(context);	
 	     
-	     //  ??????toekn
-	     Log.d(TAG, "TOKEN_ID=" + XGPushConfig.getToken(this));
+	     deviceToken = XGPushConfig.getToken(this);
 	}
 	
 	private void enterMainActivity() {

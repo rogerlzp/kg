@@ -22,6 +22,8 @@ public class BaseActivity extends Activity {
 	long waitTime = 2000;
 	long touchTime = 0;
 	
+	String deviceToken;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
