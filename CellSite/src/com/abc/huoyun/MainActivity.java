@@ -47,9 +47,11 @@ import android.widget.PopupWindow;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
+import com.abc.huoyun.CargoWeightVolumeDialog.CargoWeightVolumeInputListener;
 import com.abc.huoyun.CityDialog.InputListener;
 import com.abc.huoyun.net.CellSiteHttpClient;
 import com.abc.huoyun.utility.CellSiteConstants;
+import com.abc.huoyun.utility.CityDBReader;
 import com.abc.huoyun.view.PullToRefreshListView;
 import com.abc.huoyun.view.PullToRefreshListView.OnRefreshListener;
 
@@ -75,6 +77,7 @@ public class MainActivity extends BaseActivity {
 
 	private TextView mSDtv;
 	private TextView mCTtv;
+	private TextView mCWVtv; // 货物重量和体积
 	private TextView mTTtv;
 	private TextView mTLtv;
 
@@ -132,15 +135,47 @@ public class MainActivity extends BaseActivity {
 				return;
 			}
 
-			String partyId = (String) aHorders.get(position).get("party_id");
-			// boolean hasJoined = (Boolean) parties.get(position).get(
-			// "has_joined");
-
 			Intent intent = new Intent(MainActivity.this,
 					HorderDetailActivity.class);
-			startActivity(intent);
-			// intent.putExtra(PartyActivity.PARTY_ID, );
+			intent.putExtra(
+					CellSiteConstants.HORDER_ID,
+					(String) aHorders.get(position).get(
+							CellSiteConstants.HORDER_ID));
+			intent.putExtra(
+					CellSiteConstants.SHIPPER_USERNAME,
+					(String) aHorders.get(position).get(
+							CellSiteConstants.SHIPPER_USERNAME));
+			intent.putExtra(
+					CellSiteConstants.SHIPPER_ADDRESS_NAME,
+					(String) aHorders.get(position).get(
+							CellSiteConstants.SHIPPER_ADDRESS_NAME));
+			intent.putExtra(
+					CellSiteConstants.CONSIGNEE_ADDRESS_NAME,
+					(String) aHorders.get(position).get(
+							CellSiteConstants.CONSIGNEE_ADDRESS_NAME));
+			intent.putExtra(CellSiteConstants.CARGO_TYPE, (String) aHorders
+					.get(position).get(CellSiteConstants.CARGO_TYPE));
+			intent.putExtra(CellSiteConstants.CARGO_WEIGHT, (String) aHorders
+					.get(position).get(CellSiteConstants.CARGO_WEIGHT));
+			intent.putExtra(CellSiteConstants.CARGO_VOLUME, (String) aHorders
+					.get(position).get(CellSiteConstants.CARGO_VOLUME));
+			intent.putExtra(CellSiteConstants.TRUCK_TYPE, (String) aHorders
+					.get(position).get(CellSiteConstants.TRUCK_TYPE));
+			intent.putExtra(CellSiteConstants.HORDER_STATUS, (String) aHorders
+					.get(position).get(CellSiteConstants.HORDER_STATUS));
+			intent.putExtra(CellSiteConstants.SHIPPER_DATE, (String) aHorders
+					.get(position).get(CellSiteConstants.SHIPPER_DATE));
+			intent.putExtra(
+					CellSiteConstants.SHIPPER_USERNAME,
+					(String) aHorders.get(position).get(
+							CellSiteConstants.SHIPPER_USERNAME));
+			intent.putExtra(
+					CellSiteConstants.HORDER_DESCRIPTION,
+					(String) aHorders.get(position).get(
+							CellSiteConstants.HORDER_DESCRIPTION));
 
+			startActivity(intent);
+			
 		}
 	};
 
@@ -156,7 +191,7 @@ public class MainActivity extends BaseActivity {
 
 	TruckDownLoadTask mTruckDownLoadTask;
 	ProgressDialog mProgressdialogTruck;
-	
+
 	OnItemClickListener mTruckDetailListener = new OnItemClickListener() {
 		// / @Override
 		public void onItemClick(AdapterView<?> parent, View view, int position,
@@ -178,13 +213,13 @@ public class MainActivity extends BaseActivity {
 				return;
 			}
 
-			String truckId = (String) aTrucks.get(position).get(CellSiteConstants.TRUCK_ID);
-			
+			String truckId = (String) aTrucks.get(position).get(
+					CellSiteConstants.TRUCK_ID);
+
 			Intent intent = new Intent(MainActivity.this,
 					TruckDetailActivity.class);
-			 intent.putExtra(CellSiteConstants.TRUCK_ID, truckId);
+			intent.putExtra(CellSiteConstants.TRUCK_ID, truckId);
 			startActivity(intent);
-
 
 		}
 	};
@@ -260,6 +295,7 @@ public class MainActivity extends BaseActivity {
 		mTabPager.setAdapter(mPagerAdapter);
 
 		initData();
+		initCreateHorderView();
 	}
 
 	//
@@ -397,18 +433,10 @@ public class MainActivity extends BaseActivity {
 			mTruckLengthList.add(map);
 		}
 
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 15; i++) {
 			HashMap<String, Object> map = new HashMap<String, Object>();
-			map.put("TITLE", "Test Title");
-			map.put("TWEIGHT", "TW1");
-			mTruckWeightList.add(map);
-		}
-
-		for (int i = 0; i < 10; i++) {
-			HashMap<String, Object> map = new HashMap<String, Object>();
-			map.put("PIC", R.drawable.ic_launcher);
-			map.put("TITLE", "Test Title");
-			map.put("CTYPE", "CT1");
+			map.put("TITLE", CellSiteConstants.CargoTypes[i]);
+			map.put("CARGOTYPE", i + 1);
 			mCargoTypeList.add(map);
 		}
 
@@ -454,6 +482,7 @@ public class MainActivity extends BaseActivity {
 					mTab4.setImageDrawable(getResources().getDrawable(
 							R.drawable.tab_settings_normal));
 				}
+				initCreateHorderView();
 				break;
 			case 1:
 				mTab2.setImageDrawable(getResources().getDrawable(
@@ -478,7 +507,8 @@ public class MainActivity extends BaseActivity {
 				mTruckMore.setVisibility(View.INVISIBLE);
 				mTruckMoreTv.setText(R.string.show_more);
 
-				if (mProgressdialogTruck == null || !mProgressdialogTruck.isShowing()) {
+				if (mProgressdialogTruck == null
+						|| !mProgressdialogTruck.isShowing()) {
 					mProgressdialogTruck = new ProgressDialog(MainActivity.this);
 					mProgressdialogTruck.setMessage("正在加载数据");
 					mProgressdialogTruck.setIndeterminate(true);
@@ -550,6 +580,11 @@ public class MainActivity extends BaseActivity {
 		@Override
 		public void onPageScrollStateChanged(int arg0) {
 		}
+	}
+
+	// init view for crate horder
+	public void initCreateHorderView() {
+		mCWVtv = ((TextView) findViewById(R.id.cargo_weight_tv));
 	}
 
 	private class UpdateTruckTask extends AsyncTask<String, String, Integer> {
@@ -679,10 +714,6 @@ public class MainActivity extends BaseActivity {
 				.getText().toString();
 		mHorderDesc = ((EditText) findViewById(R.id.horder_description_et))
 				.getText().toString();
-		mCargoWeight = ((EditText) findViewById(R.id.cargo_weight_et))
-				.getText().toString();
-		mCargoVolume = ((EditText) findViewById(R.id.cargo_volume_et))
-				.getText().toString();
 
 		CreateHorderTask mCreateHorderTask = new CreateHorderTask();
 
@@ -770,7 +801,40 @@ public class MainActivity extends BaseActivity {
 	}
 
 	/**
-	 * ??????view???id ???????????????
+	 * 弹出对话框，输入重量和体积
+	 * 
+	 * @param v
+	 */
+	public void chooseCargoWeightVolume(View v) {
+		mCWVtv = ((TextView) findViewById(R.id.cargo_weight_tv));
+
+		CargoWeightVolumeInputListener listener = new CargoWeightVolumeInputListener() {
+
+			@Override
+			public void getText(String str, String str2) {
+				// TODO Auto-generated method stub
+				String finalStr = "";
+				if (!str.equals("0")) {
+					finalStr = "  " + str + "吨  ";
+				}
+				if (!str2.equals("0")) {
+					finalStr += str2 + "立方";
+				}
+
+				mCWVtv.setText(finalStr);
+				mCargoWeight = str;
+				mCargoVolume = str2;
+			}
+		};
+		CargoWeightVolumeDialog mCWVD = new CargoWeightVolumeDialog(
+				MainActivity.this, listener);
+		mCWVD.setTitle(R.string.cargo_weight_vloume);
+		mCWVD.show();
+
+	}
+
+	/**
+	 * 选择地址
 	 * 
 	 * @param v
 	 */
@@ -791,7 +855,7 @@ public class MainActivity extends BaseActivity {
 				}
 			};
 			mCityDialog = new CityDialog(MainActivity.this, listener);
-			mCityDialog.setTitle("????????????");
+			mCityDialog.setTitle(R.string.choose_address);
 			mCityDialog.show();
 
 		} else if (v.getId() == R.id.consignee_address_btn
@@ -806,7 +870,7 @@ public class MainActivity extends BaseActivity {
 				}
 			};
 			mCityDialog = new CityDialog(MainActivity.this, listener);
-			mCityDialog.setTitle("????????????");
+			mCityDialog.setTitle(R.string.choose_address);
 			mCityDialog.show();
 
 		}
@@ -853,9 +917,9 @@ public class MainActivity extends BaseActivity {
 		gridView1.setNumColumns(3);
 		// (GridView)findViewById(R.id.gridView1);
 		SimpleAdapter adapter = new SimpleAdapter(this, mCargoTypeList,
-				R.layout.cargo_type_griditem, new String[] { "PIC", "TITLE",
-						"CTYPE" }, new int[] { R.id.griditem_pic,
-						R.id.griditem_title, R.id.griditem_type, });
+				R.layout.cargo_type_griditem, new String[] { "TITLE",
+						"CARGOTYPE" }, new int[] { R.id.griditem_title,
+						R.id.griditem_type, });
 
 		gridView1.setAdapter(adapter);
 		builder.setTitle("Please Choose");
@@ -1026,16 +1090,14 @@ public class MainActivity extends BaseActivity {
 						.from(MainActivity.this).inflate(R.layout.horder_item,
 								null);
 				holder = new ViewHolder();
-				holder.tv_location = (TextView) convertView
-						.findViewById(R.id.location_tv);
 				holder.tv_horder_id = (TextView) convertView
 						.findViewById(R.id.horder_id_tv);
-				holder.tv_distance = (TextView) convertView
-						.findViewById(R.id.tvParty_distance);
-				holder.tv_attendee = (TextView) convertView
-						.findViewById(R.id.tvParty_attendee);
-				holder.progress = (ViewGroup) convertView
-						.findViewById(R.id.progressLayout);
+				holder.tv_truck = (TextView) convertView
+						.findViewById(R.id.truck_tv);
+				holder.tv_cargo = (TextView) convertView
+						.findViewById(R.id.cargo_tv);
+				holder.tv_time = (TextView)convertView.findViewById(R.id.shipper_time_tv);
+				holder.tv_location=(TextView)convertView.findViewById(R.id.location_tv);
 
 				convertView.setTag(holder);
 
@@ -1043,10 +1105,35 @@ public class MainActivity extends BaseActivity {
 				holder = (ViewHolder) convertView.getTag();
 			}
 
-			HashMap<String, Object> partyData = nHorders.get(position);
-			holder.tv_distance.setText((String) partyData.get("distance"));
-			holder.progress.setVisibility(View.INVISIBLE);
-			holder.tv_horder_id.setText((String) partyData.get("horder_id"));
+			HashMap<String, Object> horderData = nHorders.get(position);
+
+			
+			holder.tv_horder_id.setText((String) horderData.get("horder_id"));
+			holder.tv_location.setText((String) horderData
+					.get(CellSiteConstants.SHIPPER_ADDRESS_NAME)
+					+ "~"
+					+ (String) horderData
+							.get(CellSiteConstants.CONSIGNEE_ADDRESS_NAME));
+
+			holder.tv_truck.setText(CellSiteConstants.TruckTypes[Integer
+					.valueOf((String) horderData
+							.get(CellSiteConstants.TRUCK_TYPE)) - 1]);
+
+			int cargoVolumeValue = Integer.valueOf((String) horderData
+					.get(CellSiteConstants.CARGO_VOLUME));
+			int cargoWeightValue = Integer.valueOf((String) horderData
+					.get(CellSiteConstants.CARGO_WEIGHT));
+			String cargoVolume = cargoVolumeValue != 0 ? cargoVolumeValue + "方"
+					: "";
+			String cargoWeight = cargoWeightValue != 0 ? cargoWeightValue + "吨"
+					: "";
+			holder.tv_cargo.setText((CellSiteConstants.CargoTypes[Integer
+					.valueOf((String) horderData
+							.get(CellSiteConstants.CARGO_TYPE)) - 1])
+					+ cargoWeight + cargoVolume);
+			
+			holder.tv_time.setText((String)horderData.get(CellSiteConstants.SHIPPER_DATE));
+
 			return convertView;
 		}
 
@@ -1056,7 +1143,8 @@ public class MainActivity extends BaseActivity {
 			TextView tv_horder_id;
 			TextView tv_distance;
 			TextView tv_time;
-			TextView tv_attendee;
+			TextView tv_cargo;
+			TextView tv_truck;
 			ViewGroup progress;
 		}
 
@@ -1076,7 +1164,7 @@ public class MainActivity extends BaseActivity {
 		}
 	}
 
-	// ????????????????????? horder
+	// 查看 horder
 
 	class HorderDownLoadTask extends AsyncTask<Integer, String, String> {
 		static final String TAG_FAIL = "FAIL";
@@ -1101,7 +1189,7 @@ public class MainActivity extends BaseActivity {
 							&& !mHasExceptionHorder) {
 						mHorderTypes[mCurrRadioIdx].hasShowAllHorders = true;
 					}
-					Log.d(TAG, "after download the parties");
+					Log.d(TAG, "after download the horder");
 				} else {
 					Log.d(TAG, "Will use the cache, current radio index "
 							+ mCurrRadioIdx);
@@ -1118,7 +1206,7 @@ public class MainActivity extends BaseActivity {
 				return TAG_FAIL;
 			}
 
-			Log.d(TAG, "after download the parties: TAG_SUCC");
+			Log.d(TAG, "after download the horders: TAG_SUCC");
 			return TAG_SUCC;
 		}
 
@@ -1207,8 +1295,7 @@ public class MainActivity extends BaseActivity {
 	}
 
 	/**
-	 * ?????????????????????????????? ???????????????
-	 * {"result_code":"0","horders":[{"id":6,"shipper_username":
+	 * horder状态 {"result_code":"0","horders":[{"id":6,"shipper_username":
 	 * "\u674e\u674e\u90bb\u5c45\u5929",
 	 * "shipper_phone":"","shipper_date":"2015-03-15 00:00:00"
 	 * ,"shipper_address_code":"110000-110100-110101",
@@ -1240,9 +1327,39 @@ public class MainActivity extends BaseActivity {
 								CellSiteConstants.SHIPPER_USERNAME,
 								resultObj
 										.getString(CellSiteConstants.SHIPPER_USERNAME));
-						mHorder.put("horder_id",
+						mHorder.put(CellSiteConstants.HORDER_ID,
 								(resultObj).getString(CellSiteConstants.ID));
-						// TODO : ????????????????????????
+
+						CityDBReader dbReader = new CityDBReader(
+								this.getApplicationContext());
+						mHorder.put(
+								CellSiteConstants.SHIPPER_ADDRESS_NAME,
+								dbReader.getNameFromCode((resultObj)
+										.getString(CellSiteConstants.SHIPPER_ADDRESS_CODE_IN)));
+						mHorder.put(
+								CellSiteConstants.CONSIGNEE_ADDRESS_NAME,
+								dbReader.getNameFromCode((resultObj)
+										.getString(CellSiteConstants.CONSIGNEE_ADDRESS_CODE2)));
+						mHorder.put(CellSiteConstants.CARGO_TYPE, (resultObj)
+								.getString(CellSiteConstants.CARGO_TYPE));
+						mHorder.put(CellSiteConstants.CARGO_WEIGHT, (resultObj)
+								.getString(CellSiteConstants.CARGO_WEIGHT));
+						mHorder.put(CellSiteConstants.CARGO_VOLUME, (resultObj)
+								.getString(CellSiteConstants.CARGO_VOLUME));
+						mHorder.put(CellSiteConstants.TRUCK_TYPE, (resultObj)
+								.getString(CellSiteConstants.TRUCK_TYPE));
+						mHorder.put(CellSiteConstants.HORDER_STATUS,
+								(resultObj).getString(CellSiteConstants.STATUS));
+						mHorder.put(CellSiteConstants.SHIPPER_DATE, (resultObj)
+								.getString(CellSiteConstants.SHIPPER_DATE));
+						mHorder.put(CellSiteConstants.HORDER_DESCRIPTION, (resultObj)
+								.getString(CellSiteConstants.HORDER_DESCRIPTION));
+						mHorder.put(
+								CellSiteConstants.SHIPPER_USERNAME,
+								(resultObj)
+										.getString(CellSiteConstants.SHIPPER_USERNAME));
+
+						// TODO :
 						int counter = 0;
 
 						mHorderTypes[mCurrRadioIdx].nHorders.add(mHorder);
@@ -1458,7 +1575,7 @@ public class MainActivity extends BaseActivity {
 			int resultCode = response.getInt(CellSiteConstants.RESULT_CODE);
 			if (CellSiteConstants.RESULT_SUC == resultCode) {
 				parseTruckJson(response);
-			} else  {
+			} else {
 				Log.d(TAG, "QUERY RESULT FAILED");
 			}
 		} catch (Exception e) {

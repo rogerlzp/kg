@@ -58,8 +58,9 @@
     <string name="consignee_address">终点</string>
     <string name="shipper_date">发货时间</string>
     <string name="cargo_type">货物类别</string>
-    <string name="cargo_weight">货物重量</string>
-    <string name="cargo_volume">货物体积</string>
+    <string name="cargo_weight">货物重量(吨)</string>
+    <string name="cargo_weight_vloume">货物重量体积</string>
+    <string name="cargo_volume">货物体积(立方米)</string>
     <string name="truck_type">货车类别</string>
     <string name="truck_weight">货车载重</string>
     <string name="truck_length">货车长度</string>
@@ -166,5 +167,7 @@
     <string name="plate_number">车牌号</string>
     <string name="contact">电话联系</string>
     <string name="tuisong_huo">推送货源</string>
+    <string name="note">备注</string>
+    <string name="choose_address">请选择地址</string>
 
 </resources>

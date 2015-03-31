@@ -78,4 +78,12 @@
         <item name="android:layout_gravity">left|center_vertical</item>
     </style>
 
+        <style name="more_right_arrow">
+        <item name="android:layout_height">40dp</item>
+        <item name="android:layout_width">40dp</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:src">@drawable/more_arrow</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+    
 </resources>

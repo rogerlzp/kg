@@ -239,7 +239,7 @@ public class CellSiteApplication extends Application {
 			UrlStr = CellSiteConstants.USER_IMAGE_URL + relativePath;  // image path from the server
 			localDir = userTag;
 
-			// ???????????????????????????????????????????????????????????????????????????
+			// 
 			try {
 				File localFile = new File(userTag +"/"+localPath);
 				boolean localFileExits = localFile.exists() && localFile.isFile();
@@ -250,7 +250,7 @@ public class CellSiteApplication extends Application {
 						|| hasDownloadBmpList.contains(relativePath)) {
 					if (localFileExits) {
 						try {
-							inputStream = new FileInputStream(localPath);
+							inputStream = new FileInputStream(localFile);
 							result = BitmapFactory.decodeFileDescriptor(
 									inputStream.getFD(), null, mBitmapDecodeOption);
 						} catch (Exception e) {
@@ -286,7 +286,7 @@ public class CellSiteApplication extends Application {
 					if (localFileExits) {
 						localLastModify = localFile.lastModified();
 						if (localLastModify == sererLastModified) {
-							inputStream = new FileInputStream(localPath);
+							inputStream = new FileInputStream(localFile);
 							try {
 								result = BitmapFactory.decodeFileDescriptor(
 										inputStream.getFD(), null,

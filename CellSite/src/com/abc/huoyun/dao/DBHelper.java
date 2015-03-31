@@ -26,7 +26,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	 private static String DB_PATH = "/data/data/com.abc.huoyun/databases/"; 
 	
 	   public static final String DB_NAME = "city.s3db";
-	    public static final String PACKAGE_NAME = "com.abc.driver";
+	    public static final String PACKAGE_NAME = "com.abc.huoyun";
 	 //   public static final String DB_PATH = "/data"
 	  //         + Environment.getDataDirectory().getAbsolutePath() + "/"+ PACKAGE_NAME;
 	
