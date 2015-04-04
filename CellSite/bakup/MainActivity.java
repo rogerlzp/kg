@@ -43,7 +43,6 @@ import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -53,11 +52,8 @@ import com.abc.huoyun.CityDialog.InputListener;
 import com.abc.huoyun.net.CellSiteHttpClient;
 import com.abc.huoyun.utility.CellSiteConstants;
 import com.abc.huoyun.utility.CityDBReader;
-import com.handmark.pulltorefresh.library.PullToRefreshBase;
-import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
-import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
-import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener2;
-import com.handmark.pulltorefresh.library.PullToRefreshListView;
+import com.abc.huoyun.view.PullToRefreshListView;
+import com.abc.huoyun.view.PullToRefreshListView.OnRefreshListener;
 
 public class MainActivity extends BaseActivity {
 
@@ -106,9 +102,6 @@ public class MainActivity extends BaseActivity {
 	private UpdateTruckTask mUpdateTruckTask;
 
 	//
-
-	PullToRefreshListView mHorderLv2;
-
 	// 货单
 	PullToRefreshListView mHorderLv;
 	HorderType[] mHorderTypes = new HorderType[3];
@@ -134,7 +127,7 @@ public class MainActivity extends BaseActivity {
 				if (mHorderTypes[mCurrRadioIdx].hasShowAllHorders) {
 					mHorderMoreTv.setText(R.string.hasShowAll);
 				} else {
-				//	mLvHistoryPosHorder = mHorderLv.getFirstVisiblePosition();
+					mLvHistoryPosHorder = mHorderLv.getFirstVisiblePosition();
 					mHorderDownLoadTask = new HorderDownLoadTask();
 					mHorderDownLoadTask
 							.execute(CellSiteConstants.MORE_OPERATION);
@@ -189,7 +182,6 @@ public class MainActivity extends BaseActivity {
 	// 货车列表
 
 	PullToRefreshListView mTruckLv;
-
 	ViewGroup mTruckMore;
 	TextView mTruckMoreTv;
 	Trucks mTrucks = new Trucks();
@@ -213,7 +205,7 @@ public class MainActivity extends BaseActivity {
 				if (mTrucks.hasShowAllTrucks) {
 					mTruckMoreTv.setText(R.string.hasShowAll);
 				} else {
-				//	mLvHistoryPosTruck = mTruckLv.getFirstVisiblePosition();
+					mLvHistoryPosTruck = mTruckLv.getFirstVisiblePosition();
 					mTruckDownLoadTask = new TruckDownLoadTask();
 					mTruckDownLoadTask
 							.execute(CellSiteConstants.MORE_OPERATION);
@@ -386,7 +378,6 @@ public class MainActivity extends BaseActivity {
 	public void initHorders() {
 
 		mHorderLv = (PullToRefreshListView) findViewById(R.id.myPartyLv);
-		mHorderLv.setMode(Mode.BOTH);
 
 		mHorderMore = (ViewGroup) LayoutInflater.from(MainActivity.this)
 				.inflate(R.layout.more_list, null);
@@ -394,29 +385,11 @@ public class MainActivity extends BaseActivity {
 
 		mHorderMoreTv = (TextView) mHorderMore.getChildAt(0);
 
-		// mHorderLv.addFooterView(mHorderMore);
+		mHorderLv.addFooterView(mHorderMore);
 		mHorderLv.setOnItemClickListener(mHorderDetailListener);
 		mHorderLv.setAdapter(mHorderTypes[mCurrRadioIdx].nHorderAdapter);
 		// Set a listener to be invoked when the list should be refreshed.
-		mHorderLv.setOnRefreshListener(new OnRefreshListener2<ListView>() {
-
-			@Override
-			public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
-				isForceRefreshHorder = true;
-				mHorderTypes[mCurrRadioIdx] = new HorderType(mCurrRadioIdx);
-
-			mHorderDownLoadTask = new HorderDownLoadTask();
-				mHorderDownLoadTask.execute(CellSiteConstants.NORMAL_OPERATION);
-			}
-			
-			@Override
-			public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView){
-				isForceRefreshHorder = true;
-				mHorderTypes[mCurrRadioIdx] = new HorderType(mCurrRadioIdx);
-
-				mHorderDownLoadTask = new HorderDownLoadTask();
-				mHorderDownLoadTask.execute(CellSiteConstants.NORMAL_OPERATION);
-			}
+		mHorderLv.setOnRefreshListener(new OnRefreshListener() {
 
 			public void onRefresh() {
 				// TODO Auto-generated method stub
@@ -441,11 +414,11 @@ public class MainActivity extends BaseActivity {
 
 		mTruckMoreTv = (TextView) mTruckMore.getChildAt(0);
 
-	//	mTruckLv.addFooterView(mTruckMore);
+		mTruckLv.addFooterView(mTruckMore);
 		mTruckLv.setOnItemClickListener(mTruckDetailListener);
 		mTruckLv.setAdapter(mTrucks.nTruckAdapter);
 		// Set a listener to be invoked when the list should be refreshed.
-	/*	mTruckLv.setOnRefreshListener(new OnRefreshListener() {
+		mTruckLv.setOnRefreshListener(new OnRefreshListener() {
 
 			public void onRefresh() {
 				// TODO Auto-generated method stub
@@ -457,7 +430,6 @@ public class MainActivity extends BaseActivity {
 			}
 
 		});
-*/
 
 	}
 
@@ -1304,15 +1276,15 @@ public class MainActivity extends BaseActivity {
 						+ app.getHorderTypeCache(mCurrRadioIdx).nHorders.size());
 
 				if (mHorderTypes[mCurrRadioIdx].nDisplayNum > 0) {
-					Log.d(TAG, "set more tv to visible");
-
+					Log.d(TAG, "set more tv to visible" );
+					
 					mHorderMoreTv.setVisibility(View.VISIBLE);
 				} else {
-					Log.d(TAG, "set more tv to INVISIBLE");
+					Log.d(TAG, "set more tv to INVISIBLE" );
 					mHorderMoreTv.setVisibility(View.INVISIBLE);
 				}
 				if (mLvHistoryPosHorder > 0) {
-				//	mHorderLv.setSelectionFromTop(mLvHistoryPosHorder, 0);
+					mHorderLv.setSelectionFromTop(mLvHistoryPosHorder, 0);
 					mLvHistoryPosHorder = 0;
 				}
 
@@ -1606,7 +1578,7 @@ public class MainActivity extends BaseActivity {
 					mTruckMoreTv.setVisibility(View.INVISIBLE);
 				}
 				if (mLvHistoryPosTruck > 0) {
-				//	mTruckLv.setSelectionFromTop(mLvHistoryPosTruck, 0);
+					mTruckLv.setSelectionFromTop(mLvHistoryPosTruck, 0);
 					mLvHistoryPosTruck = 0;
 				}
 

@@ -61,7 +61,7 @@
             android:textSize="20sp" />
 
         <TextView
-            android:id="@+id/plate_number_tv"
+            android:id="@+id/truck_plate_tv"
             android:layout_width="wrap_content"
             android:layout_height="18dp"
             android:layout_below="@id/name_tv"
@@ -101,7 +101,7 @@
             android:layout_marginLeft="20dp"
             android:layout_marginTop="15dp"
             android:layout_toRightOf="@id/truck_image_iv"
-            android:text="@string/driver"
+            android:text="@string/truck_type"
             android:textSize="20sp" />
 
         <TextView
@@ -112,7 +112,7 @@
             android:layout_marginLeft="20dp"
             android:layout_marginTop="5dp"
             android:layout_toRightOf="@id/truck_image_iv"
-            android:text="@string/plate_number"
+            android:text="@string/truck_length"
             android:textSize="20sp" />
 
         <TextView
@@ -128,26 +128,28 @@
         </TextView>
     </RelativeLayout>
 
-    <RelativeLayout
-        android:id="@+id/horder_description"
-        android:layout_width="fill_parent"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="45dp"
         android:layout_marginBottom="10dp"
-        android:gravity="center_vertical" >
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
 
         <Button
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_marginLeft="20dp"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1"
             android:text="@string/contact" />
 
         <Button
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:layout_marginRight="20dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
             android:text="@string/tuisong_huo" />
-    </RelativeLayout>
+    </LinearLayout>
 
 </LinearLayout>
