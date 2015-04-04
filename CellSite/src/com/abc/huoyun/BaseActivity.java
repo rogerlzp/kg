@@ -14,6 +14,7 @@ import com.abc.huoyun.utility.CellSiteApplication;
  *
  */
 
+
 public class BaseActivity extends Activity {
 	
     final static String BASETAG = "BaseActivity";
