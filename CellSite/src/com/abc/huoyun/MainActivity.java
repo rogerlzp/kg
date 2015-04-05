@@ -24,6 +24,7 @@ import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
@@ -55,7 +56,6 @@ import com.abc.huoyun.utility.CellSiteConstants;
 import com.abc.huoyun.utility.CityDBReader;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
-import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener2;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
@@ -112,7 +112,7 @@ public class MainActivity extends BaseActivity {
 	// 货单
 	PullToRefreshListView mHorderLv;
 	HorderType[] mHorderTypes = new HorderType[3];
-	ViewGroup mHorderMore;
+	ViewGroup mHorderMore, mEmptyHorderView;
 	TextView mHorderMoreTv;
 	boolean isForceRefreshHorder = false;
 	Boolean mHasExceptionHorder = false;
@@ -134,7 +134,8 @@ public class MainActivity extends BaseActivity {
 				if (mHorderTypes[mCurrRadioIdx].hasShowAllHorders) {
 					mHorderMoreTv.setText(R.string.hasShowAll);
 				} else {
-				//	mLvHistoryPosHorder = mHorderLv.getFirstVisiblePosition();
+					// mLvHistoryPosHorder =
+					// mHorderLv.getFirstVisiblePosition();
 					mHorderDownLoadTask = new HorderDownLoadTask();
 					mHorderDownLoadTask
 							.execute(CellSiteConstants.MORE_OPERATION);
@@ -213,7 +214,7 @@ public class MainActivity extends BaseActivity {
 				if (mTrucks.hasShowAllTrucks) {
 					mTruckMoreTv.setText(R.string.hasShowAll);
 				} else {
-				//	mLvHistoryPosTruck = mTruckLv.getFirstVisiblePosition();
+					// mLvHistoryPosTruck = mTruckLv.getFirstVisiblePosition();
 					mTruckDownLoadTask = new TruckDownLoadTask();
 					mTruckDownLoadTask
 							.execute(CellSiteConstants.MORE_OPERATION);
@@ -391,38 +392,46 @@ public class MainActivity extends BaseActivity {
 		mHorderMore = (ViewGroup) LayoutInflater.from(MainActivity.this)
 				.inflate(R.layout.more_list, null);
 		mHorderMore.setVisibility(View.GONE);
+		mEmptyHorderView = (ViewGroup) LayoutInflater.from(MainActivity.this)
+				.inflate(R.layout.empty_horder, null);
+		
+		
 
 		mHorderMoreTv = (TextView) mHorderMore.getChildAt(0);
 
-		// mHorderLv.addFooterView(mHorderMore);
+		// mHorderLv.getRefreshableView().addFooterView(mHorderMore);
 		mHorderLv.setOnItemClickListener(mHorderDetailListener);
 		mHorderLv.setAdapter(mHorderTypes[mCurrRadioIdx].nHorderAdapter);
 		// Set a listener to be invoked when the list should be refreshed.
 		mHorderLv.setOnRefreshListener(new OnRefreshListener2<ListView>() {
 
 			@Override
-			public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
+			public void onPullDownToRefresh(
+					PullToRefreshBase<ListView> refreshView) {
 				isForceRefreshHorder = true;
-				
-			//	mHorderTypes[mCurrRadioIdx] = new HorderType(mCurrRadioIdx);
 
-			mHorderDownLoadTask = new HorderDownLoadTask();
-				mHorderDownLoadTask.execute(CellSiteConstants.NORMAL_OPERATION);
-			}
-			
-			@Override
-			public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView){
-				isForceRefreshHorder = true;
-			//	mHorderTypes[mCurrRadioIdx] = new HorderType(mCurrRadioIdx);
+				String label = DateUtils.formatDateTime(
+						getApplicationContext(), System.currentTimeMillis(),
+						DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE
+								| DateUtils.FORMAT_ABBREV_ALL);
+				refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);// 加上时间
+
+				// mHorderTypes[mCurrRadioIdx] = new HorderType(mCurrRadioIdx);
 
 				mHorderDownLoadTask = new HorderDownLoadTask();
 				mHorderDownLoadTask.execute(CellSiteConstants.NORMAL_OPERATION);
 			}
 
-			public void onRefresh() {
-				// TODO Auto-generated method stub
+			@Override
+			public void onPullUpToRefresh(
+					PullToRefreshBase<ListView> refreshView) {
 				isForceRefreshHorder = true;
-				mHorderTypes[mCurrRadioIdx] = new HorderType(mCurrRadioIdx);
+				// mHorderTypes[mCurrRadioIdx] = new HorderType(mCurrRadioIdx);
+				String label = DateUtils.formatDateTime(
+						getApplicationContext(), System.currentTimeMillis(),
+						DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE
+								| DateUtils.FORMAT_ABBREV_ALL);
+				refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);// 加上时间
 
 				mHorderDownLoadTask = new HorderDownLoadTask();
 				mHorderDownLoadTask.execute(CellSiteConstants.NORMAL_OPERATION);
@@ -442,23 +451,21 @@ public class MainActivity extends BaseActivity {
 
 		mTruckMoreTv = (TextView) mTruckMore.getChildAt(0);
 
-	//	mTruckLv.addFooterView(mTruckMore);
+		// mTruckLv.addFooterView(mTruckMore);
 		mTruckLv.setOnItemClickListener(mTruckDetailListener);
 		mTruckLv.setAdapter(mTrucks.nTruckAdapter);
 		// Set a listener to be invoked when the list should be refreshed.
-	/*	mTruckLv.setOnRefreshListener(new OnRefreshListener() {
-
-			public void onRefresh() {
-				// TODO Auto-generated method stub
-				isForceRefreshTruck = true;
-				mTrucks = new Trucks();
-
-				mTruckDownLoadTask = new TruckDownLoadTask();
-				mTruckDownLoadTask.execute(CellSiteConstants.NORMAL_OPERATION);
-			}
-
-		});
-*/
+		/*
+		 * mTruckLv.setOnRefreshListener(new OnRefreshListener() {
+		 * 
+		 * public void onRefresh() { // TODO Auto-generated method stub
+		 * isForceRefreshTruck = true; mTrucks = new Trucks();
+		 * 
+		 * mTruckDownLoadTask = new TruckDownLoadTask();
+		 * mTruckDownLoadTask.execute(CellSiteConstants.NORMAL_OPERATION); }
+		 * 
+		 * });
+		 */
 
 	}
 
@@ -589,10 +596,19 @@ public class MainActivity extends BaseActivity {
 				}
 
 				initHorders();
-				mHorderMore.setVisibility(View.INVISIBLE);
-				mHorderMoreTv.setText(R.string.show_more);
+				// mHorderMore.setVisibility(View.GONE);
+				// mHorderMoreTv.setText(R.string.show_more);
+
+				if (mProgressdialog == null || !mProgressdialog.isShowing()) {
+					mProgressdialog = new ProgressDialog(MainActivity.this);
+					mProgressdialog.setMessage("正在加载数据");
+					mProgressdialog.setIndeterminate(true);
+					mProgressdialog.setCancelable(true);
+					mProgressdialog.show();
+				}
 				mHorderDownLoadTask = new HorderDownLoadTask();
 				mHorderDownLoadTask.execute(CellSiteConstants.MORE_OPERATION);
+
 				break;
 			case 3:
 				mTab4.setImageDrawable(getResources().getDrawable(
@@ -806,8 +822,10 @@ public class MainActivity extends BaseActivity {
 				String _cargoWeight, String _cargoVolume, String _truckType,
 				String _truckLength, String _orderDesc, String _userId) {
 
-			Log.d(TAG, "_shipperDate: "+_shipperDate + "\n_cargoType: "+_cargoType +"\n_cargoWeight: "+ _cargoWeight
-					+"\n_cargoVolume"+_cargoVolume + "\n_truckType:"+_truckType + "_truckLength: "+_truckLength );
+			Log.d(TAG, "_shipperDate: " + _shipperDate + "\n_cargoType: "
+					+ _cargoType + "\n_cargoWeight: " + _cargoWeight
+					+ "\n_cargoVolume" + _cargoVolume + "\n_truckType:"
+					+ _truckType + "_truckLength: " + _truckLength);
 			ArrayList<NameValuePair> postParameters = new ArrayList<NameValuePair>();
 
 			postParameters
@@ -1289,8 +1307,10 @@ public class MainActivity extends BaseActivity {
 				mHorderTypes[mCurrRadioIdx].nHorderAdapter
 						.notifyDataSetChanged();
 				mHorderMore.setVisibility(View.VISIBLE);
+				mHorderLv.setEmptyView(mEmptyHorderView);
 
 				if (mHorderTypes[mCurrRadioIdx].hasShowAllHorders) {
+
 					mHorderMoreTv.setText(R.string.hasShowAll);
 				} else {
 					mHorderMoreTv.setText(R.string.show_more);
@@ -1315,7 +1335,7 @@ public class MainActivity extends BaseActivity {
 					mHorderMoreTv.setVisibility(View.INVISIBLE);
 				}
 				if (mLvHistoryPosHorder > 0) {
-				//	mHorderLv.setSelectionFromTop(mLvHistoryPosHorder, 0);
+					// mHorderLv.setSelectionFromTop(mLvHistoryPosHorder, 0);
 					mLvHistoryPosHorder = 0;
 				}
 
@@ -1609,7 +1629,7 @@ public class MainActivity extends BaseActivity {
 					mTruckMoreTv.setVisibility(View.INVISIBLE);
 				}
 				if (mLvHistoryPosTruck > 0) {
-				//	mTruckLv.setSelectionFromTop(mLvHistoryPosTruck, 0);
+					// mTruckLv.setSelectionFromTop(mLvHistoryPosTruck, 0);
 					mLvHistoryPosTruck = 0;
 				}
 
@@ -1707,4 +1727,8 @@ public class MainActivity extends BaseActivity {
 
 	}
 
+	
+	public void gotoCreateHorder(View v){
+		mTabPager.setCurrentItem(0);
+	}
 }

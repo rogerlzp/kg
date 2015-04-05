@@ -169,5 +169,7 @@
     <string name="tuisong_huo">推送货源</string>
     <string name="note">备注</string>
     <string name="choose_address">请选择地址</string>
+     <string name="create_horder_hint">您还有没有创建任何货单，前去创建货单</string>
+    
 
 </resources>

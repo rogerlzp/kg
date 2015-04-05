@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ptr="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="#eee"
@@ -109,6 +110,8 @@
         <com.handmark.pulltorefresh.library.PullToRefreshListView
             android:id="@+id/myPartyLv"
             android:layout_width="match_parent"
+           ptr:ptrListViewExtrasEnabled="true"
+           
             android:layout_height="match_parent" />
 
         <!--  com.abc.huoyun.view.PullToRefreshListView
