@@ -32,7 +32,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical" >
 
-        <com.abc.huoyun.view.PullToRefreshListView
+        <com.abc.huoyun.view.PullToRefreshListView2
             android:id="@+id/trucks_lv"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"

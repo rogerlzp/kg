@@ -20,7 +20,7 @@ import android.widget.TextView;
 
 import com.abc.huoyun.R;
 
-public class PullToRefreshListView extends ListView implements OnScrollListener {
+public class PullToRefreshListView2 extends ListView implements OnScrollListener {
 
 	private static final int TAP_TO_REFRESH = 1;
 	private static final int PULL_TO_REFRESH = 2;
@@ -55,17 +55,17 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 
 	private boolean mBounceHack;
 
-	public PullToRefreshListView(Context context) {
+	public PullToRefreshListView2(Context context) {
 		super(context);
 		init(context);
 	}
 
-	public PullToRefreshListView(Context context, AttributeSet attrs) {
+	public PullToRefreshListView2(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		init(context);
 	}
 
-	public PullToRefreshListView(Context context, AttributeSet attrs,
+	public PullToRefreshListView2(Context context, AttributeSet attrs,
 			int defStyle) {
 		super(context, attrs, defStyle);
 		init(context);
@@ -400,7 +400,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 		/**
 		 * Called when the list should be refreshed.
 		 * <p>
-		 * A call to {@link PullToRefreshListView #onRefreshComplete()} is
+		 * A call to {@link PullToRefreshListView2 #onRefreshComplete()} is
 		 * expected to indicate that the refresh has completed.
 		 */
 		public void onRefresh();

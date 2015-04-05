@@ -54,6 +54,7 @@ import com.abc.huoyun.CityDialog.InputListener;
 import com.abc.huoyun.net.CellSiteHttpClient;
 import com.abc.huoyun.utility.CellSiteConstants;
 import com.abc.huoyun.utility.CityDBReader;
+import com.abc.huoyun.view.PullToRefreshListView2;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener2;
@@ -189,7 +190,7 @@ public class MainActivity extends BaseActivity {
 
 	// 货车列表
 
-	PullToRefreshListView mTruckLv;
+	PullToRefreshListView2 mTruckLv;
 
 	ViewGroup mTruckMore;
 	TextView mTruckMoreTv;
@@ -214,7 +215,7 @@ public class MainActivity extends BaseActivity {
 				if (mTrucks.hasShowAllTrucks) {
 					mTruckMoreTv.setText(R.string.hasShowAll);
 				} else {
-					// mLvHistoryPosTruck = mTruckLv.getFirstVisiblePosition();
+					mLvHistoryPosTruck = mTruckLv.getFirstVisiblePosition();
 					mTruckDownLoadTask = new TruckDownLoadTask();
 					mTruckDownLoadTask
 							.execute(CellSiteConstants.MORE_OPERATION);
@@ -394,8 +395,6 @@ public class MainActivity extends BaseActivity {
 		mHorderMore.setVisibility(View.GONE);
 		mEmptyHorderView = (ViewGroup) LayoutInflater.from(MainActivity.this)
 				.inflate(R.layout.empty_horder, null);
-		
-		
 
 		mHorderMoreTv = (TextView) mHorderMore.getChildAt(0);
 
@@ -451,21 +450,22 @@ public class MainActivity extends BaseActivity {
 
 		mTruckMoreTv = (TextView) mTruckMore.getChildAt(0);
 
-		// mTruckLv.addFooterView(mTruckMore);
+		mTruckLv.addFooterView(mTruckMore);
 		mTruckLv.setOnItemClickListener(mTruckDetailListener);
 		mTruckLv.setAdapter(mTrucks.nTruckAdapter);
 		// Set a listener to be invoked when the list should be refreshed.
-		/*
-		 * mTruckLv.setOnRefreshListener(new OnRefreshListener() {
-		 * 
-		 * public void onRefresh() { // TODO Auto-generated method stub
-		 * isForceRefreshTruck = true; mTrucks = new Trucks();
-		 * 
-		 * mTruckDownLoadTask = new TruckDownLoadTask();
-		 * mTruckDownLoadTask.execute(CellSiteConstants.NORMAL_OPERATION); }
-		 * 
-		 * });
-		 */
+
+		mTruckLv.setOnRefreshListener(new PullToRefreshListView2.OnRefreshListener() {
+
+			public void onRefresh() { // TODO Auto-generated method stub
+				isForceRefreshTruck = true;
+				mTrucks = new Trucks();
+
+				mTruckDownLoadTask = new TruckDownLoadTask();
+				mTruckDownLoadTask.execute(CellSiteConstants.NORMAL_OPERATION);
+			}
+
+		});
 
 	}
 
@@ -558,7 +558,7 @@ public class MainActivity extends BaseActivity {
 							R.drawable.tab_settings_normal));
 				}
 
-				mTruckLv = (PullToRefreshListView) findViewById(R.id.trucks_lv);
+				mTruckLv = (PullToRefreshListView2) findViewById(R.id.trucks_lv);
 				initTrucks();
 				mTruckMore.setVisibility(View.INVISIBLE);
 				mTruckMoreTv.setText(R.string.show_more);
@@ -1629,7 +1629,7 @@ public class MainActivity extends BaseActivity {
 					mTruckMoreTv.setVisibility(View.INVISIBLE);
 				}
 				if (mLvHistoryPosTruck > 0) {
-					// mTruckLv.setSelectionFromTop(mLvHistoryPosTruck, 0);
+					mTruckLv.setSelectionFromTop(mLvHistoryPosTruck, 0);
 					mLvHistoryPosTruck = 0;
 				}
 
@@ -1727,8 +1727,7 @@ public class MainActivity extends BaseActivity {
 
 	}
 
-	
-	public void gotoCreateHorder(View v){
+	public void gotoCreateHorder(View v) {
 		mTabPager.setCurrentItem(0);
 	}
 }
