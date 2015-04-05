@@ -81,5 +81,8 @@ public class HorderDetailActivity extends BaseActivity {
 		mHItv.setText(intent.getStringExtra(CellSiteConstants.HORDER_ID));
 
 	}
+	public void delHorder(View v){
+		
+	}
 
 }

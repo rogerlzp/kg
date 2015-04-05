@@ -403,7 +403,8 @@ public class MainActivity extends BaseActivity {
 			@Override
 			public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
 				isForceRefreshHorder = true;
-				mHorderTypes[mCurrRadioIdx] = new HorderType(mCurrRadioIdx);
+				
+			//	mHorderTypes[mCurrRadioIdx] = new HorderType(mCurrRadioIdx);
 
 			mHorderDownLoadTask = new HorderDownLoadTask();
 				mHorderDownLoadTask.execute(CellSiteConstants.NORMAL_OPERATION);
@@ -412,7 +413,7 @@ public class MainActivity extends BaseActivity {
 			@Override
 			public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView){
 				isForceRefreshHorder = true;
-				mHorderTypes[mCurrRadioIdx] = new HorderType(mCurrRadioIdx);
+			//	mHorderTypes[mCurrRadioIdx] = new HorderType(mCurrRadioIdx);
 
 				mHorderDownLoadTask = new HorderDownLoadTask();
 				mHorderDownLoadTask.execute(CellSiteConstants.NORMAL_OPERATION);
@@ -805,6 +806,8 @@ public class MainActivity extends BaseActivity {
 				String _cargoWeight, String _cargoVolume, String _truckType,
 				String _truckLength, String _orderDesc, String _userId) {
 
+			Log.d(TAG, "_shipperDate: "+_shipperDate + "\n_cargoType: "+_cargoType +"\n_cargoWeight: "+ _cargoWeight
+					+"\n_cargoVolume"+_cargoVolume + "\n_truckType:"+_truckType + "_truckLength: "+_truckLength );
 			ArrayList<NameValuePair> postParameters = new ArrayList<NameValuePair>();
 
 			postParameters

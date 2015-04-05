@@ -34,7 +34,7 @@ public class CellSiteConstants {
 	public static final String TRUCK = "truck";
 	public static final String TRUCK_ID = "truck_id";
 	public static final String TRUCK_TYPE = "truck_type";
-	public static final String TRUCK_LENGTH = "tlength_id";
+	public static final String TRUCK_LENGTH = "truck_length";
 	public static final String TRUCK_WEIGHT = "tweight_id";
 	public static final String TRUCK_STATUS = "tstatus_id";
 	public static final String TRUCK_AUDIT_STATUS = "taudit_status_id";
@@ -102,8 +102,8 @@ public class CellSiteConstants {
 
 	// �������� URL
 	// public static final String HOST = "http://20120328.welives.sinaapp.com/";
-	//public static final String HOST = "http://115.28.175.222:9091/";
-	 public static final String HOST = "http://192.168.2.106:9003/";
+	public static final String HOST = "http://115.28.175.222:9091/";
+	// public static final String HOST = "http://192.168.2.106:9003/";
 	public static final String LOGIN_URL = HOST + "login/fmobile";
 	public static final String CHANGE_PASSWORD_URL = HOST
 			+ "changePassword.php";
