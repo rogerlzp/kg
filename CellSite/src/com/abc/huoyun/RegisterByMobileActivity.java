@@ -13,8 +13,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -47,6 +49,7 @@ public class RegisterByMobileActivity extends Activity {
 	RegisterWithServerTask mRegisterWithServerTask;
 	GetVerifyCodeTask mGetVerifyCodeTask;
 	ProgressDialog mProgressdialog;
+	RegisterCodeSmsContent content;
 
 	String deviceToken;
 	@Override
@@ -68,6 +71,8 @@ public class RegisterByMobileActivity extends Activity {
 		password_tv = (EditText) findViewById(R.id.password_tv);
 		verify_code_tv = (EditText) findViewById(R.id.verify_code_tv);
 		// name_tv = (EditText)findViewById(R.id.reg_by_mail_name_tv);
+		content = new RegisterCodeSmsContent(this, new Handler(), verify_code_tv);
+		this.getContentResolver().registerContentObserver(Uri.parse("content://sms/"), true, content);
 	}
 
 	public void onBackButton(View v) {
@@ -330,6 +335,14 @@ public class RegisterByMobileActivity extends Activity {
 			mRegisterWithServerTask.cancel(false);
 		}
 
+	}
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		if (content != null) {
+			this.getContentResolver().unregisterContentObserver(content);
+		}
 	}
 
 }
