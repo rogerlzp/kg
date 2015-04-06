@@ -128,6 +128,8 @@ public class CellSiteConstants {
 	public final static String USER_QUERY_URL = HOST + "getUserProfile/fmobile";
 	// 用户注册
 	public static final String REGISTER_URL = HOST + "register/fmobile";
+	
+	public static final String VERSION_URL = HOST + "/publish_apk/CellSiteVersion.xml";
 
 	// driver     注册
 	// public static final String REGISTER_URL = HOST +

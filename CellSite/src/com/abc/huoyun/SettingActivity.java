@@ -50,4 +50,10 @@ public class SettingActivity extends BaseActivity {
 		builder.create().show();
 
 	}
+	
+	public void aboutUs(View v) {
+		Intent intent = new Intent(SettingActivity.this,
+				AboutActivity.class);
+		startActivity(intent);
+	}
 }

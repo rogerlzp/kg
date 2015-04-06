@@ -121,6 +121,7 @@
     <string name="confirmquit">确认退出</string>
     <string name="updateName">更改名字</string>
     <string name="updateNameHint">你的姓名</string>
+    <string name="check_version">检查更新</string>
 
     <!-- Setting  start -->
 
