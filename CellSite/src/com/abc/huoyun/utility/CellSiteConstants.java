@@ -35,13 +35,13 @@ public class CellSiteConstants {
 	public static final String TRUCK_ID = "truck_id";
 	public static final String TRUCK_TYPE = "truck_type";
 	public static final String TRUCK_LENGTH = "truck_length";
-	public static final String TRUCK_WEIGHT = "tweight_id";
-	public static final String TRUCK_STATUS = "tstatus_id";
-	public static final String TRUCK_AUDIT_STATUS = "taudit_status_id";
+	public static final String TRUCK_WEIGHT = "trcuk_weight";
+	public static final String TRUCK_STATUS = "truck_status";
+	public static final String TRUCK_AUDIT_STATUS = "truck_audit_status";
 	public static final String TRUCK_LICENSE_URL = "tl_image_url";
 	public static final String TRUCK_MOBILE_NUM = "tmobile_num";
 	public static final String TRUCK_IMAGE_URL = "tphoto_image_url";
-	public static final String TRUCK_LICENSE = "tlicense";
+	public static final String TRUCK_LICENSE = "truck_license";
 
 	public static final String SHIPPER_ADDRESS_CODE = "sa_code";
 	public static final String SHIPPER_ADDRESS_CODE_IN = "shipper_address_code";

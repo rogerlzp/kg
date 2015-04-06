@@ -443,6 +443,7 @@ public class MainActivity extends BaseActivity {
 	public void initTrucks() {
 
 		mTrucks = new Trucks();
+		mTruckLv = (PullToRefreshListView2) findViewById(R.id.trucks_lv);
 
 		mTruckMore = (ViewGroup) LayoutInflater.from(MainActivity.this)
 				.inflate(R.layout.more_list, null);
@@ -558,7 +559,7 @@ public class MainActivity extends BaseActivity {
 							R.drawable.tab_settings_normal));
 				}
 
-				mTruckLv = (PullToRefreshListView2) findViewById(R.id.trucks_lv);
+				
 				initTrucks();
 				mTruckMore.setVisibility(View.INVISIBLE);
 				mTruckMoreTv.setText(R.string.show_more);
@@ -1693,7 +1694,7 @@ public class MainActivity extends BaseActivity {
 						mTruck.put(CellSiteConstants.TRUCK_LENGTH, (resultObj)
 								.getString(CellSiteConstants.TRUCK_LENGTH));
 						mTruck.put(CellSiteConstants.TRUCK_TYPE,
-								(resultObj).getString("ttype_id"));
+								(resultObj).getString(CellSiteConstants.TRUCK_TYPE));
 						mTruck.put(
 								CellSiteConstants.TRUCK_IMAGE_URL,
 								(resultObj)
