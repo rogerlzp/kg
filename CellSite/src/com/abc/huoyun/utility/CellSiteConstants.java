@@ -44,6 +44,7 @@ public class CellSiteConstants {
 	public static final String TRUCK_LICENSE = "truck_license";
 
 	public static final String SHIPPER_ADDRESS_CODE = "sa_code";
+	public static final String SHIPPER_PHONE = "shipper_phone";
 	public static final String SHIPPER_ADDRESS_CODE_IN = "shipper_address_code";
 	public static final String SHIPPER_ADDRESS_NAME = "shipper_address_name";
 

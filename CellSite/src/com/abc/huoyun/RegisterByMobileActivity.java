@@ -148,7 +148,7 @@ public class RegisterByMobileActivity extends Activity {
 		if (!mInputCode.equals(mVerifyCode)) {
 			Toast.makeText(RegisterByMobileActivity.this, "请填写正确的验证码",
 					Toast.LENGTH_SHORT).show();
-			return;
+		//	return;
 		}
 
 		//String username = name_tv.getText().toString().trim();
@@ -202,6 +202,7 @@ public class RegisterByMobileActivity extends Activity {
 
 				User user = new User();
 				user.setId(response.getLong(CellSiteConstants.USER_ID));
+				user.setMobileNum(_mobile);
 			
 				app.attachUser(user);
 

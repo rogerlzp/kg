@@ -794,7 +794,7 @@ public class MainActivity extends BaseActivity {
 		mCreateHorderTask.execute(mShipperAddressCode, mShipperDate,
 				mConsigneeAddressCode, mShipperUsername, mCargoType,
 				mCargoWeight, mCargoVolume, mTruckType, mTruckLength,
-				mHorderDesc, "" + app.getUser().getId());
+				mHorderDesc, "" + app.getUser().getId(),  app.getUser().getMobileNum());
 
 	}
 
@@ -803,7 +803,7 @@ public class MainActivity extends BaseActivity {
 		public Integer doInBackground(String... params) {
 			return createHorderTask(params[0], params[1], params[2], params[3],
 					params[4], params[5], params[6], params[7], params[8],
-					params[9], params[10]);
+					params[9], params[10], params[11]);
 		}
 
 		@Override
@@ -821,7 +821,7 @@ public class MainActivity extends BaseActivity {
 				String _shipperDate, String _consigneeAddressCode,
 				String _shipperUsername, String _cargoType,
 				String _cargoWeight, String _cargoVolume, String _truckType,
-				String _truckLength, String _orderDesc, String _userId) {
+				String _truckLength, String _orderDesc, String _userId, String _shipperPhone) {
 
 			Log.d(TAG, "_shipperDate: " + _shipperDate + "\n_cargoType: "
 					+ _cargoType + "\n_cargoWeight: " + _cargoWeight
@@ -840,6 +840,8 @@ public class MainActivity extends BaseActivity {
 					_consigneeAddressCode));
 			postParameters.add(new BasicNameValuePair(
 					CellSiteConstants.SHIPPER_USERNAME, _shipperUsername));
+			postParameters.add(new BasicNameValuePair(
+					CellSiteConstants.SHIPPER_PHONE, _shipperPhone));
 			postParameters.add(new BasicNameValuePair(
 					CellSiteConstants.CARGO_TYPE, _cargoType));
 			postParameters.add(new BasicNameValuePair(
