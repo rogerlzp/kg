@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -36,20 +37,17 @@ import com.abc.huoyun.utility.CellSiteConstants;
 
 public class AboutActivity extends Activity {
 	
-	
-	
-	
-	
-
 	private final String TAG = this.getClass().getName();
-	private final int UPDATE_NONEED = 0;
-	private final int UPDATE_CLIENT = 1;
-	private final int GET_UNDATE_INFO_ERROR = 2;
-	private final int DOWN_ERROR = 4;
+	private static final int UPDATE_NONEED = 0;
+	private static final int UPDATE_CLIENT = 1;
+	private static final int GET_UNDATE_INFO_ERROR = 2;
+	private static final int DOWN_ERROR = 4;
 
 	private Button getVersionBtn;
 	private VersionInfo info;
 	private String localVersion;
+	
+	private final Handler handler = new MyHandler(this);
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -123,22 +121,28 @@ public class AboutActivity extends Activity {
 		}
 	}
 
-	Handler handler = new Handler() {
+	private static class MyHandler extends Handler {
+		private final WeakReference<AboutActivity> mActivity;
+
+		public MyHandler(AboutActivity activity) {
+			mActivity = new WeakReference<AboutActivity>(activity);
+		}
+		
 		@Override
 		public void handleMessage(Message msg) {
 			super.handleMessage(msg);
 			switch (msg.what) {
 			case UPDATE_NONEED:
-				Toast.makeText(getApplicationContext(), "当前已是最新版本", Toast.LENGTH_SHORT).show();
+				Toast.makeText(mActivity.get().getApplicationContext(), "当前已是最新版本", Toast.LENGTH_SHORT).show();
 				break;
 			case UPDATE_CLIENT:
-				showUpdataDialog();
+				mActivity.get().showUpdataDialog();
 				break;
 			case GET_UNDATE_INFO_ERROR:
-				Toast.makeText(getApplicationContext(), "获取服务器更新信息失败", 1).show();
+				Toast.makeText(mActivity.get().getApplicationContext(), "获取服务器更新信息失败", 1).show();
 				break;
 			case DOWN_ERROR:
-				Toast.makeText(getApplicationContext(), "下载新版本失败", 1).show();
+				Toast.makeText(mActivity.get().getApplicationContext(), "下载新版本失败", 1).show();
 				break;
 			}
 		}
