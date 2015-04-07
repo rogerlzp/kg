@@ -161,7 +161,7 @@ public class LoginActivity extends BaseActivity {
 					CellSiteConstants.DEVICE_TOKEN, _deviceToken));
 			postParameters.add(new BasicNameValuePair(
 					CellSiteConstants.ROLE_ID, ""
-							+ CellSiteConstants.DRIVER_ROLE_ID));
+							+ CellSiteConstants.HUOZHU_ROLE_ID));
 
 			Log.d(TAG, "password: " + passwordHash);
 
