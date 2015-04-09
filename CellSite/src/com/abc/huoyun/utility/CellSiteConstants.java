@@ -58,6 +58,17 @@ public class CellSiteConstants {
 	// horder
 	public static final String HORDER_ID = "horder_id";
 	public static final String STATUS = "status";
+	public static final String REPLIED_DRIVERS = "replied_drivers";
+	public static final String SENT_DRIVERS = "sent_drivers";
+	public static final String REPLIED_DRIVERS_COUNT = "replied_drivers_num";
+	public static final String ALREADY_REPLIED= "alaready_replied";
+	public static final String REPLIED_DRIVER_LIST = "reply_driver_list";
+	public static final String REPLIED_DRIVER_COUNT = "reply_drivers_num";
+	public static final String DRIVER_ID= "driver_id";
+//	public static final String REQUEST_DRIVER_LIST = "req_driver_list";
+//	public static final String REQUEST_DRIVER_COUNT = "req_drivers_num";
+//	public static final String ALREADY_REQUEST= "alaready_requested";
+//	public static final String REQUEST_DRIVERS = "request_drivers";
 	// RESULT
 	public final static String LOGIN_RESULT = "login_result";
 	public final static String FORGET_PASSWORD_RESULT = "forget_password_result";
@@ -130,6 +141,8 @@ public class CellSiteConstants {
 	public static final String REGISTER_URL = HOST + "register/fmobile";
 	
 	public static final String VERSION_URL = HOST + "/publish_apk/CellSiteVersion.xml";
+	
+	public static final String GET_DRIVER_FROM_HORDER_URL = HOST + "getDriverForHorder/fmobile";
 
 	// driver     注册
 	// public static final String REGISTER_URL = HOST +

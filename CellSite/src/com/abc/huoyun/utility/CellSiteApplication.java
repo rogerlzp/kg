@@ -22,6 +22,7 @@ import android.net.NetworkInfo;
 import android.os.Environment;
 import android.util.Log;
 
+import com.abc.huoyun.CheckReqDriverActivity.HorderDriverType;
 import com.abc.huoyun.MainActivity.HorderType;
 import com.abc.huoyun.MainActivity.Trucks;
 import com.abc.huoyun.model.Truck;
@@ -73,6 +74,9 @@ public class CellSiteApplication extends Application {
 	// Truck Cache
 	Trucks gTrucks;// = new Trucks(); 
 	
+	HorderDriverType[] gHorderDriverType = new HorderDriverType[10] ;
+	
+	//getDriverTypeCache
 	
 	Bitmap mPortaritBitmap = null;
 
@@ -80,6 +84,13 @@ public class CellSiteApplication extends Application {
 	
 	public Bitmap getPortaritBitmap() {
 		return mPortaritBitmap;
+	}
+	
+	public void setHorderDriverTypeCache(HorderDriverType _mDriverType, int horderId){
+		gHorderDriverType[horderId] = _mDriverType;
+	}
+	public HorderDriverType getHorderDriverTypeCache(int horderId){
+		return gHorderDriverType[horderId];
 	}
 
 
