@@ -21,7 +21,6 @@ import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -35,16 +34,19 @@ import android.widget.Toast;
 
 import com.abc.huoyun.TruckActivity.DownloadImageTask;
 import com.abc.huoyun.net.CellSiteHttpClient;
+import com.abc.huoyun.utility.CellSiteApplication;
 import com.abc.huoyun.utility.CellSiteConstants;
 import com.abc.huoyun.utility.CropOption;
 import com.abc.huoyun.utility.CropOptionAdapter;
 import com.abc.huoyun.utility.Utils;
+import com.abc.huoyun.utility.image.ImageLoad;
+import com.abc.huoyun.utility.image.ImageLoad.ImageDownloadedCallBack;
 
 public class PersonalActivity extends BaseActivity {
 
 	final String TAG = PersonalActivity.class.getSimpleName();
 
-	ImageView portraitIv, identityIv, driverLicenseIv;
+	ImageView mUserPortraitIv, mUserIdentityIv, driverLicenseIv;
 	TextView nameTv, driverLicenseTv, mobileNumTv;
 
 	Bitmap mIdentityImage, mDriverLicenseImage;
@@ -52,52 +54,109 @@ public class PersonalActivity extends BaseActivity {
 	// SigleBmpDownLoadTask mSwitchDownloadTask;
 
 	ProgressDialog mProgressdialog;
+	String name_current, mobile_current, portraitImageUrl, identityImageUrl,
+			dirverLicenseImageUrl;
 
 	MyUserDownLoadTask userDownLoadTask;
 	DownloadImageTask mDownloadImageTask;
 
 	UpdateImageTask mUpdateImageTask;
+	UpdateIdentityImageTask mUpdateIdentityImageTask;
 
 	boolean isPortraitChanged;
 
 	private Uri imageUri;
+
+	ImageLoad mImageLoad;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.personal);
 
+		mImageLoad = new ImageLoad(this);
+
 		initView();
 		initData();
+		initViewData();
 	}
 
 	public void initView() {
-		portraitIv = (ImageView) findViewById(R.id.portrait_iv);
-		identityIv = (ImageView) findViewById(R.id.identity_iv);
+		mUserPortraitIv = (ImageView) findViewById(R.id.portrait_iv);
+		mUserIdentityIv = (ImageView) findViewById(R.id.identity_iv);
 		driverLicenseIv = (ImageView) findViewById(R.id.driver_license_iv);
 		nameTv = (TextView) findViewById(R.id.name_tv);
 		driverLicenseTv = (TextView) findViewById(R.id.driver_license_tv);
 		mobileNumTv = (TextView) findViewById(R.id.mobile_tv);
-		Log.d(TAG, "user name changed" + app.getUser().getName());
 	}
-	
+
 	public void initViewData() {
-		nameTv.setText(app.getUser().getName());
-		mobileNumTv.setTag(app.getUser().getMobileNum());
-	
+
+		name_current = CellSiteApplication.getUser().getName();
+		mobile_current = CellSiteApplication.getUser().getMobileNum();
+		portraitImageUrl = CellSiteApplication.getUser().getProfileImageUrl();
+		identityImageUrl = CellSiteApplication.getUser().getIdentityImageUrl();
+
+		nameTv.setText(name_current);
+		mobileNumTv.setTag(mobile_current);
+		if (portraitImageUrl != null && !portraitImageUrl.equals("")) {
+			showImage(mUserPortraitIv, portraitImageUrl);
+		}
+		if (identityImageUrl != null && !identityImageUrl.equals("")) {
+			showImage(mUserIdentityIv, identityImageUrl);
+		}
 	}
 
 	public void initData() {
 		userDownLoadTask = new MyUserDownLoadTask();
-		userDownLoadTask.execute(app.getUser().getId());
+		userDownLoadTask.execute(CellSiteApplication.getUser().getId());
 	}
 
-	public void setPortraitImage() {
-
-		if (app.getPortaritBitmap() != null) {
-			portraitIv.setImageDrawable(new BitmapDrawable(app
-					.getPortaritBitmap()));
+	private void showImage(ImageView imageView, String avatar) {
+		// imageView.setTag(avatar);
+		Bitmap bitmap = mImageLoad.loadImage(imageView, avatar,
+				new ImageDownloadedCallBack() {
+					@Override
+					public void onImageDownloaded(ImageView imageView,
+							Bitmap bitmap) {
+						imageView.setImageBitmap(bitmap);
+					}
+				});
+		if (bitmap != null) {
+			imageView.setImageBitmap(bitmap);
 		}
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+
+		String name_tmp = CellSiteApplication.getUser().getName();
+		if (!name_tmp.equals(name_current)) {
+			name_current = name_tmp;
+			nameTv.setText(name_current);
+		}
+		String mobile_tmp = CellSiteApplication.getUser().getMobileNum();
+		if (!mobile_tmp.equals(mobile_current)) {
+			mobile_current = mobile_tmp;
+			mobileNumTv.setText(mobile_current);
+		}
+
+		String portraitImageUrl_tmp = CellSiteApplication.getUser()
+				.getProfileImageUrl();
+		if (portraitImageUrl != null
+				&& !portraitImageUrl_tmp.equals(portraitImageUrl)) {
+			portraitImageUrl = portraitImageUrl_tmp;
+			showImage(mUserPortraitIv, portraitImageUrl);
+		}
+		String identityImageUrl_tmp = CellSiteApplication.getUser()
+				.getIdentityImageUrl();
+		if (identityImageUrl != null
+				&& !identityImageUrl_tmp.equals(identityImageUrl)) {
+			identityImageUrl = identityImageUrl_tmp;
+			showImage(mUserIdentityIv, identityImageUrl);
+		}
+
 	}
 
 	private class MyUserDownLoadTask extends AsyncTask<Long, Integer, Integer> {
@@ -119,8 +178,7 @@ public class PersonalActivity extends BaseActivity {
 			}
 
 			if (result == CellSiteConstants.RESULT_SUC) {
-				 initViewData();
-				setPortraitImage();
+				initViewData();
 			}
 		}
 
@@ -129,9 +187,6 @@ public class PersonalActivity extends BaseActivity {
 			ArrayList<NameValuePair> postParameters = new ArrayList<NameValuePair>();
 			postParameters.add(new BasicNameValuePair(
 					CellSiteConstants.USER_ID, String.valueOf(_userId)));
-
-			Log.d(TAG, "userId=" + _userId);
-
 			JSONObject response = null;
 			try {
 				response = CellSiteHttpClient.executeHttpPost(
@@ -141,8 +196,6 @@ public class PersonalActivity extends BaseActivity {
 
 				if (resultCode == CellSiteConstants.RESULT_SUC) {
 					parseJson(response);
-				} else {
-					Log.d("downloadUserPeofile", "Query user profile failed");
 				}
 			} catch (Exception e) {
 			}
@@ -159,24 +212,26 @@ public class PersonalActivity extends BaseActivity {
 
 			if (profileJson.get(CellSiteConstants.PROFILE_IMAGE_URL) != JSONObject.NULL) {
 				Log.d(TAG, "get the image url");
-				app.getUser()
+				CellSiteApplication
+						.getUser()
 						.setProfileImageUrl(
 								profileJson
 										.getString(CellSiteConstants.PROFILE_IMAGE_URL));
 
 			}
 			if (profileJson.get(CellSiteConstants.DRIVER_LICENSE_URL) != JSONObject.NULL) {
-				app.getUser()
+				CellSiteApplication
+						.getUser()
 						.setDriverLicenseImageUrl(
 								profileJson
 										.getString(CellSiteConstants.DRIVER_LICENSE_URL));
 			}
 			if (profileJson.get(CellSiteConstants.NAME) != JSONObject.NULL) {
-				app.getUser().setName(
+				CellSiteApplication.getUser().setName(
 						profileJson.getString(CellSiteConstants.NAME));
 			}
 			if (userJson.get(CellSiteConstants.MOBILE) != JSONObject.NULL) {
-				app.getUser().setMobileNum(
+				CellSiteApplication.getUser().setMobileNum(
 						userJson.getString(CellSiteConstants.MOBILE));
 			}
 
@@ -197,10 +252,10 @@ public class PersonalActivity extends BaseActivity {
 					public void onClick(DialogInterface dialog, int id) {
 						switch (id) {
 						case 0:
-							startToCameraActivity();
+							startToCameraActivity(CellSiteConstants.TAKE_USER_PORTRAIT);
 							break;
 						case 1:
-							startToMediaActivity();
+							startToMediaActivity(CellSiteConstants.PICK_USER_PORTRAIT);
 							break;
 						}
 					}
@@ -211,16 +266,40 @@ public class PersonalActivity extends BaseActivity {
 
 	}
 
+	public void updateIdentityImage(View v) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle(res.getString(R.string.choose_portrait));
+		builder.setItems(
+				new String[] { res.getString(R.string.getPhotoFromCamera),
+						res.getString(R.string.getPhotoFromMemory) },
+				new DialogInterface.OnClickListener() {
+					// @Override
+					public void onClick(DialogInterface dialog, int id) {
+						switch (id) {
+						case 0:
+							startToCameraActivity(CellSiteConstants.TAKE_IDENTITY);
+							break;
+						case 1:
+							startToMediaActivity(CellSiteConstants.PICK_IDENTITY);
+							break;
+						}
+					}
+
+				});
+		AlertDialog alert = builder.create();
+		alert.show();
+	}
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-		if (requestCode == CellSiteConstants.TAKE_PICTURE
-				|| requestCode == CellSiteConstants.PICK_PICTURE) {
+		if (requestCode == CellSiteConstants.TAKE_USER_PORTRAIT
+				|| requestCode == CellSiteConstants.PICK_USER_PORTRAIT) {
 			Uri uri = null;
-			if (requestCode == CellSiteConstants.TAKE_PICTURE) {
+			if (requestCode == CellSiteConstants.TAKE_USER_PORTRAIT) {
 				uri = imageUri;
 
-			} else if (requestCode == CellSiteConstants.PICK_PICTURE) {
+			} else if (requestCode == CellSiteConstants.PICK_USER_PORTRAIT) {
 				uri = data.getData();
 
 			}
@@ -245,20 +324,17 @@ public class PersonalActivity extends BaseActivity {
 				String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss")
 						.format(new Date());
 				File tmpFile = new File(app.regUserPath + File.separator
-						+ "IMG_" + timeStamp + ".jpg");
+						+ "IMG_" + timeStamp + ".png");
 				File srcFile = new File(uri.getPath());
 				if (srcFile.exists()) {
 					try {
 						Utils.copyFile(srcFile, tmpFile);
-						app.getUser().getMyTruck()
-								.setLicenseImageUrl(tmpFile.getAbsolutePath());
 					} catch (Exception e) {
 						Toast.makeText(this, R.string.create_tmp_file_fail,
 								Toast.LENGTH_SHORT).show();
 						return;
 					}
 				} else {
-					Log.d(TAG, "Logic error, should not come to here");
 					Toast.makeText(this, R.string.file_not_found,
 							Toast.LENGTH_SHORT).show();
 					return;
@@ -278,15 +354,79 @@ public class PersonalActivity extends BaseActivity {
 				Bundle extras = data.getExtras();
 				Bitmap photo = extras.getParcelable("data");
 
-				app.setPortaritBitmap(photo);
-				portraitIv.setImageBitmap(photo);
 				mUpdateImageTask = new UpdateImageTask();
-				mUpdateImageTask.execute("" + app.getUser().getId(),
+				mUpdateImageTask.execute(""
+						+ CellSiteApplication.getUser().getId(),
 						Utils.bitmap2String(photo),
 						CellSiteConstants.UPDATE_USER_PORTRAIT_URL);
 
 				isPortraitChanged = true;
 			}
+		} else if (requestCode == CellSiteConstants.TAKE_IDENTITY
+				|| requestCode == CellSiteConstants.PICK_IDENTITY) {
+
+			Uri uri = null;
+			if (requestCode == CellSiteConstants.TAKE_IDENTITY) {
+				uri = imageUri;
+
+			} else if (requestCode == CellSiteConstants.PICK_IDENTITY) {
+				uri = data.getData();
+
+			}
+
+			String[] filePathColumn = { MediaStore.Images.Media.DATA };
+			Cursor cursor = getContentResolver().query(uri, filePathColumn,
+					null, null, null);
+			if (cursor != null && cursor.moveToFirst()) {
+				int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+				String filePath = cursor.getString(columnIndex);
+				cursor.close();
+				Log.d(TAG, "filePath =" + filePath);
+				Log.d(TAG, "uri=" + uri.toString());
+				imageUri = Uri.fromFile(new File(filePath));
+			} else //
+			{
+				if (!Environment.getExternalStorageState().equals(
+						Environment.MEDIA_MOUNTED)) {
+					Toast.makeText(this, R.string.sdcard_occupied,
+							Toast.LENGTH_SHORT).show();
+					return;
+				}
+
+				String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss")
+						.format(new Date());
+				File tmpFile = new File(CellSiteApplication.getRootDir()
+						+ "IMG_" + timeStamp + ".png");
+				File srcFile = new File(uri.getPath());
+				if (srcFile.exists()) {
+					try {
+						Utils.copyFile(srcFile, tmpFile);
+					} catch (Exception e) {
+						Toast.makeText(this, R.string.create_tmp_file_fail,
+								Toast.LENGTH_SHORT).show();
+						return;
+					}
+				} else {
+					Toast.makeText(this, R.string.file_not_found,
+							Toast.LENGTH_SHORT).show();
+					return;
+				}
+
+				imageUri = Uri.fromFile(tmpFile);
+			}
+
+			Bitmap tmpBmp = BitmapFactory.decodeFile(imageUri.getPath(), null);
+			Bitmap scaledBmp = Bitmap.createScaledBitmap(tmpBmp,
+					CellSiteConstants.IDENTITY_IMAGE_WIDTH,
+					CellSiteConstants.IDENTITY_IMAGE_HEIGHT, false);
+
+			// s isChanged = true;
+			mUpdateIdentityImageTask = new UpdateIdentityImageTask();
+			mUpdateIdentityImageTask.execute(""
+					+ CellSiteApplication.getUser().getId(),
+					Utils.bitmap2String(scaledBmp),
+					CellSiteConstants.UPDATE_USER_IDENTITY_URL);
+
 		}
 	}
 
@@ -309,7 +449,7 @@ public class PersonalActivity extends BaseActivity {
 					CellSiteConstants.IMAGE_WIDTH,
 					CellSiteConstants.IMAGE_HEIGHT, false));
 
-			portraitIv.setImageBitmap(app.getPortaritBitmap());
+			mUserPortraitIv.setImageBitmap(app.getPortaritBitmap());
 			isPortraitChanged = true;
 
 			Log.d(TAG, "set bitmap");
@@ -389,7 +529,7 @@ public class PersonalActivity extends BaseActivity {
 	/**
 	 * start to take picture
 	 */
-	private void startToCameraActivity() {
+	private void startToCameraActivity(int requestId) {
 		Intent localIntent = new Intent("android.media.action.IMAGE_CAPTURE");
 
 		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss")
@@ -399,69 +539,92 @@ public class PersonalActivity extends BaseActivity {
 		localIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mediaFile));
 		imageUri = Uri.fromFile(mediaFile);
 
-		// isCameraCapture = true;
-
-		startActivityForResult(localIntent, CellSiteConstants.TAKE_PICTURE);
+		startActivityForResult(localIntent, requestId);
 	}
 
 	/**
 	 * start to choose pictue
 	 */
-	private void startToMediaActivity() {
+	private void startToMediaActivity(int requestId) {
 		Intent localIntent = new Intent("android.intent.action.PICK");
 		Uri localUri = MediaStore.Images.Media.INTERNAL_CONTENT_URI;
 		localIntent.setDataAndType(localUri, "image/*");
-		startActivityForResult(localIntent, CellSiteConstants.PICK_PICTURE);
+		startActivityForResult(localIntent, requestId);
 	}
 
-	private class UpdateImageTask extends AsyncTask<String, String, Integer> {
+	private class UpdateIdentityImageTask extends
+			AsyncTask<String, String, String> {
 		@Override
-		public Integer doInBackground(String... params) {
+		public String doInBackground(String... params) {
 			return updateImage(params[0], params[1], params[2]);
 		}
 
 		@Override
-		public void onPostExecute(Integer result) {
+		public void onPostExecute(String result) {
 			if (this.isCancelled()) {
 				return;
 			}
-			Integer resCode = result;// Integer.parseInt(result);
-			if (resCode == CellSiteConstants.RESULT_SUC) {
+
+			if (result != null) {
+				String identityImageUrl = result;
+				CellSiteApplication.getUser().setIdentityImageUrl(
+						identityImageUrl);
+				showImage(mUserIdentityIv, identityImageUrl);
+			}
+		}
+
+	}
+
+	protected String updateImage(String _userId, String _bitmap,
+			String _updateUrl) {
+
+		ArrayList<NameValuePair> postParameters = new ArrayList<NameValuePair>();
+		postParameters.add(new BasicNameValuePair("bitmap", _bitmap));
+		postParameters.add(new BasicNameValuePair(CellSiteConstants.USER_ID,
+				_userId));
+
+		JSONObject response = null;
+		String imageUrl = null;
+		try {
+			response = CellSiteHttpClient.executeHttpPost(_updateUrl,
+					postParameters);
+
+			int resultCode = Integer.parseInt(response.get(
+					CellSiteConstants.RESULT_CODE).toString());
+			if (resultCode == CellSiteConstants.RESULT_SUC) {
+				imageUrl = response.get(CellSiteConstants.IMAGE_URL).toString();
+			}
+			return imageUrl;
+
+		} catch (UnknownHostException e) {
+			// TODO
+		} catch (Exception e) {
+			// TODO
+		}
+		return null;
+	}
+
+	private class UpdateImageTask extends AsyncTask<String, String, String> {
+		@Override
+		public String doInBackground(String... params) {
+			return updateImage(params[0], params[1], params[2]);
+		}
+
+		@Override
+		public void onPostExecute(String result) {
+			if (this.isCancelled()) {
+				return;
+			}
+
+			if (result != null) {
 				// TODO: set for different user
+				portraitImageUrl = result;
+				CellSiteApplication.getUser().setProfileImageUrl(
+						portraitImageUrl);
+				showImage(mUserPortraitIv, portraitImageUrl);
 			}
 		}
 
-		protected Integer updateImage(String _userId, String _bitmap,
-				String _updateUrl) {
-
-			ArrayList<NameValuePair> postParameters = new ArrayList<NameValuePair>();
-			postParameters.add(new BasicNameValuePair("bitmap", _bitmap));
-			postParameters.add(new BasicNameValuePair(
-					CellSiteConstants.USER_ID, _userId));
-
-			JSONObject response = null;
-			try {
-				response = CellSiteHttpClient.executeHttpPost(_updateUrl,
-						postParameters);
-
-				int resultCode = Integer.parseInt(response.get(
-						CellSiteConstants.RESULT_CODE).toString());
-				if (resultCode == CellSiteConstants.RESULT_SUC) {
-					//   成功
-					// int truckId = Integer.parseInt(response.get(
-					// CellSiteConstants.TRUCK_ID).toString());
-					// app.getUser().getMyTruck().setTruckId(truckId);
-
-				}
-				return resultCode;
-
-			} catch (UnknownHostException e) {
-				return CellSiteConstants.UNKNOWN_HOST_ERROR;
-			} catch (Exception e) {
-				// TODO
-			}
-			return CellSiteConstants.UNKNOWN_ERROR;
-		}
 	}
 
 	/**

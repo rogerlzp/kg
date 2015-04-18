@@ -52,7 +52,7 @@ public class CellSiteConstants {
 	public static final String SHIPPER_USERNAME = "shipper_username";
 	public static final String CONSIGNEE_ADDRESS_CODE = "ca_code";
 	public static final String CONSIGNEE_ADDRESS_CODE2 = "consignee_address_code";
-	public static final String  CONSIGNEE_ADDRESS_NAME = "consignee_address_name";
+	public static final String CONSIGNEE_ADDRESS_NAME = "consignee_address_name";
 	public static final String HORDER_DESCRIPTION = "horder_desc";
 
 	// horder
@@ -61,17 +61,22 @@ public class CellSiteConstants {
 	public static final String REPLIED_DRIVERS = "replied_drivers";
 	public static final String SENT_DRIVERS = "sent_drivers";
 	public static final String REPLIED_DRIVERS_COUNT = "replied_drivers_num";
-	public static final String ALREADY_REPLIED= "alaready_replied";
+	public static final String ALREADY_REPLIED = "alaready_replied";
 	public static final String REPLIED_DRIVER_LIST = "reply_driver_list";
 	public static final String REPLIED_DRIVER_COUNT = "reply_drivers_num";
-	public static final String DRIVER_ID= "driver_id";
-//	public static final String REQUEST_DRIVER_LIST = "req_driver_list";
-//	public static final String REQUEST_DRIVER_COUNT = "req_drivers_num";
-//	public static final String ALREADY_REQUEST= "alaready_requested";
-//	public static final String REQUEST_DRIVERS = "request_drivers";
+	public static final String DRIVER_ID = "driver_id";
+	// public static final String REQUEST_DRIVER_LIST = "req_driver_list";
+	// public static final String REQUEST_DRIVER_COUNT = "req_drivers_num";
+	// public static final String ALREADY_REQUEST= "alaready_requested";
+	// public static final String REQUEST_DRIVERS = "request_drivers";
 	// RESULT
 	public final static String LOGIN_RESULT = "login_result";
 	public final static String FORGET_PASSWORD_RESULT = "forget_password_result";
+
+	// driver
+	public static final String IS_SELECTED_DRIVER = "is_selected_driver";
+	public static final String SELECTED_DRIVER_ID = "selected_driver_id";
+	public static final String DRIVER_LIST = "driver_list";
 
 	// RESULT
 	// login
@@ -100,6 +105,18 @@ public class CellSiteConstants {
 	// image corp size
 	public static final int IMAGE_WIDTH = 180;
 	public static final int IMAGE_HEIGHT = 180;
+	// identity crop size
+	public static final int IDENTITY_IMAGE_HEIGHT = 200;
+	public static final int IDENTITY_IMAGE_WIDTH = 360;
+
+	public final static int TAKE_IDENTITY = 1012;
+	public final static int PICK_IDENTITY = 1013;
+	public final static int TAKE_DRIVER_LICENSE = 1014;
+	public final static int PICK_DRIVER_LICENSE = 1015;
+	public final static int TAKE_USER_PORTRAIT = 1016;
+	public final static int PICK_USER_PORTRAIT = 1017;
+
+	public final static String IMAGE_URL = "image_url";
 
 	// down horder
 	public static final int NORMAL_OPERATION = 0;
@@ -111,6 +128,9 @@ public class CellSiteConstants {
 	public static final int HORDER_COMPLEMENTED = 2;
 	// horder page count
 	public static final int PAGE_COUNT = 3;
+
+	// image download
+	public static final int IMAGE_DOWNLOADED = 111;
 
 	// �������� URL
 	// public static final String HOST = "http://20120328.welives.sinaapp.com/";
@@ -139,11 +159,18 @@ public class CellSiteConstants {
 	public final static String USER_QUERY_URL = HOST + "getUserProfile/fmobile";
 	// 用户注册
 	public static final String REGISTER_URL = HOST + "register/fmobile";
-	
-	public static final String VERSION_URL = HOST + "/publish_apk/CellSiteVersion.xml";
-	
-	public static final String GET_DRIVER_FROM_HORDER_URL = HOST + "getDriverForHorder/fmobile";
 
+	public static final String VERSION_URL = HOST
+			+ "/publish_apk/CellSiteVersion.xml";
+
+	public static final String GET_DRIVER_FROM_HORDER_URL = HOST
+			+ "getDriverForHorder/fmobile";
+
+	public static final String TOGGLE_DRIVER_FOR_HORDER_URL = HOST
+			+ "toggleDriverForHorder/fmobile";
+
+	public final static String UPDATE_USER_IDENTITY_URL = HOST
+			+ "updateUserIdentityImage/fmobile";
 	// driver     注册
 	// public static final String REGISTER_URL = HOST +
 	// "registerDriver/fmobile";
@@ -168,6 +195,7 @@ public class CellSiteConstants {
 
 	public final static String RESULT_CODE = "result_code";
 	public final static int RESULT_SUC = 0;
+	public final static int RESULT_CANCEL_DRIVER = 1; // 取消了选择司机
 	public final static String RESULT = "result";
 
 	// Truck 类型
@@ -179,8 +207,7 @@ public class CellSiteConstants {
 			"6.2米", "6.5米", "6.8米", "7.2米", "8米", "9.6米", "12米", "13米",
 			"13.5米", "15米", "16.5米", "17.5米", "18.5米", "20米", "22米", "24米" };
 
-	public final static String[] CargoTypes = { "设备", "矿产", "建材", "食品",
-			"蔬菜", "生鲜", "药品", "化工", "木材", "家畜", "纺织品", "日用品", "电子电器",
-			"农副产品", "其它类型" };
+	public final static String[] CargoTypes = { "设备", "矿产", "建材", "食品", "蔬菜",
+			"生鲜", "药品", "化工", "木材", "家畜", "纺织品", "日用品", "电子电器", "农副产品", "其它类型" };
 
 }

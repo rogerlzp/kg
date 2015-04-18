@@ -34,7 +34,6 @@
             android:layout_weight="1"
             android:clickable="true"
             android:gravity="center_horizontal"
-            android:onClick="getHorders"
             android:orientation="vertical" >
 
             <TextView
@@ -56,7 +55,6 @@
             android:layout_weight="1"
             android:clickable="true"
             android:gravity="center_horizontal"
-            android:onClick="getHorders"
             android:orientation="vertical" >
 
             <TextView
@@ -79,7 +77,6 @@
             android:layout_weight="1"
             android:clickable="true"
             android:gravity="center_horizontal"
-            android:onClick="getHorders"
             android:orientation="vertical" >
 
             <TextView
@@ -110,11 +107,11 @@
         <com.handmark.pulltorefresh.library.PullToRefreshListView
             android:id="@+id/myPartyLv"
             android:layout_width="match_parent"
-           ptr:ptrListViewExtrasEnabled="true"
-           
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            ptr:ptrListViewExtrasEnabled="true" />
 
-        <!--  com.abc.huoyun.view.PullToRefreshListView
+        <!--
+              com.abc.huoyun.view.PullToRefreshListView
             android:id="@+id/myPartyLv"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
@@ -125,8 +122,9 @@
             android:fadingEdge="none"
             android:footerDividersEnabled="true"
             android:headerDividersEnabled="true"
-            android:listSelector="#d3d7d4" /-->
-            
+            android:listSelector="#d3d7d4" /
+        -->
+
     </LinearLayout>
 
 </LinearLayout>

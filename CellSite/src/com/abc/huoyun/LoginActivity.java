@@ -132,7 +132,7 @@ public class LoginActivity extends BaseActivity {
 			}
 			if (result == CellSiteConstants.RESULT_SUC) {
 				Intent intent = new Intent(LoginActivity.this,
-						MainActivity.class);
+						MainFragmentActivity.class);
 				startActivity(intent);
 				finish();
 			} else if (result == CellSiteConstants.LOGIN_FAILED) {

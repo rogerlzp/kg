@@ -58,6 +58,11 @@
             android:label="@string/app_name" >
         </activity>
         <activity
+            android:name=".MainFragmentActivity"
+            android:launchMode="singleTask"
+            android:label="@string/app_name" >
+        </activity>
+        <activity
             android:name=".LoginActivity"
             android:label="@string/app_name" >
         </activity>
@@ -113,11 +118,12 @@
             android:name=".CheckReqDriverActivity"
             android:label="@string/app_name" >
         </activity>
-       <activity
+        <activity
             android:name=".CheckReqDriverDetailActivity"
+            android:finishOnTaskLaunch="false"
             android:label="@string/app_name" >
         </activity>
-        
+
         <!-- 【必须】 (2.30及以上版新增)展示通知的activity -->
         <!-- 【必须】 exported设置为true -->
         <activity
@@ -173,20 +179,20 @@
             <intent-filter>
 
                 <!-- 【必须】 请修改为当前APP名包.PUSH_ACTION，如demo的包名为：com.qq.xgdemo -->
-                <action android:name="com.abc.driver.PUSH_ACTION" />
+                <action android:name="com.abc.huoyun.PUSH_ACTION" />
             </intent-filter>
         </service>
 
         <!-- 【必须】 请将YOUR_ACCESS_ID修改为APP的AccessId，“21”开头的10位数字，中间没空格 -->
         <meta-data
             android:name="XG_V2_ACCESS_ID"
-            android:value="2100094985" />
+            android:value="2100103063" />
         <!-- 【必须】 请将YOUR_ACCESS_KEY修改为APP的AccessKey，“A”开头的12位字符串，中间没空格 -->
         <meta-data
             android:name="XG_V2_ACCESS_KEY"
-            android:value="A2N488VV9VAF" />
+            android:value="A9PF11CDH65F" />
 
-        <receiver android:name="com.abc.cellsite.SmsReceiver" >
+        <receiver android:name="com.abc.huoyun.SmsReceiver" >
             <intent-filter android:priority="999" >
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>

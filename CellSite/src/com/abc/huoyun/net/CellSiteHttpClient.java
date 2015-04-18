@@ -218,7 +218,7 @@ public class CellSiteHttpClient {
 			HttpEntity entity = response.getEntity();
 			if (entity != null) {
 				 instream = entity.getContent();
-				instream.close();
+			//	instream.close();
 
 			}
 			return instream;

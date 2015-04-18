@@ -42,16 +42,17 @@ public class BaseActivity extends Activity {
 	}
 	
 	
-	
+	/*
 	@Override
 	public void onBackPressed() {
 		long currentTime = System.currentTimeMillis();
 		if ((currentTime-touchTime ) >= waitTime){
-			Toast.makeText(this, "??????????????????", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, "再按一次退出货运", Toast.LENGTH_SHORT).show();
 			touchTime = currentTime;
 		} else {
 			finish();
 		}
 	}
+	*/
 
 }

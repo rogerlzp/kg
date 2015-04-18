@@ -161,18 +161,22 @@
         android:orientation="horizontal" >
 
         <Button
+            android:id="@+id/contact_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_marginLeft="10dp"
+            android:onClick="contactDriver"
             android:layout_weight="1"
             android:text="@string/contact" />
 
         <Button
+             android:id="@+id/confirm_driver_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_marginRight="10dp"
+             android:onClick="confirmDriver"
             android:layout_weight="1"
             android:text="@string/confirm_driver" />
     </LinearLayout>

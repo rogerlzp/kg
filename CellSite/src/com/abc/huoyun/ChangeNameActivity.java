@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.abc.huoyun.net.CellSiteHttpClient;
+import com.abc.huoyun.utility.CellSiteApplication;
 import com.abc.huoyun.utility.CellSiteConstants;
 
 public class ChangeNameActivity extends BaseActivity {
@@ -27,8 +28,8 @@ public class ChangeNameActivity extends BaseActivity {
 		setContentView(R.layout.change_name);
 
 		usernameEt = (EditText) findViewById(R.id.update_username_et);
-		if(app.getUser().getName() != null) {
-		usernameEt.setText(app.getUser().getName());
+		if (CellSiteApplication.getUser().getName() != null) {
+			usernameEt.setText(CellSiteApplication.getUser().getName());
 
 		} else {
 			usernameEt.setText(R.string.updateNameHint);
@@ -39,14 +40,11 @@ public class ChangeNameActivity extends BaseActivity {
 	// TODO: 如果用户名没有更新，则这个处于disabled状态
 
 	public void saveUsername(View v) {
-		// if
-		// (usernameEt.getText().toString().trim().equals(app.getUser().getUsername()))
-		// {
-		// }
 
 		mUpdateUserTask = new UpdateUserTask();
-		mUpdateUserTask.execute("" + app.getUser().getId(), usernameEt.getText().toString().trim());
-		this.finish();
+		mUpdateUserTask.execute("" + CellSiteApplication.getUser().getId(),
+				usernameEt.getText().toString().trim());
+	
 	}
 
 	private class UpdateUserTask extends AsyncTask<String, String, Integer> {
@@ -63,7 +61,8 @@ public class ChangeNameActivity extends BaseActivity {
 			Integer resCode = result;// Integer.parseInt(result);
 			if (resCode == CellSiteConstants.RESULT_SUC) {
 				// TODO: set for different user
-				
+				finish();
+
 			}
 		}
 
@@ -83,13 +82,13 @@ public class ChangeNameActivity extends BaseActivity {
 				int resultCode = Integer.parseInt(response.get(
 						CellSiteConstants.RESULT_CODE).toString());
 				if (resultCode == CellSiteConstants.RESULT_SUC) {
-					app.getUser().setName(_name);
-					
+					CellSiteApplication.getUser().setName(_name);
+
 					Editor sharedUser = getSharedPreferences(
 							CellSiteConstants.CELLSITE_CONFIG, MODE_PRIVATE)
 							.edit();
-					
-					sharedUser.putString(CellSiteConstants.NAME,_name);
+
+					sharedUser.putString(CellSiteConstants.NAME, _name);
 					sharedUser.commit();
 
 				}

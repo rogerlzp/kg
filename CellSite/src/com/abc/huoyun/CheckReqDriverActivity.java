@@ -10,19 +10,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.abc.huoyun.MainActivity.HorderDownLoadTask;
-import com.abc.huoyun.MainActivity.HorderType;
-import com.abc.huoyun.net.CellSiteHttpClient;
-import com.abc.huoyun.utility.CellSiteConstants;
-import com.abc.huoyun.utility.CityDBReader;
-import com.handmark.pulltorefresh.library.PullToRefreshBase;
-import com.handmark.pulltorefresh.library.PullToRefreshListView;
-import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
-import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener2;
-
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.format.DateUtils;
@@ -31,11 +22,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.AdapterView.OnItemClickListener;
+
+import com.abc.huoyun.net.CellSiteHttpClient;
+import com.abc.huoyun.utility.CellSiteConstants;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
+import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener2;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 public class CheckReqDriverActivity extends BaseActivity {
 
@@ -48,9 +46,13 @@ public class CheckReqDriverActivity extends BaseActivity {
 	Boolean mHasExceptionDriver = false;
 	int mLvHistoryPosDriver = 0;
 	private int horderId = 0;
+	private int selectedDriverId = 1;
+	private int newSelectedDriverId = 0;
 
 	ProgressDialog mProgressdialog;
 	HorderDriverDownLoadTask mHorderDriverDownLoadTask;
+
+	SelectDriverTask mTask;
 
 	OnItemClickListener mDriverDetailListener = new OnItemClickListener() {
 		// / @Override
@@ -77,8 +79,11 @@ public class CheckReqDriverActivity extends BaseActivity {
 			Intent intent = new Intent(CheckReqDriverActivity.this,
 					CheckReqDriverDetailActivity.class);
 
-			intent.putExtra(CellSiteConstants.ID,
-					(String) aDrivers.get(position).get(CellSiteConstants.ID));
+			intent.putExtra(CellSiteConstants.DRIVER_ID, (Integer) aDrivers
+					.get(position).get(CellSiteConstants.DRIVER_ID));
+			intent.putExtra(CellSiteConstants.HORDER_ID, horderId);
+			intent.putExtra(CellSiteConstants.SELECTED_DRIVER_ID,
+					selectedDriverId);
 
 			startActivity(intent);
 
@@ -94,6 +99,9 @@ public class CheckReqDriverActivity extends BaseActivity {
 		horderId = Integer.valueOf(intent
 				.getStringExtra(CellSiteConstants.HORDER_ID));
 		Log.d(TAG, "horderId=" + horderId);
+
+		selectedDriverId = Integer.valueOf(intent
+				.getStringExtra(CellSiteConstants.DRIVER_ID));
 
 		mHorderDriverType = new HorderDriverType(horderId);
 		initHorders();
@@ -172,6 +180,8 @@ public class CheckReqDriverActivity extends BaseActivity {
 
 	class HorderDriverAdapter extends BaseAdapter {
 		public ArrayList<HashMap<String, Object>> nDrivers = new ArrayList<HashMap<String, Object>>();
+		private ContactListener mContactListener;
+		private SelectListener mSelectListener;
 
 		public HorderDriverAdapter(Context context) {
 		}
@@ -192,6 +202,16 @@ public class CheckReqDriverActivity extends BaseActivity {
 						.findViewById(R.id.truck_type_tv);
 				holder.tv_name = (TextView) convertView
 						.findViewById(R.id.name_tv);
+				holder.tv_contact = (TextView) convertView
+						.findViewById(R.id.contact_tv);
+				holder.tv_select_driver = (TextView) convertView
+						.findViewById(R.id.select_driver_tv);
+
+				mContactListener = new ContactListener();
+				holder.tv_contact.setOnClickListener(mContactListener);
+
+				mSelectListener = new SelectListener();
+				holder.tv_select_driver.setOnClickListener(mSelectListener);
 
 				convertView.setTag(holder);
 
@@ -203,6 +223,19 @@ public class CheckReqDriverActivity extends BaseActivity {
 
 			holder.tv_name.setText((String) driverData
 					.get(CellSiteConstants.ID));
+			mContactListener.setPhone((String) driverData
+					.get(CellSiteConstants.MOBILE));
+
+			if ((Boolean) driverData.get(CellSiteConstants.IS_SELECTED_DRIVER)) {
+				holder.tv_select_driver.setText(res
+						.getString(R.string.cancel_driver));
+			} else {
+				holder.tv_select_driver.setText(res
+						.getString(R.string.confirm_driver));
+			}
+
+			mSelectListener.setDriver((Integer) driverData
+					.get(CellSiteConstants.DRIVER_ID));
 
 			return convertView;
 		}
@@ -211,9 +244,11 @@ public class CheckReqDriverActivity extends BaseActivity {
 			ImageView organizerPortrait;
 			TextView tv_name;
 			TextView tv_truck_license;
+			TextView tv_contact;
 			TextView tv_truck_type;
 			TextView tv_truck_length;
 			TextView tv_truck;
+			TextView tv_select_driver;
 			TextView tv_request;
 			ViewGroup progress;
 		}
@@ -231,6 +266,115 @@ public class CheckReqDriverActivity extends BaseActivity {
 		public long getItemId(int position) {
 			// TODO Auto-generated method stub
 			return 0;
+		}
+
+		class ContactListener implements View.OnClickListener {
+			private String phoneNum;
+
+			public void setPhone(String _phoneNUm) {
+				this.phoneNum = _phoneNUm;
+			}
+
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:"
+						+ phoneNum));
+				startActivity(intent);
+
+			}
+		}
+
+		class SelectListener implements View.OnClickListener {
+			private int driverId;
+
+			public void setDriver(int _driverId) {
+				this.driverId = _driverId;
+			}
+
+			@Override
+			public void onClick(View v) {
+				mTask = new SelectDriverTask();
+				mTask.execute(this.driverId);
+				newSelectedDriverId = this.driverId;
+			}
+		}
+
+	}
+
+	class SelectDriverTask extends AsyncTask<Integer, String, Integer> {
+		@Override
+		protected Integer doInBackground(Integer... params) {
+			ArrayList<NameValuePair> postParameters = new ArrayList<NameValuePair>();
+
+			postParameters.add(new BasicNameValuePair(
+					CellSiteConstants.DRIVER_ID, "" + params[0]));
+			postParameters.add(new BasicNameValuePair(
+					CellSiteConstants.HORDER_ID, "" + horderId));
+			postParameters.add(new BasicNameValuePair(
+					CellSiteConstants.USER_ID, "" + app.getUser().getId()));
+
+			JSONObject response = null;
+			int resultCode = -1;
+			try {
+				response = CellSiteHttpClient.executeHttpPost(
+						CellSiteConstants.TOGGLE_DRIVER_FOR_HORDER_URL,
+						postParameters);
+				resultCode = response.getInt(CellSiteConstants.RESULT_CODE);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return resultCode;
+
+		}
+
+		@Override
+		protected void onPostExecute(Integer result) {
+			if (CellSiteConstants.RESULT_SUC == result) {
+				// update ui result
+				boolean tag1 = false, tag2 = false;
+				for (int i = 0; i < mHorderDriverType.nDrivers.size(); i++) {
+
+					if ((Integer) mHorderDriverType.nDrivers.get(i).get(
+							CellSiteConstants.DRIVER_ID) == newSelectedDriverId) {
+						mHorderDriverType.nDrivers.get(i).put(
+								CellSiteConstants.IS_SELECTED_DRIVER, true);
+						tag1 = true;
+						if (selectedDriverId == 1) {
+							break;
+						}
+					}
+					if ((Integer) mHorderDriverType.nDrivers.get(i).get(
+							CellSiteConstants.DRIVER_ID) == selectedDriverId) {
+						mHorderDriverType.nDrivers.get(i).put(
+								CellSiteConstants.IS_SELECTED_DRIVER, false);
+						tag2 = true;
+					}
+					if (tag1 && tag2) {
+						break;
+					}
+				}
+
+				mHorderDriverType.nHorderDriverAdapter.notifyDataSetChanged();
+
+			} else if (CellSiteConstants.RESULT_CANCEL_DRIVER == result) { // 取消了司机
+
+				for (int i = 0; i < mHorderDriverType.nDrivers.size(); i++) {
+
+					if ((Integer) mHorderDriverType.nDrivers.get(i).get(
+							CellSiteConstants.DRIVER_ID) == newSelectedDriverId) {
+						mHorderDriverType.nDrivers.get(i).put(
+								CellSiteConstants.IS_SELECTED_DRIVER, false);
+						selectedDriverId = 1;
+
+						break;
+
+					}
+
+				}
+
+				mHorderDriverType.nHorderDriverAdapter.notifyDataSetChanged();
+
+			}
 		}
 	}
 
@@ -376,8 +520,18 @@ public class CheckReqDriverActivity extends BaseActivity {
 					try {
 						JSONObject resultObj = (JSONObject) results.get(i);
 						mHorder = new HashMap<String, Object>();
-						mHorder.put(CellSiteConstants.ID,
-								resultObj.getString(CellSiteConstants.ID));
+						mHorder.put(CellSiteConstants.DRIVER_ID, Integer
+								.valueOf((String) resultObj
+										.getString(CellSiteConstants.ID)));
+
+						// 是否是被选中的司机
+						if ((Integer) resultObj.getInt(CellSiteConstants.ID) == selectedDriverId) {
+							mHorder.put(CellSiteConstants.IS_SELECTED_DRIVER,
+									true);
+						} else {
+							mHorder.put(CellSiteConstants.IS_SELECTED_DRIVER,
+									false);
+						}
 
 						mHorderDriverType.nDrivers.add(mHorder);
 					} catch (Exception e) {
@@ -394,4 +548,18 @@ public class CheckReqDriverActivity extends BaseActivity {
 		}
 
 	}
+
+	@Override
+	public void onResume() {
+		// update the list from detail activity
+		super.onResume();
+	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+		Log.d(TAG, "result = " + mHorderDriverType.nDrivers.size());
+		data.getStringExtra(CellSiteConstants.DRIVER_LIST);
+	}
+
 }

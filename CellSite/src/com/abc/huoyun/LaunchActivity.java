@@ -67,7 +67,7 @@ public class LaunchActivity extends BaseActivity {
 	private void enterMainActivity() {
 
 		Intent mainAct = new Intent();
-		mainAct.setClass(this, MainActivity.class);
+		mainAct.setClass(this, MainFragmentActivity.class);
 		mainAct.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		startActivity(mainAct);
 		// isGifstopped = true;
