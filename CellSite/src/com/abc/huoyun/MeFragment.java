@@ -30,6 +30,8 @@ public class MeFragment extends Fragment {
 	String portraitImageUrl;
 	private ImageView avatarIv;
 	ImageLoad mImageLoad;
+	
+	CellSiteApplication app;
 
 	public static MeFragment newInstance() {
 		MeFragment mHCFragment = new MeFragment();
@@ -39,6 +41,9 @@ public class MeFragment extends Fragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
+		
+		app = (CellSiteApplication)this.getActivity().getApplication();
+		
 		mImageLoad = new ImageLoad(this.getActivity());
 		mNameTv = (TextView) this.getActivity().findViewById(R.id.name_tv);
 		mMobileTv = (TextView) this.getActivity().findViewById(R.id.mobile_tv);
@@ -51,12 +56,12 @@ public class MeFragment extends Fragment {
 		avatarIv = (ImageView) this.getActivity()
 				.findViewById(R.id.portrait_iv);
 
-		name_current = CellSiteApplication.getUser().getName();
+		name_current = app.getUser().getName();
 		if (name_current != null) {
 			mNameTv.setText(name_current);
 		}
-		phoneNum_current = CellSiteApplication.getUser().getMobileNum();
-		if (CellSiteApplication.getUser().getMobileNum() != null) {
+		phoneNum_current = app.getUser().getMobileNum();
+		if (app.getUser().getMobileNum() != null) {
 			mMobileTv.setText(phoneNum_current);
 		}
 		shipperUserRL = (RelativeLayout) this.getActivity().findViewById(
@@ -68,10 +73,11 @@ public class MeFragment extends Fragment {
 
 			}
 		});
-		portraitImageUrl = CellSiteApplication.getUser().profileImageUrl;
+		portraitImageUrl = app.getUser().profileImageUrl;
 		if (portraitImageUrl != null && !portraitImageUrl.equals("")) {
 			showUserAvator(avatarIv, portraitImageUrl);
 		}
+
 	}
 
 	class SettingListener implements View.OnClickListener {
@@ -109,8 +115,8 @@ public class MeFragment extends Fragment {
 	public void onResume() {
 		super.onResume();
 
-		String name = CellSiteApplication.getUser().getName();
-		String phoneNum = CellSiteApplication.getUser().getMobileNum();
+		String name = app.getUser().getName();
+		String phoneNum = app.getUser().getMobileNum();
 		if (!name.equals(name_current)) {
 			name_current = name;
 			mNameTv.setText(name);
@@ -120,7 +126,7 @@ public class MeFragment extends Fragment {
 			mMobileTv.setText(phoneNum);
 		}
 
-		String profileImageTmp = CellSiteApplication.getUser().profileImageUrl;
+		String profileImageTmp = app.getUser().profileImageUrl;
 		if (!profileImageTmp.equals(portraitImageUrl)) {
 			showUserAvator(avatarIv, profileImageTmp);
 		}

@@ -49,6 +49,8 @@ public class TruckFragment extends Fragment {
 
 	TruckDownLoadTask mTruckDownLoadTask;
 	ProgressDialog mProgressdialogTruck;
+	
+	CellSiteApplication app;
 
 	public static TruckFragment newInstance() {
 		TruckFragment mHCFragment = new TruckFragment();
@@ -58,6 +60,7 @@ public class TruckFragment extends Fragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
+		app =  (CellSiteApplication)this.getActivity().getApplication();
 		initTrucks();
 	}
 
@@ -171,10 +174,8 @@ public class TruckFragment extends Fragment {
 							CellSiteConstants.TRUCK_ID));
 			intent.putExtra(CellSiteConstants.TRUCK_LENGTH, (Integer) aTrucks
 					.get(position).get(CellSiteConstants.TRUCK_LENGTH));
-			intent.putExtra(
-					CellSiteConstants.TRUCK_TYPE,
-					(Integer) aTrucks.get(position).get(
-							CellSiteConstants.TRUCK_TYPE));
+			intent.putExtra(CellSiteConstants.TRUCK_TYPE, (Integer) aTrucks
+					.get(position).get(CellSiteConstants.TRUCK_TYPE));
 			intent.putExtra(CellSiteConstants.TRUCK_IMAGE_URL, (String) aTrucks
 					.get(position).get(CellSiteConstants.TRUCK_IMAGE_URL));
 			intent.putExtra(
@@ -272,7 +273,7 @@ public class TruckFragment extends Fragment {
 		ArrayList<NameValuePair> postParameters = new ArrayList<NameValuePair>();
 
 		postParameters.add(new BasicNameValuePair(CellSiteConstants.USER_ID, ""
-				+ CellSiteApplication.getUser().getId()));
+				+ app.getUser().getId()));
 
 		postParameters.add(new BasicNameValuePair("offset", String
 				.valueOf(mTruckTypes.nDisplayNum)));
@@ -320,10 +321,14 @@ public class TruckFragment extends Fragment {
 						mTruck = new HashMap<String, Object>();
 						mTruck.put(CellSiteConstants.TRUCK_ID,
 								resultObj.getString(CellSiteConstants.ID));
-						mTruck.put(CellSiteConstants.TRUCK_LENGTH, Integer.parseInt((resultObj)
-								.getString(CellSiteConstants.TRUCK_LENGTH)));
-						mTruck.put(CellSiteConstants.TRUCK_TYPE,  Integer.parseInt((resultObj)
-								.getString(CellSiteConstants.TRUCK_TYPE)));
+						mTruck.put(
+								CellSiteConstants.TRUCK_LENGTH,
+								Integer.parseInt((resultObj)
+										.getString(CellSiteConstants.TRUCK_LENGTH)));
+						mTruck.put(
+								CellSiteConstants.TRUCK_TYPE,
+								Integer.parseInt((resultObj)
+										.getString(CellSiteConstants.TRUCK_TYPE)));
 						mTruck.put(
 								CellSiteConstants.TRUCK_IMAGE_URL,
 								(resultObj)
@@ -347,14 +352,14 @@ public class TruckFragment extends Fragment {
 
 						}
 						try {
-						JSONObject driverProfileObj = (JSONObject) resultObj
-								.get(CellSiteConstants.PROFILE);
-						if (driverProfileObj != null) {
+							JSONObject driverProfileObj = (JSONObject) resultObj
+									.get(CellSiteConstants.PROFILE);
+							if (driverProfileObj != null) {
 
-							mTruck.put(CellSiteConstants.NAME,
-									driverObj.getString(CellSiteConstants.NAME));
-						}
-						} catch(Exception e){
+								mTruck.put(CellSiteConstants.NAME, driverObj
+										.getString(CellSiteConstants.NAME));
+							}
+						} catch (Exception e) {
 							e.printStackTrace();
 						}
 

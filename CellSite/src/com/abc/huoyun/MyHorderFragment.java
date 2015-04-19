@@ -56,6 +56,8 @@ public class MyHorderFragment extends Fragment {
 	ProgressDialog mProgressdialog;
 	HorderDownLoadTask mHorderDownLoadTask;
 
+	CellSiteApplication app;
+
 	public static MyHorderFragment newInstance() {
 		MyHorderFragment mHCFragment = new MyHorderFragment();
 		return mHCFragment;
@@ -64,6 +66,7 @@ public class MyHorderFragment extends Fragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
+		app = (CellSiteApplication) this.getActivity().getApplication();
 
 		mHorderTypes[0] = new HorderType(0, this.getActivity());
 		mHorderTypes[1] = new HorderType(1, this.getActivity());
@@ -263,8 +266,7 @@ public class MyHorderFragment extends Fragment {
 			try {
 				if (isForceRefreshHorder
 						|| moreOperation == CellSiteConstants.MORE_OPERATION
-						|| CellSiteApplication
-								.getHorderTypeCache(mCurrRadioIdx) == null) {
+						|| app.getHorderTypeCache(mCurrRadioIdx) == null) {
 					Log.d(TAG,
 							"Will connect the network and download the horders");
 					getHorder(mCurrRadioIdx);
@@ -280,7 +282,7 @@ public class MyHorderFragment extends Fragment {
 							+ mCurrRadioIdx);
 					;
 
-					mHorderTypes[mCurrRadioIdx] = CellSiteApplication
+					mHorderTypes[mCurrRadioIdx] = app
 							.getHorderTypeCache(mCurrRadioIdx);
 					Log.d(TAG, "++++++++++++++++Number of My horders :"
 							+ mHorderTypes[mCurrRadioIdx].nHorders.size());
@@ -329,11 +331,8 @@ public class MyHorderFragment extends Fragment {
 
 				mHorderTypes[mCurrRadioIdx].nDisplayNum = mHorderTypes[mCurrRadioIdx].nHorders
 						.size();
-				Log.d(TAG,
-						"++++++++++++++++onPostExecute() Number of My Parties to save :"
-								+ mHorderTypes[mCurrRadioIdx].nHorders.size());
-				CellSiteApplication.setHorderTypeCache(
-						mHorderTypes[mCurrRadioIdx], mCurrRadioIdx);
+				app.setHorderTypeCache(mHorderTypes[mCurrRadioIdx],
+						mCurrRadioIdx);
 
 				if (mHorderTypes[mCurrRadioIdx].nDisplayNum > 0) {
 					Log.d(TAG, "set more tv to visible");
@@ -357,7 +356,7 @@ public class MyHorderFragment extends Fragment {
 		ArrayList<NameValuePair> postParameters = new ArrayList<NameValuePair>();
 
 		postParameters.add(new BasicNameValuePair(CellSiteConstants.USER_ID, ""
-				+ CellSiteApplication.getUser().getId()));
+				+ app.getUser().getId()));
 		postParameters.add(new BasicNameValuePair(
 				CellSiteConstants.HORDER_STATUS, "" + horder_status));
 
@@ -373,7 +372,6 @@ public class MyHorderFragment extends Fragment {
 			if (CellSiteConstants.RESULT_SUC == resultCode) {
 				parseJson(response);
 			} else {
-				Log.d(TAG, "QUERY RESULT FAILED");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -533,6 +531,21 @@ public class MyHorderFragment extends Fragment {
 			mHorderDownLoadTask = new HorderDownLoadTask();
 			mHorderDownLoadTask.execute(CellSiteConstants.NORMAL_OPERATION);
 		}
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		if (app.getHorderTypeCache(mCurrRadioIdx) != null) {
+			if (app.getHorderTypeCache(mCurrRadioIdx).nHorders.size() != mHorderTypes[mCurrRadioIdx].nHorders
+					.size()) {
+				mHorderTypes[mCurrRadioIdx].nHorders = app
+						.getHorderTypeCache(mCurrRadioIdx).nHorders;
+				mHorderTypes[mCurrRadioIdx].nHorderAdapter
+						.notifyDataSetChanged();
+			}
+		}
+
 	}
 
 }

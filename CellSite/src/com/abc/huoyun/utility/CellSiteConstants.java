@@ -20,6 +20,7 @@ public class CellSiteConstants {
 	public static final String USER_PORTARIT = "portrait";
 	public static final String PROFILE_IMAGE_URL = "profile_image_url";
 	public static final String DRIVER_LICENSE_URL = "driver_license_image_url";
+	public static final String IDENTITY_CARD_IMAGE_URL = "identity_card_image_url";
 	// public static final String DRIVER_LICENSE_URL =
 	// "driver_license_image_url";
 
@@ -186,6 +187,9 @@ public class CellSiteConstants {
 	public static final String CREATE_HORDER_URL = HOST
 			+ "createHorder/fmobile";
 	// public final static String REGISTER_RESULT = "register_result";
+
+	public static final String DELETE_HORDER_URL = HOST
+			+ "deleteHorder/fmobile";
 
 	// TRUCK
 	public static final String UPDATE_TRUCK_URL = HOST + "updateTruck/fmobile";

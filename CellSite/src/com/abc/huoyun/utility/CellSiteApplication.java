@@ -58,7 +58,7 @@ public class CellSiteApplication extends Application {
 
 	protected String username = null;
 	protected String password = null;
-	protected static User user = null;
+	protected User user = null;
 
 	public static File cacheFileDir; // Download the file, dir
 	public String regUserPath;
@@ -70,7 +70,7 @@ public class CellSiteApplication extends Application {
 	final int MEMORY_FOR_BITMAP_DECODE = 12 * 1024;
 
 	// HorderType cache
-	static HorderType[] gHorderType = new HorderType[3];
+	HorderType[] gHorderType = new HorderType[3];
 
 	// Truck Cache
 	static TruckType gTruckTypes;// = new Trucks();
@@ -134,6 +134,8 @@ public class CellSiteApplication extends Application {
 		String name = sp.getString(CellSiteConstants.NAME, null);
 		String profileImageUrl = sp.getString(
 				CellSiteConstants.PROFILE_IMAGE_URL, null);
+		String identityImageUrl = sp.getString(
+				CellSiteConstants.IDENTITY_CARD_IMAGE_URL, null);
 
 		user = new User();
 		if (username != null) {
@@ -145,6 +147,7 @@ public class CellSiteApplication extends Application {
 			user.setMobileNum(mobileNum);
 			user.setProfileImageUrl(profileImageUrl);
 			user.setName(name);
+			user.setIdentityImageUrl(identityImageUrl);
 			this.attachUser(user);
 		} else { // visitor mode
 			user.setId(User.INVALID_ID);
@@ -207,11 +210,11 @@ public class CellSiteApplication extends Application {
 		return cacheData;
 	}
 
-	public static void attachUser(User _user) {
+	public void attachUser(User _user) {
 		user = _user;
 	}
 
-	public static User getUser() {
+	public User getUser() {
 		return user;
 	}
 
@@ -398,12 +401,11 @@ public class CellSiteApplication extends Application {
 		return null;
 	}
 
-	public static void setHorderTypeCache(HorderType aHorderTypeCache,
-			int aIndex) {
+	public void setHorderTypeCache(HorderType aHorderTypeCache, int aIndex) {
 		gHorderType[aIndex] = aHorderTypeCache;
 	}
 
-	public static HorderType getHorderTypeCache(int aIndex) {
+	public HorderType getHorderTypeCache(int aIndex) {
 		return gHorderType[aIndex];
 	}
 

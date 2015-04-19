@@ -100,13 +100,12 @@ public class LoginActivity extends BaseActivity {
 			}
 
 			// TODO: normal login
-/*
-			Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-			startActivity(intent);
-
-			mProgressdialog.dismiss();
-			finish();
-*/
+			/*
+			 * Intent intent = new Intent(LoginActivity.this,
+			 * MainActivity.class); startActivity(intent);
+			 * 
+			 * mProgressdialog.dismiss(); finish();
+			 */
 
 			mNormalLoginTask = new NormalLoginTask();
 			mNormalLoginTask.execute(new String[] { username, password,
@@ -122,7 +121,7 @@ public class LoginActivity extends BaseActivity {
 
 		@Override
 		public void onPostExecute(Integer result) {
-				if (mProgressdialog != null) {
+			if (mProgressdialog != null) {
 				mProgressdialog.cancel();
 			}
 			if (this.isCancelled()) {
@@ -170,18 +169,19 @@ public class LoginActivity extends BaseActivity {
 						CellSiteConstants.RESULT_CODE).toString());
 				if (resultCode == CellSiteConstants.RESULT_SUC) {
 					// store the username and password in sharedPreference
+
 					User normalUser = new User();
 					normalUser.setUsername(_username);
 
 					JSONObject userJson = response
 							.getJSONObject(CellSiteConstants.USER);
-					JSONObject profileJson  = null;
-					try{
-					 profileJson = response
-							.getJSONObject(CellSiteConstants.PROFILE);
-					} catch(JSONException e) {
+					JSONObject profileJson = null;
+					try {
+						profileJson = response
+								.getJSONObject(CellSiteConstants.PROFILE);
+					} catch (JSONException e) {
 						Log.d(TAG, " The profile is not inited");
-						profileJson  = null;
+						profileJson = null;
 						// response.get(CellSiteConstants.PROFILE);
 					}
 
@@ -213,6 +213,17 @@ public class LoginActivity extends BaseActivity {
 									.setProfileImageUrl(profileJson
 											.getString(CellSiteConstants.PROFILE_IMAGE_URL));
 						}
+						if (profileJson
+								.get(CellSiteConstants.IDENTITY_CARD_IMAGE_URL) != null) {
+							sharedUser
+									.putString(
+											CellSiteConstants.IDENTITY_CARD_IMAGE_URL,
+											profileJson
+													.getString(CellSiteConstants.IDENTITY_CARD_IMAGE_URL));
+							normalUser
+									.setIdentityImageUrl(profileJson
+											.getString(CellSiteConstants.IDENTITY_CARD_IMAGE_URL));
+						}
 					}
 
 					sharedUser
@@ -224,7 +235,6 @@ public class LoginActivity extends BaseActivity {
 					sharedUser.putString(CellSiteConstants.MOBILE, _username);
 
 					app.attachUser(normalUser);
-					Log.d(TAG, "id=" + app.getUser().getId());
 					sharedUser.commit();
 
 				}
@@ -264,17 +274,6 @@ public class LoginActivity extends BaseActivity {
 			startActivity(intent);
 			overridePendingTransition(R.anim.slide_right_in,
 					R.anim.slide_left_out);
-		}
-	}
-
-	public void OnCloseSoftKeyboard(View v) {
-		if (v.getId() == R.id.loginLayout) {
-			InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-
-			// do the following for all the etidtext
-	//		imm.hideSoftInputFromWindow(passwordEt.getWindowToken(), 0);
-		//	imm.hideSoftInputFromWindow(usernameEt.getWindowToken(), 0);
-
 		}
 	}
 
