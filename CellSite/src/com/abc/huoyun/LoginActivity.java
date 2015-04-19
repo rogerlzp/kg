@@ -122,9 +122,7 @@ public class LoginActivity extends BaseActivity {
 
 		@Override
 		public void onPostExecute(Integer result) {
-			Log.d(TAG, "onPostExecute" + result);
-
-			if (mProgressdialog != null) {
+				if (mProgressdialog != null) {
 				mProgressdialog.cancel();
 			}
 			if (this.isCancelled()) {
@@ -163,8 +161,6 @@ public class LoginActivity extends BaseActivity {
 					CellSiteConstants.ROLE_ID, ""
 							+ CellSiteConstants.HUOZHU_ROLE_ID));
 
-			Log.d(TAG, "password: " + passwordHash);
-
 			JSONObject response = null;
 			try {
 				response = CellSiteHttpClient.executeHttpPost(
@@ -192,7 +188,6 @@ public class LoginActivity extends BaseActivity {
 					normalUser.setId(userJson.getLong(CellSiteConstants.ID));
 					normalUser.setMobileNum(_username);
 
-					Log.d(TAG, "id=" + app.getUser().getId());
 					Editor sharedUser = getSharedPreferences(
 							CellSiteConstants.CELLSITE_CONFIG, MODE_PRIVATE)
 							.edit();
@@ -277,8 +272,8 @@ public class LoginActivity extends BaseActivity {
 			InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 
 			// do the following for all the etidtext
-			imm.hideSoftInputFromWindow(passwordEt.getWindowToken(), 0);
-			imm.hideSoftInputFromWindow(usernameEt.getWindowToken(), 0);
+	//		imm.hideSoftInputFromWindow(passwordEt.getWindowToken(), 0);
+		//	imm.hideSoftInputFromWindow(usernameEt.getWindowToken(), 0);
 
 		}
 	}

@@ -1,5 +1,6 @@
 package com.abc.huoyun;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -13,8 +14,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.abc.huoyun.utility.CellSiteApplication;
-import com.abc.huoyun.utility.CellSiteConstants;
-import com.abc.huoyun.utility.LocalUser;
 import com.abc.huoyun.utility.image.ImageLoad;
 import com.abc.huoyun.utility.image.ImageLoad.ImageDownloadedCallBack;
 
@@ -24,6 +23,7 @@ public class MeFragment extends Fragment {
 	private TextView mNameTv;
 	private TextView mMobileTv;
 	private RelativeLayout shipperUserRL;
+	private RelativeLayout settingRL;
 
 	String name_current;
 	String phoneNum_current;
@@ -42,6 +42,11 @@ public class MeFragment extends Fragment {
 		mImageLoad = new ImageLoad(this.getActivity());
 		mNameTv = (TextView) this.getActivity().findViewById(R.id.name_tv);
 		mMobileTv = (TextView) this.getActivity().findViewById(R.id.mobile_tv);
+		settingRL = (RelativeLayout) this.getView().findViewById(R.id.setting);
+		SettingListener mSettingListener = new SettingListener(
+				this.getActivity());
+
+		settingRL.setOnClickListener(mSettingListener);
 
 		avatarIv = (ImageView) this.getActivity()
 				.findViewById(R.id.portrait_iv);
@@ -66,6 +71,20 @@ public class MeFragment extends Fragment {
 		portraitImageUrl = CellSiteApplication.getUser().profileImageUrl;
 		if (portraitImageUrl != null && !portraitImageUrl.equals("")) {
 			showUserAvator(avatarIv, portraitImageUrl);
+		}
+	}
+
+	class SettingListener implements View.OnClickListener {
+		private Context ctx;
+
+		public SettingListener(Context _ctx) {
+			this.ctx = _ctx;
+		}
+
+		@Override
+		public void onClick(View v) {
+			Intent intent = new Intent(ctx, SettingActivity.class);
+			startActivity(intent);
 		}
 	}
 

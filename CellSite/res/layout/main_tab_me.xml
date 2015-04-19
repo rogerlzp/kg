@@ -50,8 +50,8 @@
             android:layout_marginLeft="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="12dp"
+            android:layout_toEndOf="@+id/portrait_iv"
             android:layout_toRightOf="@+id/portrait_iv"
-             android:layout_toEndOf="@+id/portrait_iv"
             android:text="丽正品"
             android:textColor="#353535"
             android:textSize="16sp" />
@@ -71,8 +71,6 @@
             android:textSize="15sp" />
     </RelativeLayout>
 Ï
-
-
 
     <RelativeLayout
         android:id="@+id/truck_lincense"
@@ -118,8 +116,7 @@
         android:layout_marginTop="20dp"
         android:background="#eee"
         android:clickable="true"
-        android:gravity="center_vertical"
-        android:onClick="gotoSetting" >
+        android:gravity="center_vertical" >
 
         <TextView
             android:layout_width="match_parent"

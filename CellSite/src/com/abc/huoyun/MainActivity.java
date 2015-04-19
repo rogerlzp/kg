@@ -1522,7 +1522,7 @@ public class MainActivity extends BaseActivity {
 
 				} else {
 
-					mTrucks = app.getTrucksCache();
+					//mTrucks = app.getTrucksCache();
 
 				}
 
@@ -1563,7 +1563,7 @@ public class MainActivity extends BaseActivity {
 
 				mTrucks.nDisplayNum = mTrucks.nTrucks.size();
 
-				app.setTrucksCache(mTrucks);
+			//	app.setTrucksCache(mTrucks);
 
 				if (mTrucks.nDisplayNum > 0) {
 					mTruckMoreTv.setVisibility(View.VISIBLE);

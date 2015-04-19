@@ -11,6 +11,7 @@ import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.Display;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
@@ -36,6 +37,7 @@ public class MainFragmentActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.main_weixin);
+
 		mTabPager = (ViewPager) findViewById(R.id.tabpager);
 		mTabPager.setOnPageChangeListener(new MyOnPageChangeListener());
 		mFPAdapter = new MyFragmentPageAdapter(this.getSupportFragmentManager());
@@ -127,7 +129,6 @@ public class MainFragmentActivity extends FragmentActivity {
 					mTab4.setImageDrawable(getResources().getDrawable(
 							R.drawable.tab_settings_normal));
 				}
-				// initCreateHorderView();
 
 				break;
 			case 1:
@@ -149,24 +150,6 @@ public class MainFragmentActivity extends FragmentActivity {
 					mTab4.setImageDrawable(getResources().getDrawable(
 							R.drawable.tab_settings_normal));
 				}
-				/*
-				 * initTrucks(); mTruckMore.setVisibility(View.INVISIBLE);
-				 * mTruckMoreTv.setText(R.string.show_more);
-				 * 
-				 * if (mProgressdialogTruck == null ||
-				 * !mProgressdialogTruck.isShowing()) { mProgressdialogTruck =
-				 * new ProgressDialog(MainActivity.this);
-				 * mProgressdialogTruck.setMessage("正在加载数据");
-				 * mProgressdialogTruck.setIndeterminate(true);
-				 * mProgressdialogTruck.setCancelable(true);
-				 * mProgressdialogTruck.show(); }
-				 * 
-				 * mTruckLv.setAdapter(mTrucks.nTruckAdapter);
-				 * 
-				 * mTruckDownLoadTask = new TruckDownLoadTask();
-				 * mTruckDownLoadTask
-				 * .execute(CellSiteConstants.NORMAL_OPERATION);
-				 */
 
 				break;
 
@@ -195,23 +178,24 @@ public class MainFragmentActivity extends FragmentActivity {
 
 				mTab4.setImageDrawable(getResources().getDrawable(
 						R.drawable.tab_settings_pressed));
-				/*
-				 * if (currIndex == 0) { needAnimation = false; animation = new
-				 * TranslateAnimation(zero, three, 0, 0);
-				 * mTab1.setImageDrawable(getResources().getDrawable(
-				 * R.drawable.tab_weixin_normal)); } else if (currIndex == 1) {
-				 * needAnimation = false; animation = new
-				 * TranslateAnimation(one, three, 0, 0);
-				 * mTab2.setImageDrawable(getResources().getDrawable(
-				 * R.drawable.tab_address_normal)); } else if (currIndex == 2) {
-				 * animation = new TranslateAnimation(two, three, 0, 0);
-				 * mTab3.setImageDrawable(getResources().getDrawable(
-				 * R.drawable.tab_find_frd_normal)); } initMeView(); // download
-				 * Truck information mUpdateTruckTask = new UpdateTruckTask();
-				 * mUpdateTruckTask.execute("" + app.getUser().getId());
-				 * 
-				 * break;
-				 */
+
+				if (currIndex == 0) {
+					needAnimation = false;
+					animation = new TranslateAnimation(zero, three, 0, 0);
+					mTab1.setImageDrawable(getResources().getDrawable(
+							R.drawable.tab_weixin_normal));
+				} else if (currIndex == 1) {
+					needAnimation = false;
+					animation = new TranslateAnimation(one, three, 0, 0);
+					mTab2.setImageDrawable(getResources().getDrawable(
+							R.drawable.tab_address_normal));
+				} else if (currIndex == 2) {
+					animation = new TranslateAnimation(two, three, 0, 0);
+					mTab3.setImageDrawable(getResources().getDrawable(
+							R.drawable.tab_find_frd_normal));
+				}
+
+				break;
 
 			}
 
@@ -226,12 +210,12 @@ public class MainFragmentActivity extends FragmentActivity {
 					((MyFragmentPageAdapter) mTabPager.getAdapter())
 							.getItem(arg0)).commit();
 
-			/*
-			 * if (needAnimation) { animation.setFillAfter(true);// True:
-			 * animation.setDuration(150);
-			 * 
-			 * mTabImg.startAnimation(animation); }
-			 */
+			// if (needAnimation) {
+			// animation.setFillAfter(true);// True:
+			// animation.setDuration(150);
+
+			// mTabImg.startAnimation(animation);
+			// }
 
 		}
 

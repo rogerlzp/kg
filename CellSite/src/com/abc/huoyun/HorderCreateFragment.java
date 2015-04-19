@@ -16,11 +16,11 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
@@ -49,7 +49,8 @@ public class HorderCreateFragment extends Fragment {
 	private String mCargoVolume;
 	private String mTruckType;
 	private String mShipperUsername;
-	private String mHorderDesc;
+	// private String mHorderDesc;
+
 	private String mTruckLength;
 	ArrayList<HashMap<String, Object>> mCargoTypeList = new ArrayList<HashMap<String, Object>>();
 	ArrayList<HashMap<String, Object>> mTruckLengthList = new ArrayList<HashMap<String, Object>>();
@@ -60,6 +61,7 @@ public class HorderCreateFragment extends Fragment {
 	private TextView mCTtv;
 	private TextView mCWVtv; // 货物重量和体积
 	private TextView mTTtv;
+	private EditText mHDet;// 货物描述
 
 	private TextView mTLtv;
 
@@ -80,7 +82,9 @@ public class HorderCreateFragment extends Fragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
+	
 		initData();
+		initView();
 		initChooseAddress();
 		initChooseCargoWeightVolume();
 		initChooseDate();
@@ -95,10 +99,24 @@ public class HorderCreateFragment extends Fragment {
 		((MainFragmentActivity) this.getActivity()).gotoMyHorder();
 	}
 
-	public void initChooseAddress() {
+	public void initView() {
+		mCreateBtn = (Button) this.getView().findViewById(
+				R.id.create_horder_btn);
+		mCreateBtn.requestFocus();
+		mHDet = ((EditText) this.getView().findViewById(
+				R.id.horder_description_et));
+	
+
 		mSAtv = (TextView) this.getView().findViewById(R.id.shipper_address_tv);
 		mCAtv = (TextView) this.getView().findViewById(
 				R.id.consignee_address_tv);
+
+		mShipperUsername = ((EditText) this.getView().findViewById(
+				R.id.shipper_username_et)).getText().toString();
+
+	}
+
+	public void initChooseAddress() {
 
 		listener1 = new InputListener() {
 			@Override
@@ -132,17 +150,12 @@ public class HorderCreateFragment extends Fragment {
 		View view = inflater.inflate(R.layout.main_tab_horder_create,
 				container, false);
 
+		this.getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 		return view;
 	}
 
 	public void initCreateHorder() {
 
-		mCreateBtn = (Button) this.getView().findViewById(
-				R.id.create_horder_btn);
-		mShipperUsername = ((EditText) this.getView().findViewById(
-				R.id.shipper_username_et)).getText().toString();
-		mHorderDesc = ((EditText) this.getView().findViewById(
-				R.id.horder_description_et)).getText().toString();
 		mCreateBtn.setOnClickListener(new View.OnClickListener() {
 
 			@Override
@@ -153,8 +166,8 @@ public class HorderCreateFragment extends Fragment {
 				mCreateHorderTask.execute(mShipperAddressCode, mShipperDate,
 						mConsigneeAddressCode, mShipperUsername, mCargoType,
 						mCargoWeight, mCargoVolume, mTruckType, mTruckLength,
-						mHorderDesc,
-						"" + CellSiteApplication.getUser().getId(),
+						mHDet.getText().toString().trim(), ""
+								+ CellSiteApplication.getUser().getId(),
 						CellSiteApplication.getUser().getMobileNum());
 			}
 		});

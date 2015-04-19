@@ -25,6 +25,7 @@ import android.util.Log;
 import com.abc.huoyun.CheckReqDriverActivity.HorderDriverType;
 import com.abc.huoyun.MainActivity.Trucks;
 import com.abc.huoyun.cache.HorderType;
+import com.abc.huoyun.cache.TruckType;
 import com.abc.huoyun.model.Truck;
 import com.abc.huoyun.model.User;
 
@@ -72,7 +73,7 @@ public class CellSiteApplication extends Application {
 	static HorderType[] gHorderType = new HorderType[3];
 
 	// Truck Cache
-	Trucks gTrucks;// = new Trucks();
+	static TruckType gTruckTypes;// = new Trucks();
 
 	HorderDriverType[] gHorderDriverType = new HorderDriverType[10];
 
@@ -83,8 +84,8 @@ public class CellSiteApplication extends Application {
 	public Bitmap getPortaritBitmap() {
 		return mPortaritBitmap;
 	}
-	
-	public static String getRootDir(){
+
+	public static String getRootDir() {
 		return CacheFilePath;
 	}
 
@@ -397,7 +398,8 @@ public class CellSiteApplication extends Application {
 		return null;
 	}
 
-	public static void setHorderTypeCache(HorderType aHorderTypeCache, int aIndex) {
+	public static void setHorderTypeCache(HorderType aHorderTypeCache,
+			int aIndex) {
 		gHorderType[aIndex] = aHorderTypeCache;
 	}
 
@@ -405,12 +407,12 @@ public class CellSiteApplication extends Application {
 		return gHorderType[aIndex];
 	}
 
-	public void setTrucksCache(Trucks aTrucksCache) {
-		gTrucks = aTrucksCache;
+	public static void setTrucksCache(TruckType aTrucksCache) {
+		gTruckTypes = aTrucksCache;
 	}
 
-	public Trucks getTrucksCache() {
-		return gTrucks;
+	public static TruckType getTrucksCache() {
+		return gTruckTypes;
 	}
 
 }

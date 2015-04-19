@@ -12,6 +12,7 @@ public class CellSiteConstants {
 	public static final int HUOZHU_ROLE_ID = 2;
 
 	public static final String USER = "user";
+	public static final String DRIVER = "driver";
 	public static final String PROFILE = "profile";
 	public static final String MOBILE = "mobile";
 	public static final String USER_ID = "user_id";
