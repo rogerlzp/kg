@@ -394,11 +394,9 @@ public class CheckReqDriverActivity extends BaseActivity {
 				if (isForceRefreshDriver
 						|| moreOperation == CellSiteConstants.MORE_OPERATION
 						|| app.getHorderDriverTypeCache(horderId) == null // TODO:
-																			// 增加类型
+																		// 增加类型
 				) {
-
 					getHorderDrivers(horderId);
-
 					if (mHorderDriverType.nDrivers.size() < mHorderDriverType.nDisplayNum
 							+ CellSiteConstants.PAGE_COUNT
 							&& !mHasExceptionDriver) {
@@ -523,6 +521,9 @@ public class CheckReqDriverActivity extends BaseActivity {
 						mHorder.put(CellSiteConstants.DRIVER_ID, Integer
 								.valueOf((String) resultObj
 										.getString(CellSiteConstants.ID)));
+						mHorder.put(CellSiteConstants.MOBILE, 
+								(String) resultObj
+										.getString(CellSiteConstants.MOBILE));
 
 						// 是否是被选中的司机
 						if ((Integer) resultObj.getInt(CellSiteConstants.ID) == selectedDriverId) {
