@@ -7,6 +7,7 @@ public class CellSiteConstants {
 	public static final String NAME = "name";
 	public static final String PASSWORD = "password";
 	public static final String DEVICE_TOKEN = "device_token";
+	public static final String FIRST_LOGIN_FLAG = "first_login_flag";
 
 	public static final int DRIVER_ROLE_ID = 1;
 	public static final int HUOZHU_ROLE_ID = 2;

@@ -50,6 +50,7 @@ public class CellSiteApplication extends Application {
 	public boolean isWillShowFirstRecomm = true;
 	public boolean isShowHelp = true;
 	public boolean mIsSdCardAvaible = false;
+	public boolean isFirstLogin = true;
 	CacheData cacheData;
 
 	public String userMode;
@@ -113,6 +114,8 @@ public class CellSiteApplication extends Application {
 		initCacheFileDir();
 
 		initUser();
+		
+		initConfig();
 
 		// initial the unnecessarily-started component
 		// startService(new Intent(this, InitService.class));
@@ -167,17 +170,17 @@ public class CellSiteApplication extends Application {
 
 	void initConfig() // TODO: change later
 	{
-		/*
-		 * SharedPreferences sp = getSharedPreferences(CellSiteConstants.CONFIG,
-		 * MODE_PRIVATE); Boolean bFirstLogin =
-		 * sp.getBoolean(CellSiteConstants.FIRST_LOGIN_FLAG, true);
-		 * 
-		 * if(bFirstLogin) { Editor sharedUser =
-		 * getSharedPreferences(CellSiteConstants.CONFIG, MODE_PRIVATE).edit();
-		 * sharedUser.putBoolean(CellSiteConstants.FIRST_LOGIN_FLAG, true);
-		 * sharedUser.putLong(CellSiteConstants.NOTIFY_INTERNAL,
-		 * CheckNotificationService.DELAY); sharedUser.commit(); }
-		 */
+
+		SharedPreferences sp = getSharedPreferences(CellSiteConstants.CELLSITE_CONFIG, MODE_PRIVATE);
+		isFirstLogin = sp.getBoolean(CellSiteConstants.FIRST_LOGIN_FLAG, true);
+		
+//		if (bFirstLogin) {
+//			Editor sharedUser = getSharedPreferences(CellSiteConstants.CELLSITE_CONFIG, MODE_PRIVATE).edit();
+//			sharedUser.putBoolean(CellSiteConstants.FIRST_LOGIN_FLAG, true);
+//			sharedUser.putLong(CellSiteConstants.NOTIFY_INTERNAL, CheckNotificationService.DELAY);
+//			sharedUser.commit();
+//		}
+		 
 
 	}
 
@@ -415,4 +418,11 @@ public class CellSiteApplication extends Application {
 		return gTruckTypes;
 	}
 
+	public boolean isFirstLogin() {
+		return isFirstLogin;
+	}
+
+	public void setFirstLogin(boolean isFirstLogin) {
+		this.isFirstLogin = isFirstLogin;
+	}
 }

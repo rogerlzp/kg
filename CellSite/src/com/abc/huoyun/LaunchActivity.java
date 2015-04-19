@@ -3,7 +3,6 @@ package com.abc.huoyun;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Window;
 
 import com.abc.huoyun.model.User;
@@ -34,8 +33,9 @@ public class LaunchActivity extends BaseActivity {
 				runOnUiThread(new Runnable() {
 					// @Override
 					public void run() {
-
-						if (app.getUser().getId() == User.INVALID_ID) {
+						if(app.isFirstLogin) {
+							enterGuideActivity();
+						} else if (CellSiteApplication.getUser().getId() == User.INVALID_ID) {
 							enterLoginActivity();
 						} else {
 							enterMainActivity();
@@ -80,6 +80,12 @@ public class LaunchActivity extends BaseActivity {
 		loginIntent.setClass(this, LoginActivity.class);
 		startActivity(loginIntent);
 		// isGifstopped = true;
+	}
+	
+	private void enterGuideActivity() {
+		Intent gudieIntent = new Intent();
+		gudieIntent.setClass(this, GuideActivity.class);
+		startActivity(gudieIntent);
 	}
 
 }
