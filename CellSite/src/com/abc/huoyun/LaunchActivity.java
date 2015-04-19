@@ -35,7 +35,7 @@ public class LaunchActivity extends BaseActivity {
 					public void run() {
 						if(app.isFirstLogin) {
 							enterGuideActivity();
-						} else if (CellSiteApplication.getUser().getId() == User.INVALID_ID) {
+						} else if (app.getUser().getId() == User.INVALID_ID) {
 							enterLoginActivity();
 						} else {
 							enterMainActivity();

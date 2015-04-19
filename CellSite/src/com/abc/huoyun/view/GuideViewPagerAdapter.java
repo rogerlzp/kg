@@ -72,7 +72,7 @@ public class GuideViewPagerAdapter extends PagerAdapter {
 
 					CellSiteApplication app = (CellSiteApplication) activity.getApplication();
 					app.setFirstLogin(false);
-					if (CellSiteApplication.getUser().getId() == User.INVALID_ID) {
+					if (app.getUser().getId() == User.INVALID_ID) {
 						enterLoginActivity();
 					} else {
 						enterMainActivity();
