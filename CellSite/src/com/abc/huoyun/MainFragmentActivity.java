@@ -11,11 +11,12 @@ import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.Display;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.abc.huoyun.utility.CellSiteApplication;
 
 public class MainFragmentActivity extends FragmentActivity {
 
@@ -31,6 +32,8 @@ public class MainFragmentActivity extends FragmentActivity {
 	private int three;
 
 	public static final String TAG = MainFragmentActivity.class.getSimpleName();
+	
+	public CellSiteApplication app;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -59,6 +62,8 @@ public class MainFragmentActivity extends FragmentActivity {
 		one = displayWidth / 4;
 		two = one * 2;
 		three = one * 3;
+		
+		app = (CellSiteApplication)this.getApplication();
 	}
 
 	public static class MyFragmentPageAdapter extends FragmentStatePagerAdapter {

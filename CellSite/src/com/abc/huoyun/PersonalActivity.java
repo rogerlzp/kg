@@ -17,6 +17,7 @@ import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences.Editor;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -92,10 +93,10 @@ public class PersonalActivity extends BaseActivity {
 
 	public void initViewData() {
 
-		name_current = CellSiteApplication.getUser().getName();
-		mobile_current = CellSiteApplication.getUser().getMobileNum();
-		portraitImageUrl = CellSiteApplication.getUser().getProfileImageUrl();
-		identityImageUrl = CellSiteApplication.getUser().getIdentityImageUrl();
+		name_current = app.getUser().getName();
+		mobile_current = app.getUser().getMobileNum();
+		portraitImageUrl = app.getUser().getProfileImageUrl();
+		identityImageUrl = app.getUser().getIdentityImageUrl();
 
 		nameTv.setText(name_current);
 		mobileNumTv.setTag(mobile_current);
@@ -109,7 +110,7 @@ public class PersonalActivity extends BaseActivity {
 
 	public void initData() {
 		userDownLoadTask = new MyUserDownLoadTask();
-		userDownLoadTask.execute(CellSiteApplication.getUser().getId());
+		userDownLoadTask.execute(app.getUser().getId());
 	}
 
 	private void showImage(ImageView imageView, String avatar) {
@@ -131,26 +132,24 @@ public class PersonalActivity extends BaseActivity {
 	public void onResume() {
 		super.onResume();
 
-		String name_tmp = CellSiteApplication.getUser().getName();
+		String name_tmp = app.getUser().getName();
 		if (!name_tmp.equals(name_current)) {
 			name_current = name_tmp;
 			nameTv.setText(name_current);
 		}
-		String mobile_tmp = CellSiteApplication.getUser().getMobileNum();
+		String mobile_tmp = app.getUser().getMobileNum();
 		if (!mobile_tmp.equals(mobile_current)) {
 			mobile_current = mobile_tmp;
 			mobileNumTv.setText(mobile_current);
 		}
 
-		String portraitImageUrl_tmp = CellSiteApplication.getUser()
-				.getProfileImageUrl();
+		String portraitImageUrl_tmp = app.getUser().getProfileImageUrl();
 		if (portraitImageUrl != null
 				&& !portraitImageUrl_tmp.equals(portraitImageUrl)) {
 			portraitImageUrl = portraitImageUrl_tmp;
 			showImage(mUserPortraitIv, portraitImageUrl);
 		}
-		String identityImageUrl_tmp = CellSiteApplication.getUser()
-				.getIdentityImageUrl();
+		String identityImageUrl_tmp = app.getUser().getIdentityImageUrl();
 		if (identityImageUrl != null
 				&& !identityImageUrl_tmp.equals(identityImageUrl)) {
 			identityImageUrl = identityImageUrl_tmp;
@@ -212,26 +211,24 @@ public class PersonalActivity extends BaseActivity {
 
 			if (profileJson.get(CellSiteConstants.PROFILE_IMAGE_URL) != JSONObject.NULL) {
 				Log.d(TAG, "get the image url");
-				CellSiteApplication
-						.getUser()
+				app.getUser()
 						.setProfileImageUrl(
 								profileJson
 										.getString(CellSiteConstants.PROFILE_IMAGE_URL));
 
 			}
 			if (profileJson.get(CellSiteConstants.DRIVER_LICENSE_URL) != JSONObject.NULL) {
-				CellSiteApplication
-						.getUser()
+				app.getUser()
 						.setDriverLicenseImageUrl(
 								profileJson
 										.getString(CellSiteConstants.DRIVER_LICENSE_URL));
 			}
 			if (profileJson.get(CellSiteConstants.NAME) != JSONObject.NULL) {
-				CellSiteApplication.getUser().setName(
+				app.getUser().setName(
 						profileJson.getString(CellSiteConstants.NAME));
 			}
 			if (userJson.get(CellSiteConstants.MOBILE) != JSONObject.NULL) {
-				CellSiteApplication.getUser().setMobileNum(
+				app.getUser().setMobileNum(
 						userJson.getString(CellSiteConstants.MOBILE));
 			}
 
@@ -355,8 +352,7 @@ public class PersonalActivity extends BaseActivity {
 				Bitmap photo = extras.getParcelable("data");
 
 				mUpdateImageTask = new UpdateImageTask();
-				mUpdateImageTask.execute(""
-						+ CellSiteApplication.getUser().getId(),
+				mUpdateImageTask.execute("" + app.getUser().getId(),
 						Utils.bitmap2String(photo),
 						CellSiteConstants.UPDATE_USER_PORTRAIT_URL);
 
@@ -422,8 +418,7 @@ public class PersonalActivity extends BaseActivity {
 
 			// s isChanged = true;
 			mUpdateIdentityImageTask = new UpdateIdentityImageTask();
-			mUpdateIdentityImageTask.execute(""
-					+ CellSiteApplication.getUser().getId(),
+			mUpdateIdentityImageTask.execute("" + app.getUser().getId(),
 					Utils.bitmap2String(scaledBmp),
 					CellSiteConstants.UPDATE_USER_IDENTITY_URL);
 
@@ -567,9 +562,14 @@ public class PersonalActivity extends BaseActivity {
 
 			if (result != null) {
 				String identityImageUrl = result;
-				CellSiteApplication.getUser().setIdentityImageUrl(
-						identityImageUrl);
+				app.getUser().setIdentityImageUrl(identityImageUrl);
 				showImage(mUserIdentityIv, identityImageUrl);
+
+				Editor sharedUser = getSharedPreferences(
+						CellSiteConstants.CELLSITE_CONFIG, MODE_PRIVATE).edit();
+				sharedUser.putString(CellSiteConstants.IDENTITY_CARD_IMAGE_URL,
+						identityImageUrl);
+				sharedUser.commit();
 			}
 		}
 
@@ -619,9 +619,14 @@ public class PersonalActivity extends BaseActivity {
 			if (result != null) {
 				// TODO: set for different user
 				portraitImageUrl = result;
-				CellSiteApplication.getUser().setProfileImageUrl(
-						portraitImageUrl);
+				app.getUser().setProfileImageUrl(portraitImageUrl);
 				showImage(mUserPortraitIv, portraitImageUrl);
+
+				Editor sharedUser = getSharedPreferences(
+						CellSiteConstants.CELLSITE_CONFIG, MODE_PRIVATE).edit();
+				sharedUser.putString(CellSiteConstants.PROFILE_IMAGE_URL,
+						portraitImageUrl);
+				sharedUser.commit();
 			}
 		}
 

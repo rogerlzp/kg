@@ -73,15 +73,20 @@ public class HorderCreateFragment extends Fragment {
 	CityChooseListener cityChooseListener2;
 
 	private Button mCreateBtn;
+	
+	CellSiteApplication app;
 
 	public static HorderCreateFragment newInstance() {
 		HorderCreateFragment mHCFragment = new HorderCreateFragment();
 		return mHCFragment;
 	}
+	
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
+		
+		app = (CellSiteApplication)this.getActivity().getApplication();
 	
 		initData();
 		initView();
@@ -92,6 +97,7 @@ public class HorderCreateFragment extends Fragment {
 		initChooseTruckType();
 		initChooseTruckLength();
 		initCreateHorder();
+		
 
 	}
 
@@ -167,8 +173,8 @@ public class HorderCreateFragment extends Fragment {
 						mConsigneeAddressCode, mShipperUsername, mCargoType,
 						mCargoWeight, mCargoVolume, mTruckType, mTruckLength,
 						mHDet.getText().toString().trim(), ""
-								+ CellSiteApplication.getUser().getId(),
-						CellSiteApplication.getUser().getMobileNum());
+								+ app.getUser().getId(),
+						app.getUser().getMobileNum());
 			}
 		});
 

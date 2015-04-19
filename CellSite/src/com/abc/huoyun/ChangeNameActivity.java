@@ -28,8 +28,8 @@ public class ChangeNameActivity extends BaseActivity {
 		setContentView(R.layout.change_name);
 
 		usernameEt = (EditText) findViewById(R.id.update_username_et);
-		if (CellSiteApplication.getUser().getName() != null) {
-			usernameEt.setText(CellSiteApplication.getUser().getName());
+		if (app.getUser().getName() != null) {
+			usernameEt.setText(app.getUser().getName());
 
 		} else {
 			usernameEt.setText(R.string.updateNameHint);
@@ -42,7 +42,7 @@ public class ChangeNameActivity extends BaseActivity {
 	public void saveUsername(View v) {
 
 		mUpdateUserTask = new UpdateUserTask();
-		mUpdateUserTask.execute("" + CellSiteApplication.getUser().getId(),
+		mUpdateUserTask.execute("" + app.getUser().getId(),
 				usernameEt.getText().toString().trim());
 	
 	}
@@ -82,7 +82,7 @@ public class ChangeNameActivity extends BaseActivity {
 				int resultCode = Integer.parseInt(response.get(
 						CellSiteConstants.RESULT_CODE).toString());
 				if (resultCode == CellSiteConstants.RESULT_SUC) {
-					CellSiteApplication.getUser().setName(_name);
+					app.getUser().setName(_name);
 
 					Editor sharedUser = getSharedPreferences(
 							CellSiteConstants.CELLSITE_CONFIG, MODE_PRIVATE)
