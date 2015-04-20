@@ -78,12 +78,18 @@ public class CheckReqDriverActivity extends BaseActivity {
 
 			Intent intent = new Intent(CheckReqDriverActivity.this,
 					CheckReqDriverDetailActivity.class);
-
+            //TODO: bug
+			// 如果在本页面选择或者取消司机后，那么接下来在打开详细页面后，取得消息将不会在变化
+			// 解决方法： 在更新后，及时更新这里存储的信息
 			intent.putExtra(CellSiteConstants.DRIVER_ID, (Integer) aDrivers
 					.get(position).get(CellSiteConstants.DRIVER_ID));
 			intent.putExtra(CellSiteConstants.HORDER_ID, horderId);
 			intent.putExtra(CellSiteConstants.SELECTED_DRIVER_ID,
 					selectedDriverId);
+			intent.putExtra(
+					CellSiteConstants.IS_SELECTED_DRIVER,
+					(boolean) aDrivers.get(position).get(
+							CellSiteConstants.IS_SELECTED_DRIVER));
 
 			startActivity(intent);
 
@@ -396,9 +402,7 @@ public class CheckReqDriverActivity extends BaseActivity {
 						|| app.getHorderDriverTypeCache(horderId) == null // TODO:
 																			// 增加类型
 				) {
-
 					getHorderDrivers(horderId);
-
 					if (mHorderDriverType.nDrivers.size() < mHorderDriverType.nDisplayNum
 							+ CellSiteConstants.PAGE_COUNT
 							&& !mHasExceptionDriver) {
@@ -523,6 +527,9 @@ public class CheckReqDriverActivity extends BaseActivity {
 						mHorder.put(CellSiteConstants.DRIVER_ID, Integer
 								.valueOf((String) resultObj
 										.getString(CellSiteConstants.ID)));
+						mHorder.put(CellSiteConstants.MOBILE,
+								(String) resultObj
+										.getString(CellSiteConstants.MOBILE));
 
 						// 是否是被选中的司机
 						if ((Integer) resultObj.getInt(CellSiteConstants.ID) == selectedDriverId) {
@@ -553,13 +560,47 @@ public class CheckReqDriverActivity extends BaseActivity {
 	public void onResume() {
 		// update the list from detail activity
 		super.onResume();
-	}
+		//
+		if (app.getRemovedDriverId() > 1) {
 
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+			// the user is removed in the detailed page, hence update it
+			for (int i = 0; i < mHorderDriverType.nDrivers.size(); i++) {
+				if ((Integer) mHorderDriverType.nDrivers.get(i).get(
+						CellSiteConstants.DRIVER_ID) == app
+						.getRemovedDriverId()) {
+					mHorderDriverType.nDrivers.get(i).put(
+							CellSiteConstants.IS_SELECTED_DRIVER, false);
+					break;
+				}
+			}
+			mHorderDriverType.nHorderDriverAdapter.notifyDataSetChanged();
+		} else if (app.getSelectDriverId() > 1) {
+			// 选中了该User
+			for (int i = 0; i < mHorderDriverType.nDrivers.size(); i++) {
+				if ((Integer) mHorderDriverType.nDrivers.get(i).get(
+						CellSiteConstants.DRIVER_ID) == app.getSelectDriverId()) {
+					mHorderDriverType.nDrivers.get(i).put(
+							CellSiteConstants.IS_SELECTED_DRIVER, true);
+					break;
+				}
+			}
+			if (app.getRemovedDriverId() > 1) {
+				// 从无人选中中选中
+				for (int i = 0; i < mHorderDriverType.nDrivers.size(); i++) {
+					if ((Integer) mHorderDriverType.nDrivers.get(i).get(
+							CellSiteConstants.DRIVER_ID) == app
+							.getRemovedDriverId()) {
+						mHorderDriverType.nDrivers.get(i).put(
+								CellSiteConstants.IS_SELECTED_DRIVER, false);
+						break;
+					}
+				}
 
-		Log.d(TAG, "result = " + mHorderDriverType.nDrivers.size());
-		data.getStringExtra(CellSiteConstants.DRIVER_LIST);
+			}
+			mHorderDriverType.nHorderDriverAdapter.notifyDataSetChanged();
+
+		}
+
 	}
 
 }
