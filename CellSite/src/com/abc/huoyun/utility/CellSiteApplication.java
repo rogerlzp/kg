@@ -104,6 +104,26 @@ public class CellSiteApplication extends Application {
 		this.mPortaritBitmap = mPortaritBitmap;
 	}
 
+	
+	public int removedDriverId = 0;
+	public int selectDriverId =0;
+	
+	public int getRemovedDriverId() {
+		return removedDriverId;
+	}
+
+	public void setRemovedDriverId(int removedDriverId) {
+		this.removedDriverId = removedDriverId;
+	}
+
+	public int getSelectDriverId() {
+		return selectDriverId;
+	}
+
+	public void setSelectDriverId(int selectDriverId) {
+		this.selectDriverId = selectDriverId;
+	}
+
 	@Override
 	public void onCreate() {
 		// TODO Auto-generated method stub

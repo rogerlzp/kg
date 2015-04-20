@@ -33,24 +33,30 @@ public class CheckReqDriverDetailActivity extends BaseActivity {
 	int selectedDriverId, newSelectedDriverId;
 	int currentDriverId;
 	boolean changedDriver;
-	
+	boolean isSelectedDriver;
+
 	SelectDriverTask mTask;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.driver_req_detail);
-		
+
 		Intent intent = getIntent();
 		phoneNum = intent.getStringExtra(CellSiteConstants.MOBILE);
 
 		selectedDriverId = intent.getIntExtra(
 				CellSiteConstants.SELECTED_DRIVER_ID, 1);
 		currentDriverId = intent.getIntExtra(CellSiteConstants.DRIVER_ID, 1);
-		
-		horderId = intent.getIntExtra(
-				CellSiteConstants.HORDER_ID, 1);
+
+		isSelectedDriver = intent.getBooleanExtra(
+				CellSiteConstants.IS_SELECTED_DRIVER, false);
+
+		horderId = intent.getIntExtra(CellSiteConstants.HORDER_ID, 1);
 		initView();
+
+		app.setSelectDriverId(0);
+		app.setRemovedDriverId(0);
 	}
 
 	public void initView() {
@@ -65,9 +71,9 @@ public class CheckReqDriverDetailActivity extends BaseActivity {
 		mToggleDriverBtn = (Button) findViewById(R.id.confirm_driver_btn);
 
 		if (selectedDriverId == currentDriverId) {
-			mToggleDriverBtn.setText(res.getString(R.string.confirm_driver));
-		} else {
 			mToggleDriverBtn.setText(res.getString(R.string.cancel_driver));
+		} else {
+			mToggleDriverBtn.setText(res.getString(R.string.confirm_driver));
 		}
 
 	}
@@ -92,7 +98,7 @@ public class CheckReqDriverDetailActivity extends BaseActivity {
 			ArrayList<NameValuePair> postParameters = new ArrayList<NameValuePair>();
 
 			postParameters.add(new BasicNameValuePair(
-					CellSiteConstants.DRIVER_ID, "" +currentDriverId));
+					CellSiteConstants.DRIVER_ID, "" + currentDriverId));
 			postParameters.add(new BasicNameValuePair(
 					CellSiteConstants.HORDER_ID, "" + horderId));
 			postParameters.add(new BasicNameValuePair(
@@ -116,10 +122,13 @@ public class CheckReqDriverDetailActivity extends BaseActivity {
 		protected void onPostExecute(Integer result) {
 			if (CellSiteConstants.RESULT_SUC == result) {
 				// update ui result
+				app.setRemovedDriverId(selectedDriverId);
+				app.setSelectDriverId(currentDriverId);
 				selectedDriverId = currentDriverId;
 				mToggleDriverBtn.setText(res.getString(R.string.cancel_driver));
-
 			} else if (CellSiteConstants.RESULT_CANCEL_DRIVER == result) { // 取消了司机
+				app.setRemovedDriverId(currentDriverId);
+				app.setSelectDriverId(1);
 				selectedDriverId = 1;
 				mToggleDriverBtn
 						.setText(res.getString(R.string.confirm_driver));
@@ -129,10 +138,6 @@ public class CheckReqDriverDetailActivity extends BaseActivity {
 
 	@Override
 	public void onBackPressed() {
-		Intent intent = new Intent(CheckReqDriverDetailActivity.this,
-				CheckReqDriverActivity.class);
-		intent.putExtra(CellSiteConstants.DRIVER_LIST, "hello");
-		startActivityForResult(intent, 1002);
 		finish();
 
 	}
