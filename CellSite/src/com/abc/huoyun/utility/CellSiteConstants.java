@@ -63,7 +63,7 @@ public class CellSiteConstants {
 	public static final String STATUS = "status";
 	public static final String REPLIED_DRIVERS = "replied_drivers";
 	public static final String SENT_DRIVERS = "sent_drivers";
-	public static final String REPLIED_DRIVERS_COUNT = "replied_drivers_num";
+	public static final String REPLIED_DRIVERS_COUNT = "replied_drivers_count";
 	public static final String ALREADY_REPLIED = "alaready_replied";
 	public static final String REPLIED_DRIVER_LIST = "reply_driver_list";
 	public static final String REPLIED_DRIVER_COUNT = "reply_drivers_num";

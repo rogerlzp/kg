@@ -247,7 +247,7 @@ public class RegisterByMobileActivity extends Activity {
 			}
 			if (CellSiteConstants.RESULT_SUC == result) {
 				Intent intent = new Intent(RegisterByMobileActivity.this,
-						MainActivity.class);
+						MainFragmentActivity.class);
 				// intent.putExtra(MainActivity.TURN_TO_ACTIVITY,
 				// EditUserinfoActivity.class.getSimpleName());
 				startActivity(intent);

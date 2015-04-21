@@ -43,6 +43,7 @@
                 android:textSize="21sp" />
 
             <View
+                android:id="@+id/waiting_view"
                 android:layout_width="fill_parent"
                 android:layout_height="4dp"
                 android:background="#000000" />
@@ -61,10 +62,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="35dp"
                 android:text="@string/horder_sent"
-                android:textColor="#fff"
                 android:textSize="21sp" />
 
             <View
+                android:id="@+id/sent_view"
                 android:layout_width="fill_parent"
                 android:layout_height="4dp"
                 android:background="#000000" />
@@ -83,10 +84,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="35dp"
                 android:text="@string/horder_history"
-                android:textColor="#fff"
                 android:textSize="21sp" />
 
             <View
+                android:id="@+id/history_view"
                 android:layout_width="fill_parent"
                 android:layout_height="4dp"
                 android:background="#000000" />
@@ -106,13 +107,6 @@
 
         <com.handmark.pulltorefresh.library.PullToRefreshListView
             android:id="@+id/myPartyLv"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            ptr:ptrListViewExtrasEnabled="true" />
-
-        <!--
-              com.abc.huoyun.view.PullToRefreshListView
-            android:id="@+id/myPartyLv"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
@@ -122,9 +116,8 @@
             android:fadingEdge="none"
             android:footerDividersEnabled="true"
             android:headerDividersEnabled="true"
-            android:listSelector="#d3d7d4" /
-        -->
-
+            android:listSelector="#d3d7d4"
+            ptr:ptrListViewExtrasEnabled="true" />
     </LinearLayout>
 
 </LinearLayout>

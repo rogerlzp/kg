@@ -13,6 +13,7 @@ import org.json.JSONObject;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -51,6 +52,7 @@ public class MyHorderFragment extends Fragment {
 	int mCurrRadioIdx = 0;
 
 	LinearLayout waitLL, sentLL, historyLL;
+	View waitView, sentView, historyView;
 	Button mCreateHorderBtn;
 
 	ProgressDialog mProgressdialog;
@@ -102,6 +104,10 @@ public class MyHorderFragment extends Fragment {
 		sentLL = (LinearLayout) this.getView().findViewById(R.id.sent_ll);
 		historyLL = (LinearLayout) this.getView().findViewById(R.id.history_ll);
 
+		waitView = (View) this.getView().findViewById(R.id.waiting_view);
+		sentView = (View) this.getView().findViewById(R.id.sent_view);
+		historyView = (View) this.getView().findViewById(R.id.history_view);
+
 		ChooseStatusListener mChooseStatusListener = new ChooseStatusListener(
 				this.getActivity());
 		sentLL.setOnClickListener(mChooseStatusListener);
@@ -119,11 +125,31 @@ public class MyHorderFragment extends Fragment {
 
 		@Override
 		public void onClick(View v) {
+
+			// TODO: 优化交互UI
 			if (v.getId() == R.id.waiting_ll) {
 				mCurrRadioIdx = 0;
+				waitLL.setBackgroundColor(Color.WHITE);
+				waitView.setBackgroundColor(Color.WHITE);
+				sentView.setBackgroundColor(Color.BLACK);
+				sentLL.setBackgroundColor(Color.BLACK);
+				historyView.setBackgroundColor(Color.BLACK);
+				historyLL.setBackgroundColor(Color.BLACK);
 			} else if (v.getId() == R.id.sent_ll) {
 				mCurrRadioIdx = 1;
+				waitLL.setBackgroundColor(Color.BLACK);
+				waitView.setBackgroundColor(Color.BLACK);
+				sentView.setBackgroundColor(Color.WHITE);
+				sentLL.setBackgroundColor(Color.WHITE);
+				historyView.setBackgroundColor(Color.BLACK);
+				historyLL.setBackgroundColor(Color.BLACK);
 			} else if (v.getId() == R.id.history_ll) {
+				waitLL.setBackgroundColor(Color.BLACK);
+				waitView.setBackgroundColor(Color.BLACK);
+				sentView.setBackgroundColor(Color.BLACK);
+				sentLL.setBackgroundColor(Color.BLACK);
+				historyView.setBackgroundColor(Color.WHITE);
+				historyLL.setBackgroundColor(Color.WHITE);
 				mCurrRadioIdx = 2;
 			}
 
@@ -215,10 +241,6 @@ public class MyHorderFragment extends Fragment {
 					CellSiteConstants.REPLIED_DRIVER_COUNT,
 					(Integer) aHorders.get(position).get(
 							CellSiteConstants.REPLIED_DRIVER_COUNT));
-			intent.putExtra(
-					CellSiteConstants.REPLIED_DRIVER_LIST,
-					(ArrayList<String>) aHorders.get(position).get(
-							CellSiteConstants.REPLIED_DRIVER_LIST));
 			intent.putExtra(
 					CellSiteConstants.SHIPPER_ADDRESS_NAME,
 					(String) aHorders.get(position).get(
