@@ -231,6 +231,7 @@ public class CheckReqDriverActivity extends BaseActivity {
 					.get(CellSiteConstants.ID));
 			mContactListener.setPhone((String) driverData
 					.get(CellSiteConstants.MOBILE));
+			
 
 			if ((Boolean) driverData.get(CellSiteConstants.IS_SELECTED_DRIVER)) {
 				holder.tv_select_driver.setText(res
