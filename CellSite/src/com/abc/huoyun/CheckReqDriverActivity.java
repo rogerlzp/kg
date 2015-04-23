@@ -88,7 +88,7 @@ public class CheckReqDriverActivity extends BaseActivity {
 					selectedDriverId);
 			intent.putExtra(
 					CellSiteConstants.IS_SELECTED_DRIVER,
-					(boolean) aDrivers.get(position).get(
+					(Boolean) aDrivers.get(position).get(
 							CellSiteConstants.IS_SELECTED_DRIVER));
 
 			startActivity(intent);
