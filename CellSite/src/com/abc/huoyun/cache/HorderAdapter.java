@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,11 +15,14 @@ import android.widget.TextView;
 
 import com.abc.huoyun.CheckReqDriverActivity;
 import com.abc.huoyun.R;
+import com.abc.huoyun.task.HorderChangeTask;
 import com.abc.huoyun.utility.CellSiteConstants;
 
 public class HorderAdapter extends BaseAdapter {
 	public ArrayList<HashMap<String, Object>> nHorders = new ArrayList<HashMap<String, Object>>();
 	HorderTextListener htListener = null;
+	ContactListener mContactListener;
+	HorderChangeListener mHorderChangeListener;
 	public Context ctx;
 
 	public HorderAdapter(Context context) {
@@ -46,11 +50,20 @@ public class HorderAdapter extends BaseAdapter {
 					.findViewById(R.id.shipper_time_tv);
 			holder.tv_location = (TextView) convertView
 					.findViewById(R.id.location_tv);
+			holder.tv_contact = (TextView) convertView
+					.findViewById(R.id.contact_tv);
+			holder.tv_operation = (TextView) convertView
+					.findViewById(R.id.operation_tv);
 			holder.tv_request = (TextView) convertView
 					.findViewById(R.id.req_horder_tv);
 
 			htListener = new HorderTextListener();
 			holder.tv_request.setOnClickListener(htListener);
+
+			mHorderChangeListener = new HorderChangeListener();
+
+			mContactListener = new ContactListener();
+			holder.tv_contact.setOnClickListener(mContactListener);
 
 			convertView.setTag(holder);
 
@@ -100,6 +113,25 @@ public class HorderAdapter extends BaseAdapter {
 		htListener.setSelectedDriverId((String) horderData
 				.get(CellSiteConstants.DRIVER_ID));
 
+		if ((Integer) horderData.get(CellSiteConstants.STATUS) == CellSiteConstants.HORDER_GETTING_CARGO) {
+			mContactListener.setPhone((String) horderData
+					.get(CellSiteConstants.DRIVER_MOBILE));
+			holder.tv_request.setText(ctx.getResources().getString(
+					R.string.getting_cargo));
+			holder.tv_operation.setText(ctx.getResources().getString(
+					R.string.confirm_sent_cargo));
+		} else if ((Integer) horderData.get(CellSiteConstants.STATUS) == CellSiteConstants.HORDER_SENTTING_CARGO) {
+			mContactListener.setPhone((String) horderData
+					.get(CellSiteConstants.DRIVER_MOBILE));
+			holder.tv_request.setText(ctx.getResources().getString(
+					R.string.sending_cargo));
+			holder.tv_operation.setText(ctx.getResources().getString(
+					R.string.confirmed_cargo));
+		} else {
+			holder.tv_contact.setVisibility(View.GONE);
+			holder.tv_operation.setVisibility(View.GONE);
+		}
+
 		/*
 		 * holder.tv_request.setOnClickListener(new View.OnClickListener() {
 		 * 
@@ -127,6 +159,8 @@ public class HorderAdapter extends BaseAdapter {
 		TextView tv_cargo;
 		TextView tv_truck;
 		TextView tv_request;
+		TextView tv_contact;
+		TextView tv_operation;
 		ViewGroup progress;
 	}
 
@@ -163,6 +197,35 @@ public class HorderAdapter extends BaseAdapter {
 			intent.putExtra(CellSiteConstants.HORDER_ID, this.horderId);
 			intent.putExtra(CellSiteConstants.DRIVER_ID, this.selectedDriverId);
 			ctx.startActivity(intent);
+		}
+	}
+
+	class ContactListener implements View.OnClickListener {
+		private String phoneNum;
+
+		public void setPhone(String _phoneNum) {
+			phoneNum = _phoneNum;
+		}
+
+		@Override
+		public void onClick(View v) {
+			Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:"
+					+ phoneNum));
+			ctx.startActivity(intent);
+		}
+	}
+
+	public class HorderChangeListener implements View.OnClickListener {
+		private int horderId;
+
+		public void setHorderId(int _horderId) {
+			horderId = _horderId;
+		}
+
+		@Override
+		public void onClick(View v) {
+			HorderChangeTask mHorderChangeTask = new HorderChangeTask();
+			mHorderChangeTask.execute(horderId);
 		}
 	}
 

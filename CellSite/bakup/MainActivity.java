@@ -24,6 +24,7 @@ import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
@@ -43,17 +44,24 @@ import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.abc.huoyun.CargoWeightVolumeDialog.CargoWeightVolumeInputListener;
 import com.abc.huoyun.CityDialog.InputListener;
+import com.abc.huoyun.cache.HorderType;
+import com.abc.huoyun.cache.HorderAdapter;
 import com.abc.huoyun.net.CellSiteHttpClient;
 import com.abc.huoyun.utility.CellSiteConstants;
 import com.abc.huoyun.utility.CityDBReader;
-import com.abc.huoyun.view.PullToRefreshListView;
-import com.abc.huoyun.view.PullToRefreshListView.OnRefreshListener;
+import com.abc.huoyun.view.PullToRefreshListView2;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
+import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener2;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 public class MainActivity extends BaseActivity {
 
@@ -81,6 +89,9 @@ public class MainActivity extends BaseActivity {
 	private TextView mTTtv;
 	private TextView mTLtv;
 
+	private String tmpHorderId;
+	private ArrayList<String> tmpArrayList;
+
 	CityDialog mCityDialog = null;
 
 	private ViewPager mTabPager;
@@ -102,10 +113,13 @@ public class MainActivity extends BaseActivity {
 	private UpdateTruckTask mUpdateTruckTask;
 
 	//
+
+	PullToRefreshListView mHorderLv2;
+
 	// 货单
 	PullToRefreshListView mHorderLv;
 	HorderType[] mHorderTypes = new HorderType[3];
-	ViewGroup mHorderMore;
+	ViewGroup mHorderMore, mEmptyHorderView;
 	TextView mHorderMoreTv;
 	boolean isForceRefreshHorder = false;
 	Boolean mHasExceptionHorder = false;
@@ -115,9 +129,14 @@ public class MainActivity extends BaseActivity {
 	HorderDownLoadTask mHorderDownLoadTask;
 
 	OnItemClickListener mHorderDetailListener = new OnItemClickListener() {
+
 		// / @Override
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
+
+			Toast.makeText(MainActivity.this, "have a test", Toast.LENGTH_SHORT)
+					.show();
+
 			ArrayList<HashMap<String, Object>> aHorders = mHorderTypes[mCurrRadioIdx].nHorders;
 
 			position--; // for the header view has taken the first position, so
@@ -127,7 +146,8 @@ public class MainActivity extends BaseActivity {
 				if (mHorderTypes[mCurrRadioIdx].hasShowAllHorders) {
 					mHorderMoreTv.setText(R.string.hasShowAll);
 				} else {
-					mLvHistoryPosHorder = mHorderLv.getFirstVisiblePosition();
+					// mLvHistoryPosHorder =
+					// mHorderLv.getFirstVisiblePosition();
 					mHorderDownLoadTask = new HorderDownLoadTask();
 					mHorderDownLoadTask
 							.execute(CellSiteConstants.MORE_OPERATION);
@@ -145,6 +165,14 @@ public class MainActivity extends BaseActivity {
 					CellSiteConstants.SHIPPER_USERNAME,
 					(String) aHorders.get(position).get(
 							CellSiteConstants.SHIPPER_USERNAME));
+			intent.putExtra(
+					CellSiteConstants.REPLIED_DRIVER_COUNT,
+					(Integer) aHorders.get(position).get(
+							CellSiteConstants.REPLIED_DRIVER_COUNT));
+			intent.putExtra(
+					CellSiteConstants.REPLIED_DRIVER_LIST,
+					(ArrayList<String>) aHorders.get(position).get(
+							CellSiteConstants.REPLIED_DRIVER_LIST));
 			intent.putExtra(
 					CellSiteConstants.SHIPPER_ADDRESS_NAME,
 					(String) aHorders.get(position).get(
@@ -181,7 +209,8 @@ public class MainActivity extends BaseActivity {
 
 	// 货车列表
 
-	PullToRefreshListView mTruckLv;
+	PullToRefreshListView2 mTruckLv;
+
 	ViewGroup mTruckMore;
 	TextView mTruckMoreTv;
 	Trucks mTrucks = new Trucks();
@@ -254,6 +283,7 @@ public class MainActivity extends BaseActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main_weixin);
+
 		getWindow().setSoftInputMode(
 				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
@@ -378,23 +408,49 @@ public class MainActivity extends BaseActivity {
 	public void initHorders() {
 
 		mHorderLv = (PullToRefreshListView) findViewById(R.id.myPartyLv);
+		mHorderLv.setMode(Mode.BOTH);
 
 		mHorderMore = (ViewGroup) LayoutInflater.from(MainActivity.this)
 				.inflate(R.layout.more_list, null);
 		mHorderMore.setVisibility(View.GONE);
+		mEmptyHorderView = (ViewGroup) LayoutInflater.from(MainActivity.this)
+				.inflate(R.layout.empty_horder, null);
 
 		mHorderMoreTv = (TextView) mHorderMore.getChildAt(0);
 
-		mHorderLv.addFooterView(mHorderMore);
+		// mHorderLv.getRefreshableView().addFooterView(mHorderMore);
 		mHorderLv.setOnItemClickListener(mHorderDetailListener);
 		mHorderLv.setAdapter(mHorderTypes[mCurrRadioIdx].nHorderAdapter);
 		// Set a listener to be invoked when the list should be refreshed.
-		mHorderLv.setOnRefreshListener(new OnRefreshListener() {
+		mHorderLv.setOnRefreshListener(new OnRefreshListener2<ListView>() {
 
-			public void onRefresh() {
-				// TODO Auto-generated method stub
+			@Override
+			public void onPullDownToRefresh(
+					PullToRefreshBase<ListView> refreshView) {
 				isForceRefreshHorder = true;
-				mHorderTypes[mCurrRadioIdx] = new HorderType(mCurrRadioIdx);
+
+				String label = DateUtils.formatDateTime(
+						getApplicationContext(), System.currentTimeMillis(),
+						DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE
+								| DateUtils.FORMAT_ABBREV_ALL);
+				refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);// 加上时间
+
+				// mHorderTypes[mCurrRadioIdx] = new HorderType(mCurrRadioIdx);
+
+				mHorderDownLoadTask = new HorderDownLoadTask();
+				mHorderDownLoadTask.execute(CellSiteConstants.NORMAL_OPERATION);
+			}
+
+			@Override
+			public void onPullUpToRefresh(
+					PullToRefreshBase<ListView> refreshView) {
+				isForceRefreshHorder = true;
+				// mHorderTypes[mCurrRadioIdx] = new HorderType(mCurrRadioIdx);
+				String label = DateUtils.formatDateTime(
+						getApplicationContext(), System.currentTimeMillis(),
+						DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE
+								| DateUtils.FORMAT_ABBREV_ALL);
+				refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);// 加上时间
 
 				mHorderDownLoadTask = new HorderDownLoadTask();
 				mHorderDownLoadTask.execute(CellSiteConstants.NORMAL_OPERATION);
@@ -407,6 +463,7 @@ public class MainActivity extends BaseActivity {
 	public void initTrucks() {
 
 		mTrucks = new Trucks();
+		mTruckLv = (PullToRefreshListView2) findViewById(R.id.trucks_lv);
 
 		mTruckMore = (ViewGroup) LayoutInflater.from(MainActivity.this)
 				.inflate(R.layout.more_list, null);
@@ -418,10 +475,10 @@ public class MainActivity extends BaseActivity {
 		mTruckLv.setOnItemClickListener(mTruckDetailListener);
 		mTruckLv.setAdapter(mTrucks.nTruckAdapter);
 		// Set a listener to be invoked when the list should be refreshed.
-		mTruckLv.setOnRefreshListener(new OnRefreshListener() {
 
-			public void onRefresh() {
-				// TODO Auto-generated method stub
+		mTruckLv.setOnRefreshListener(new PullToRefreshListView2.OnRefreshListener() {
+
+			public void onRefresh() { // TODO Auto-generated method stub
 				isForceRefreshTruck = true;
 				mTrucks = new Trucks();
 
@@ -457,9 +514,9 @@ public class MainActivity extends BaseActivity {
 			mCargoTypeList.add(map);
 		}
 
-		mHorderTypes[0] = new HorderType(0);
-		mHorderTypes[1] = new HorderType(1);
-		mHorderTypes[2] = new HorderType(2);
+		mHorderTypes[0] = new HorderType(0, MainActivity.this);
+		mHorderTypes[1] = new HorderType(1, MainActivity.this);
+		mHorderTypes[2] = new HorderType(2, MainActivity.this);
 	}
 
 	/**
@@ -522,7 +579,6 @@ public class MainActivity extends BaseActivity {
 							R.drawable.tab_settings_normal));
 				}
 
-				mTruckLv = (PullToRefreshListView) findViewById(R.id.trucks_lv);
 				initTrucks();
 				mTruckMore.setVisibility(View.INVISIBLE);
 				mTruckMoreTv.setText(R.string.show_more);
@@ -560,10 +616,19 @@ public class MainActivity extends BaseActivity {
 				}
 
 				initHorders();
-				mHorderMore.setVisibility(View.INVISIBLE);
-				mHorderMoreTv.setText(R.string.show_more);
+				// mHorderMore.setVisibility(View.GONE);
+				// mHorderMoreTv.setText(R.string.show_more);
+
+				if (mProgressdialog == null || !mProgressdialog.isShowing()) {
+					mProgressdialog = new ProgressDialog(MainActivity.this);
+					mProgressdialog.setMessage("正在加载数据");
+					mProgressdialog.setIndeterminate(true);
+					mProgressdialog.setCancelable(true);
+					mProgressdialog.show();
+				}
 				mHorderDownLoadTask = new HorderDownLoadTask();
 				mHorderDownLoadTask.execute(CellSiteConstants.MORE_OPERATION);
+
 				break;
 			case 3:
 				mTab4.setImageDrawable(getResources().getDrawable(
@@ -748,7 +813,8 @@ public class MainActivity extends BaseActivity {
 		mCreateHorderTask.execute(mShipperAddressCode, mShipperDate,
 				mConsigneeAddressCode, mShipperUsername, mCargoType,
 				mCargoWeight, mCargoVolume, mTruckType, mTruckLength,
-				mHorderDesc, "" + app.getUser().getId());
+				mHorderDesc, "" + app.getUser().getId(), app.getUser()
+						.getMobileNum());
 
 	}
 
@@ -757,7 +823,7 @@ public class MainActivity extends BaseActivity {
 		public Integer doInBackground(String... params) {
 			return createHorderTask(params[0], params[1], params[2], params[3],
 					params[4], params[5], params[6], params[7], params[8],
-					params[9], params[10]);
+					params[9], params[10], params[11]);
 		}
 
 		@Override
@@ -775,8 +841,13 @@ public class MainActivity extends BaseActivity {
 				String _shipperDate, String _consigneeAddressCode,
 				String _shipperUsername, String _cargoType,
 				String _cargoWeight, String _cargoVolume, String _truckType,
-				String _truckLength, String _orderDesc, String _userId) {
+				String _truckLength, String _orderDesc, String _userId,
+				String _shipperPhone) {
 
+			Log.d(TAG, "_shipperDate: " + _shipperDate + "\n_cargoType: "
+					+ _cargoType + "\n_cargoWeight: " + _cargoWeight
+					+ "\n_cargoVolume" + _cargoVolume + "\n_truckType:"
+					+ _truckType + "_truckLength: " + _truckLength);
 			ArrayList<NameValuePair> postParameters = new ArrayList<NameValuePair>();
 
 			postParameters
@@ -790,6 +861,8 @@ public class MainActivity extends BaseActivity {
 					_consigneeAddressCode));
 			postParameters.add(new BasicNameValuePair(
 					CellSiteConstants.SHIPPER_USERNAME, _shipperUsername));
+			postParameters.add(new BasicNameValuePair(
+					CellSiteConstants.SHIPPER_PHONE, _shipperPhone));
 			postParameters.add(new BasicNameValuePair(
 					CellSiteConstants.CARGO_TYPE, _cargoType));
 			postParameters.add(new BasicNameValuePair(
@@ -1078,117 +1151,6 @@ public class MainActivity extends BaseActivity {
 
 	}
 
-	public class HorderType {
-		int nIndex;
-		public ArrayList<HashMap<String, Object>> nHorders;
-		public HorderAdapter nHorderAdapter;
-
-		int nDisplayNum;
-		Boolean hasShowAllHorders;
-
-		public HorderType(int aIndex) {
-			nHorders = new ArrayList<HashMap<String, Object>>();
-			hasShowAllHorders = false;
-			nIndex = aIndex;
-			nHorderAdapter = new HorderAdapter(MainActivity.this);
-		}
-
-	}
-
-	class HorderAdapter extends BaseAdapter {
-		public ArrayList<HashMap<String, Object>> nHorders = new ArrayList<HashMap<String, Object>>();
-
-		public HorderAdapter(Context context) {
-		}
-
-		public void setHorders(ArrayList<HashMap<String, Object>> horders) {
-			nHorders = horders;
-		}
-
-		public View getView(int position, View convertView, ViewGroup parent) {
-			ViewHolder holder;
-
-			if (convertView == null) {
-				convertView = (ViewGroup) LayoutInflater
-						.from(MainActivity.this).inflate(R.layout.horder_item,
-								null);
-				holder = new ViewHolder();
-				holder.tv_horder_id = (TextView) convertView
-						.findViewById(R.id.horder_id_tv);
-				holder.tv_truck = (TextView) convertView
-						.findViewById(R.id.truck_tv);
-				holder.tv_cargo = (TextView) convertView
-						.findViewById(R.id.cargo_tv);
-				holder.tv_time = (TextView) convertView
-						.findViewById(R.id.shipper_time_tv);
-				holder.tv_location = (TextView) convertView
-						.findViewById(R.id.location_tv);
-
-				convertView.setTag(holder);
-
-			} else {
-				holder = (ViewHolder) convertView.getTag();
-			}
-
-			HashMap<String, Object> horderData = nHorders.get(position);
-
-			holder.tv_horder_id.setText((String) horderData.get("horder_id"));
-			holder.tv_location.setText((String) horderData
-					.get(CellSiteConstants.SHIPPER_ADDRESS_NAME)
-					+ "~"
-					+ (String) horderData
-							.get(CellSiteConstants.CONSIGNEE_ADDRESS_NAME));
-
-			holder.tv_truck.setText(CellSiteConstants.TruckTypes[Integer
-					.valueOf((String) horderData
-							.get(CellSiteConstants.TRUCK_TYPE)) - 1]);
-
-			int cargoVolumeValue = Integer.valueOf((String) horderData
-					.get(CellSiteConstants.CARGO_VOLUME));
-			int cargoWeightValue = Integer.valueOf((String) horderData
-					.get(CellSiteConstants.CARGO_WEIGHT));
-			String cargoVolume = cargoVolumeValue != 0 ? cargoVolumeValue + "方"
-					: "";
-			String cargoWeight = cargoWeightValue != 0 ? cargoWeightValue + "吨"
-					: "";
-			holder.tv_cargo.setText((CellSiteConstants.CargoTypes[Integer
-					.valueOf((String) horderData
-							.get(CellSiteConstants.CARGO_TYPE)) - 1])
-					+ cargoWeight + cargoVolume);
-
-			holder.tv_time.setText((String) horderData
-					.get(CellSiteConstants.SHIPPER_DATE));
-
-			return convertView;
-		}
-
-		private class ViewHolder {
-			ImageView organizerPortrait;
-			TextView tv_location;
-			TextView tv_horder_id;
-			TextView tv_distance;
-			TextView tv_time;
-			TextView tv_cargo;
-			TextView tv_truck;
-			ViewGroup progress;
-		}
-
-		public int getCount() {
-			// TODO Auto-generated method stub
-			return nHorders.size();
-		}
-
-		public Object getItem(int position) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		public long getItemId(int position) {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-	}
-
 	// 查看 horder
 
 	class HorderDownLoadTask extends AsyncTask<Integer, String, String> {
@@ -1258,8 +1220,10 @@ public class MainActivity extends BaseActivity {
 				mHorderTypes[mCurrRadioIdx].nHorderAdapter
 						.notifyDataSetChanged();
 				mHorderMore.setVisibility(View.VISIBLE);
+				mHorderLv.setEmptyView(mEmptyHorderView);
 
 				if (mHorderTypes[mCurrRadioIdx].hasShowAllHorders) {
+
 					mHorderMoreTv.setText(R.string.hasShowAll);
 				} else {
 					mHorderMoreTv.setText(R.string.show_more);
@@ -1276,15 +1240,15 @@ public class MainActivity extends BaseActivity {
 						+ app.getHorderTypeCache(mCurrRadioIdx).nHorders.size());
 
 				if (mHorderTypes[mCurrRadioIdx].nDisplayNum > 0) {
-					Log.d(TAG, "set more tv to visible" );
-					
+					Log.d(TAG, "set more tv to visible");
+
 					mHorderMoreTv.setVisibility(View.VISIBLE);
 				} else {
-					Log.d(TAG, "set more tv to INVISIBLE" );
+					Log.d(TAG, "set more tv to INVISIBLE");
 					mHorderMoreTv.setVisibility(View.INVISIBLE);
 				}
 				if (mLvHistoryPosHorder > 0) {
-					mHorderLv.setSelectionFromTop(mLvHistoryPosHorder, 0);
+					// mHorderLv.setSelectionFromTop(mLvHistoryPosHorder, 0);
 					mLvHistoryPosHorder = 0;
 				}
 
@@ -1357,6 +1321,8 @@ public class MainActivity extends BaseActivity {
 										.getString(CellSiteConstants.SHIPPER_USERNAME));
 						mHorder.put(CellSiteConstants.HORDER_ID,
 								(resultObj).getString(CellSiteConstants.ID));
+						mHorder.put(CellSiteConstants.DRIVER_ID, (resultObj)
+								.getString(CellSiteConstants.DRIVER_ID));
 
 						CityDBReader dbReader = new CityDBReader(
 								this.getApplicationContext());
@@ -1388,6 +1354,33 @@ public class MainActivity extends BaseActivity {
 								CellSiteConstants.SHIPPER_USERNAME,
 								(resultObj)
 										.getString(CellSiteConstants.SHIPPER_USERNAME));
+
+						JSONArray repliedDriversObj = null;
+						try {
+
+							repliedDriversObj = resultObj
+									.getJSONArray(CellSiteConstants.REPLIED_DRIVERS);
+							ArrayList<String> driverIdList = new ArrayList<String>();
+							if (repliedDriversObj != null) {
+
+								for (int j = 0; j < repliedDriversObj.length(); j++) {
+
+									driverIdList
+											.add(((JSONObject) repliedDriversObj
+													.get(i))
+													.getString(CellSiteConstants.DRIVER_ID));
+								}
+								mHorder.put(
+										CellSiteConstants.REPLIED_DRIVER_LIST,
+										driverIdList);
+								mHorder.put(
+										CellSiteConstants.REPLIED_DRIVER_COUNT,
+										repliedDriversObj.length());
+							}
+
+						} catch (Exception e) {
+
+						}
 
 						// TODO :
 
@@ -1529,7 +1522,7 @@ public class MainActivity extends BaseActivity {
 
 				} else {
 
-					mTrucks = app.getTrucksCache();
+					//mTrucks = app.getTrucksCache();
 
 				}
 
@@ -1570,7 +1563,7 @@ public class MainActivity extends BaseActivity {
 
 				mTrucks.nDisplayNum = mTrucks.nTrucks.size();
 
-				app.setTrucksCache(mTrucks);
+			//	app.setTrucksCache(mTrucks);
 
 				if (mTrucks.nDisplayNum > 0) {
 					mTruckMoreTv.setVisibility(View.VISIBLE);
@@ -1641,8 +1634,8 @@ public class MainActivity extends BaseActivity {
 								resultObj.getString(CellSiteConstants.ID));
 						mTruck.put(CellSiteConstants.TRUCK_LENGTH, (resultObj)
 								.getString(CellSiteConstants.TRUCK_LENGTH));
-						mTruck.put(CellSiteConstants.TRUCK_TYPE,
-								(resultObj).getString("ttype_id"));
+						mTruck.put(CellSiteConstants.TRUCK_TYPE, (resultObj)
+								.getString(CellSiteConstants.TRUCK_TYPE));
 						mTruck.put(
 								CellSiteConstants.TRUCK_IMAGE_URL,
 								(resultObj)
@@ -1676,4 +1669,7 @@ public class MainActivity extends BaseActivity {
 
 	}
 
+	public void gotoCreateHorder(View v) {
+		mTabPager.setCurrentItem(0);
+	}
 }

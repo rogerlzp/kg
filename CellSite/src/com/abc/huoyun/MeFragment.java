@@ -30,7 +30,7 @@ public class MeFragment extends Fragment {
 	String portraitImageUrl;
 	private ImageView avatarIv;
 	ImageLoad mImageLoad;
-	
+
 	CellSiteApplication app;
 
 	public static MeFragment newInstance() {
@@ -41,9 +41,9 @@ public class MeFragment extends Fragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		
-		app = (CellSiteApplication)this.getActivity().getApplication();
-		
+
+		app = (CellSiteApplication) this.getActivity().getApplication();
+
 		mImageLoad = new ImageLoad(this.getActivity());
 		mNameTv = (TextView) this.getActivity().findViewById(R.id.name_tv);
 		mMobileTv = (TextView) this.getActivity().findViewById(R.id.mobile_tv);
@@ -117,11 +117,11 @@ public class MeFragment extends Fragment {
 
 		String name = app.getUser().getName();
 		String phoneNum = app.getUser().getMobileNum();
-		if (!name.equals(name_current)) {
+		if (name != null && !name.equals(name_current)) {
 			name_current = name;
 			mNameTv.setText(name);
 		}
-		if (!phoneNum.equals(phoneNum_current)) {
+		if (phoneNum != null && !phoneNum.equals(phoneNum_current)) {
 			phoneNum_current = phoneNum;
 			mMobileTv.setText(phoneNum);
 		}

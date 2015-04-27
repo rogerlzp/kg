@@ -24,8 +24,9 @@ import android.util.Log;
 import android.util.SparseArray;
 
 import com.abc.huoyun.CheckReqDriverActivity.HorderDriverType;
-import com.abc.huoyun.cache.HorderType;
+import com.abc.huoyun.MyHorderFragment.HorderType;
 import com.abc.huoyun.cache.TruckType;
+import com.abc.huoyun.cache.WorkHorderType;
 import com.abc.huoyun.model.Truck;
 import com.abc.huoyun.model.User;
 
@@ -72,12 +73,14 @@ public class CellSiteApplication extends Application {
 
 	// HorderType cache
 	HorderType[] gHorderType = new HorderType[3];
+	// HorderType cache
+	WorkHorderType[] gWorkHorderType = new WorkHorderType[3];
 
 	// Truck Cache
 	static TruckType gTruckTypes;// = new Trucks();
 
-//	HorderDriverType[] gHorderDriverType = new HorderDriverType[10];
-	SparseArray<HorderDriverType> gHorderDriverType  = new SparseArray<HorderDriverType> ();;
+	// HorderDriverType[] gHorderDriverType = new HorderDriverType[10];
+	SparseArray<HorderDriverType> gHorderDriverType = new SparseArray<HorderDriverType>();;
 
 	// getDriverTypeCache
 
@@ -104,10 +107,9 @@ public class CellSiteApplication extends Application {
 		this.mPortaritBitmap = mPortaritBitmap;
 	}
 
-	
 	public int removedDriverId = 0;
-	public int selectDriverId =0;
-	
+	public int selectDriverId = 0;
+
 	public int getRemovedDriverId() {
 		return removedDriverId;
 	}
@@ -135,7 +137,7 @@ public class CellSiteApplication extends Application {
 		initCacheFileDir();
 
 		initUser();
-		
+
 		initConfig();
 
 		// initial the unnecessarily-started component
@@ -195,16 +197,19 @@ public class CellSiteApplication extends Application {
 	void initConfig() // TODO: change later
 	{
 
-		SharedPreferences sp = getSharedPreferences(CellSiteConstants.CELLSITE_CONFIG, MODE_PRIVATE);
+		SharedPreferences sp = getSharedPreferences(
+				CellSiteConstants.CELLSITE_CONFIG, MODE_PRIVATE);
 		isFirstLogin = sp.getBoolean(CellSiteConstants.FIRST_LOGIN_FLAG, true);
-		
-//		if (bFirstLogin) {
-//			Editor sharedUser = getSharedPreferences(CellSiteConstants.CELLSITE_CONFIG, MODE_PRIVATE).edit();
-//			sharedUser.putBoolean(CellSiteConstants.FIRST_LOGIN_FLAG, true);
-//			sharedUser.putLong(CellSiteConstants.NOTIFY_INTERNAL, CheckNotificationService.DELAY);
-//			sharedUser.commit();
-//		}
-		 
+
+		// if (bFirstLogin) {
+		// Editor sharedUser =
+		// getSharedPreferences(CellSiteConstants.CELLSITE_CONFIG,
+		// MODE_PRIVATE).edit();
+		// sharedUser.putBoolean(CellSiteConstants.FIRST_LOGIN_FLAG, true);
+		// sharedUser.putLong(CellSiteConstants.NOTIFY_INTERNAL,
+		// CheckNotificationService.DELAY);
+		// sharedUser.commit();
+		// }
 
 	}
 
@@ -431,6 +436,15 @@ public class CellSiteApplication extends Application {
 
 	public HorderType getHorderTypeCache(int aIndex) {
 		return gHorderType[aIndex];
+	}
+
+	public void setWorkHorderTypeCache(WorkHorderType aHorderTypeCache,
+			int aIndex) {
+		gWorkHorderType[aIndex] = aHorderTypeCache;
+	}
+
+	public WorkHorderType getWorkHorderTypeCache(int aIndex) {
+		return gWorkHorderType[aIndex];
 	}
 
 	public static void setTrucksCache(TruckType aTrucksCache) {

@@ -80,6 +80,7 @@ public class CellSiteConstants {
 	public static final String IS_SELECTED_DRIVER = "is_selected_driver";
 	public static final String SELECTED_DRIVER_ID = "selected_driver_id";
 	public static final String DRIVER_LIST = "driver_list";
+	public static final String DRIVER_MOBILE = "driver_phone";
 
 	// RESULT
 	// login
@@ -129,6 +130,13 @@ public class CellSiteConstants {
 	public static final int HORDER_WAITING = 0;
 	public static final int HORDER_SENT = 1;
 	public static final int HORDER_COMPLEMENTED = 2;
+
+	public static final int HORDER_GETTING_CARGO = 1;
+	public static final int HORDER_SENTTING_CARGO = 2;
+	public static final int HORDER_ARRIVED_CARGO = 3;
+	public static final int HORDER_CONFIRMED_CARGO = 4;
+	public static final int HORDER_COMMENTED_CARGO = 5;
+
 	// horder page count
 	public static final int PAGE_COUNT = 3;
 
@@ -155,11 +163,21 @@ public class CellSiteConstants {
 
 	// get my horder url
 	public static final String GET_MY_HORDER_URL = HOST + "getMyHorder/fmobile";
+	public static final String GET_MY_WORKING_HORDER_URL = HOST
+			+ "getMyWorkingHorder/fmobile";
+	
+	public static final String  GET_MY_WORKED_HORDER_URL = HOST
+			+ "getMyWorkedHorder/fmobile";
+
 	public static final String GET_HORDER_URL = HOST + "getHorder/fmobile";
 
 	public final static String USER_IMAGE_URL = HOST + "";// TOOD
 
 	public final static String USER_QUERY_URL = HOST + "getUserProfile/fmobile";
+
+	// update horder
+	public final static String GET_HUOZHU_UPDATE_HORDER_URL = HOST
+			+ "updateHorderStatus/fmobile";
 	// 用户注册
 	public static final String REGISTER_URL = HOST + "register/fmobile";
 

@@ -8,11 +8,11 @@
     android:paddingRight="10dp" >
 
     <TextView
-        android:id="@+id/req_horder_tv"
+        android:id="@+id/horder_status_tv"
         android:layout_width="match_parent"
         android:layout_height="25dp"
         android:textColor="#000000"
-        android:textSize="12sp" />
+        android:textSize="15dp" />
 
     <View
         android:layout_width="match_parent"
@@ -24,7 +24,7 @@
         android:layout_width="171dp"
         android:layout_height="18dp"
         android:textColor="#000000"
-        android:textSize="12sp"
+        android:textSize="12dp"
         android:visibility="gone" >
     </TextView>
 
@@ -33,7 +33,7 @@
         android:layout_width="match_parent"
         android:layout_height="18dp"
         android:textColor="#000000"
-        android:textSize="12sp" />
+        android:textSize="12dp" />
 
     <TextView
         android:id="@+id/shipper_time_tv"
@@ -48,14 +48,14 @@
         android:layout_width="match_parent"
         android:layout_height="18dp"
         android:textColor="#000000"
-        android:textSize="12sp" />
+        android:textSize="12dp" />
 
     <TextView
         android:id="@+id/truck_tv"
         android:layout_width="match_parent"
         android:layout_height="18dp"
         android:textColor="#000000"
-        android:textSize="12sp" />
+        android:textSize="12dp" />
 
     <View
         android:layout_width="match_parent"
@@ -76,18 +76,23 @@
             android:gravity="center"
             android:text="@string/contact"
             android:textColor="#000000"
-            android:textSize="12sp" />
+            android:textSize="12dp" />
 
         <TextView
-            android:id="@+id/operation_tv"
+            android:id="@+id/replyHorder_tv"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_weight="1"
-            android:clickable="true"
             android:gravity="center"
+               android:clickable="true"
             android:text="@string/horder_arrive"
             android:textColor="#000000"
-            android:textSize="12sp" />
+            android:textSize="12dp" />
     </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="#000000" />
 
 </LinearLayout>

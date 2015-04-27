@@ -1,14 +1,12 @@
 package com.abc.huoyun.utility;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.abc.huoyun.dao.DBHelper;
-import com.abc.huoyun.view.CityListItem;
+
+
 
 public class CityDBReader {
 
@@ -44,15 +42,21 @@ public class CityDBReader {
 
 	public String getProvinceByCode(String pCode) {
 		String name = null;
+		Cursor cursor = null;
 		try {
 			String sql = "select * from province where code=" + pCode;
-			Cursor cursor = db.rawQuery(sql, null);
+			cursor = db.rawQuery(sql, null);
 			while (cursor.moveToNext()) {
 				byte bytes[] = cursor.getBlob(2);
 				name = new String(bytes, "gbk");
 			}
 
 		} catch (Exception e) {
+		} finally {
+			if (cursor != null && !cursor.isClosed()) {
+				cursor.close();
+
+			}
 		}
 
 		return name;
@@ -61,28 +65,40 @@ public class CityDBReader {
 
 	public String getCityByCode(String cCode) {
 		String name = null;
+		Cursor cursor = null;
 		try {
 			String sql = "select * from city where code=" + cCode;
-			Cursor cursor = db.rawQuery(sql, null);
+			cursor = db.rawQuery(sql, null);
 			while (cursor.moveToNext()) {
 				byte bytes[] = cursor.getBlob(2);
 				name = new String(bytes, "gbk");
 			}
 		} catch (Exception e) {
+		} finally {
+			if (cursor != null && !cursor.isClosed()) {
+				cursor.close();
+
+			}
 		}
 		return name;
 	}
 
 	public String getDistrictByCode(String dCode) {
 		String name = null;
+		Cursor cursor = null;
 		try {
 			String sql = "select * from district where code=" + dCode;
-			Cursor cursor = db.rawQuery(sql, null);
+			cursor = db.rawQuery(sql, null);
 			while (cursor.moveToNext()) {
 				byte bytes[] = cursor.getBlob(2);
 				name = new String(bytes, "gbk");
 			}
 		} catch (Exception e) {
+		} finally {
+			if (cursor != null && !cursor.isClosed()) {
+				cursor.close();
+
+			}
 		}
 
 		return name;
