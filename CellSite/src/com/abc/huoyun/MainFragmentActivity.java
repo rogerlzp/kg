@@ -26,13 +26,13 @@ public class MainFragmentActivity extends FragmentActivity {
 	private ImageView mTabImg;//
 	private ImageView mTab1, mTab2, mTab3, mTab4;
 	private int zero = 0;
-	private int currIndex = 1;
+	private int currIndex = 0;
 	private int one;
 	private int two;
 	private int three;
 
 	public static final String TAG = MainFragmentActivity.class.getSimpleName();
-	
+
 	public CellSiteApplication app;
 
 	@Override
@@ -62,8 +62,8 @@ public class MainFragmentActivity extends FragmentActivity {
 		one = displayWidth / 4;
 		two = one * 2;
 		three = one * 3;
-		
-		app = (CellSiteApplication)this.getApplication();
+
+		app = (CellSiteApplication) this.getApplication();
 	}
 
 	public static class MyFragmentPageAdapter extends FragmentStatePagerAdapter {
@@ -89,7 +89,7 @@ public class MainFragmentActivity extends FragmentActivity {
 			case 3:
 				return MeFragment.newInstance();
 			default:
-				return null;
+				return HorderCreateFragment.newInstance();
 			}
 		}
 

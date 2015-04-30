@@ -49,7 +49,10 @@ public class TruckFragment extends Fragment {
 
 	TruckDownLoadTask mTruckDownLoadTask;
 	ProgressDialog mProgressdialogTruck;
-	
+
+	private boolean isViewShown;
+	private boolean isPrepared;
+
 	CellSiteApplication app;
 
 	public static TruckFragment newInstance() {
@@ -60,8 +63,8 @@ public class TruckFragment extends Fragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		app =  (CellSiteApplication)this.getActivity().getApplication();
-		initTrucks();
+		app = (CellSiteApplication) this.getActivity().getApplication();
+		//initTrucks();
 	}
 
 	@Override
@@ -69,8 +72,35 @@ public class TruckFragment extends Fragment {
 			Bundle savedInstanceState) {
 		View view = inflater
 				.inflate(R.layout.main_tab_trucks, container, false);
+		isPrepared = true;
+		lazyLoad();
 
 		return view;
+	}
+
+	@Override
+	public void setUserVisibleHint(boolean isVisibleToUser) {
+		super.setUserVisibleHint(isVisibleToUser);
+
+		if (this.getView() != null) {
+
+			isViewShown = true;
+
+			lazyLoad();
+
+			// 相当于Fragment的onResume
+		} else {
+			isViewShown = false;
+			// 相当于Fragment的onPause
+		}
+	}
+
+	public void lazyLoad() {
+		if (isViewShown && isPrepared) {
+			Log.d(TAG, "lazyLoad");
+			initTrucks();
+
+		}
 	}
 
 	public void initTrucks() {

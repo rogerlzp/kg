@@ -52,6 +52,8 @@ public class MyHorderFragment extends Fragment {
 	Boolean mHasExceptionHorder = false;
 	int mLvHistoryPosHorder = 0;
 	int mCurrRadioIdx = 0;
+	private boolean isViewShown;
+	private boolean isPrepared;
 
 	LinearLayout waitLL, sentLL, historyLL;
 	View waitView, sentView, historyView;
@@ -70,24 +72,12 @@ public class MyHorderFragment extends Fragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
+
 		app = (CellSiteApplication) this.getActivity().getApplication();
 
 		mHorderTypes[0] = new HorderType(0, this.getActivity());
 		mHorderTypes[1] = new HorderType(1, this.getActivity());
 		mHorderTypes[2] = new HorderType(2, this.getActivity());
-
-		initHorders();
-
-		if (mProgressdialog == null || !mProgressdialog.isShowing()) {
-			mProgressdialog = new ProgressDialog(this.getActivity());
-			mProgressdialog.setMessage("正在加载数据");
-			mProgressdialog.setIndeterminate(true);
-			mProgressdialog.setCancelable(true);
-			mProgressdialog.show();
-		}
-
-		initChooseHorders();
-
 	}
 
 	@Override
@@ -95,6 +85,8 @@ public class MyHorderFragment extends Fragment {
 			Bundle savedInstanceState) {
 		View view = inflater
 				.inflate(R.layout.main_tab_horder, container, false);
+		isPrepared = true;
+		lazyLoad();
 
 		return view;
 	}
@@ -883,6 +875,40 @@ public class MyHorderFragment extends Fragment {
 
 		public HorderAdapter getAdapter() {
 			return this.nHorderAdapter;
+		}
+	}
+
+	@Override
+	public void setUserVisibleHint(boolean isVisibleToUser) {
+		super.setUserVisibleHint(isVisibleToUser);
+
+		if (this.getView() != null) {
+
+			isViewShown = true;
+
+			lazyLoad();
+
+			// 相当于Fragment的onResume
+		} else {
+			isViewShown = false;
+			// 相当于Fragment的onPause
+		}
+	}
+
+	public void lazyLoad() {
+		if (isViewShown && isPrepared) {
+			Log.d(TAG, "lazyLoad");
+			initHorders();
+
+			if (mProgressdialog == null || !mProgressdialog.isShowing()) {
+				mProgressdialog = new ProgressDialog(this.getActivity());
+				mProgressdialog.setMessage("正在加载数据");
+				mProgressdialog.setIndeterminate(true);
+				mProgressdialog.setCancelable(true);
+				mProgressdialog.show();
+			}
+
+			initChooseHorders();
 		}
 	}
 }

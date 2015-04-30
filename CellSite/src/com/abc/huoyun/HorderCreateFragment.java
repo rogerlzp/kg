@@ -29,6 +29,7 @@ import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.abc.huoyun.CargoWeightVolumeDialog.CargoWeightVolumeInputListener;
 import com.abc.huoyun.CityDialog.InputListener;
@@ -73,21 +74,20 @@ public class HorderCreateFragment extends Fragment {
 	CityChooseListener cityChooseListener2;
 
 	private Button mCreateBtn;
-	
+
 	CellSiteApplication app;
 
 	public static HorderCreateFragment newInstance() {
 		HorderCreateFragment mHCFragment = new HorderCreateFragment();
 		return mHCFragment;
 	}
-	
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		
-		app = (CellSiteApplication)this.getActivity().getApplication();
-	
+
+		app = (CellSiteApplication) this.getActivity().getApplication();
+
 		initData();
 		initView();
 		initChooseAddress();
@@ -97,7 +97,6 @@ public class HorderCreateFragment extends Fragment {
 		initChooseTruckType();
 		initChooseTruckLength();
 		initCreateHorder();
-		
 
 	}
 
@@ -111,7 +110,6 @@ public class HorderCreateFragment extends Fragment {
 		mCreateBtn.requestFocus();
 		mHDet = ((EditText) this.getView().findViewById(
 				R.id.horder_description_et));
-	
 
 		mSAtv = (TextView) this.getView().findViewById(R.id.shipper_address_tv);
 		mCAtv = (TextView) this.getView().findViewById(
@@ -156,27 +154,59 @@ public class HorderCreateFragment extends Fragment {
 		View view = inflater.inflate(R.layout.main_tab_horder_create,
 				container, false);
 
-		this.getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+		this.getActivity()
+				.getWindow()
+				.setSoftInputMode(
+						WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 		return view;
 	}
 
 	public void initCreateHorder() {
+		CreateHorderListener mCreateHorderListener = new CreateHorderListener(
+				this.getActivity());
 
-		mCreateBtn.setOnClickListener(new View.OnClickListener() {
+		mCreateBtn.setOnClickListener(mCreateHorderListener);
 
-			@Override
-			public void onClick(View v) {
+	}
 
+	class CreateHorderListener implements View.OnClickListener {
+		private Context context;
+
+		public CreateHorderListener(Context _ctx) {
+			this.context = _ctx;
+		}
+
+		@Override
+		public void onClick(View v) {
+			// 添加判断，如果为空，则弹出提示
+			if ((mShipperAddressCode != null) && (mShipperDate != null)
+					&& (mConsigneeAddressCode != null) && (mCargoType != null)
+					&& (mTruckType != null)) {
 				CreateHorderTask mCreateHorderTask = new CreateHorderTask();
-
 				mCreateHorderTask.execute(mShipperAddressCode, mShipperDate,
 						mConsigneeAddressCode, mShipperUsername, mCargoType,
 						mCargoWeight, mCargoVolume, mTruckType, mTruckLength,
 						mHDet.getText().toString().trim(), ""
-								+ app.getUser().getId(),
-						app.getUser().getMobileNum());
+								+ app.getUser().getId(), app.getUser()
+								.getMobileNum());
+			} else if (mShipperAddressCode == null) {
+				Toast.makeText(this.context, "发货地址不能为空", Toast.LENGTH_SHORT)
+						.show();
+			} else if (mConsigneeAddressCode == null) {
+				Toast.makeText(this.context, "收货地址不能为空", Toast.LENGTH_SHORT)
+						.show();
+			} else if (mShipperDate == null) {
+				Toast.makeText(this.context, "发送时间不能为空", Toast.LENGTH_SHORT)
+						.show();
+			} else if (mCargoType == null) {
+				Toast.makeText(this.context, "货物种类不能为空", Toast.LENGTH_SHORT)
+						.show();
+			} else if (mTruckType == null) {
+				Toast.makeText(this.context, "货车种类不能为空", Toast.LENGTH_SHORT)
+						.show();
 			}
-		});
+
+		}
 
 	}
 

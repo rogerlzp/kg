@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -33,6 +34,9 @@ public class MeFragment extends Fragment {
 
 	CellSiteApplication app;
 
+	private boolean isViewShown;
+	private boolean isPrepared;
+
 	public static MeFragment newInstance() {
 		MeFragment mHCFragment = new MeFragment();
 		return mHCFragment;
@@ -44,40 +48,65 @@ public class MeFragment extends Fragment {
 
 		app = (CellSiteApplication) this.getActivity().getApplication();
 
-		mImageLoad = new ImageLoad(this.getActivity());
-		mNameTv = (TextView) this.getActivity().findViewById(R.id.name_tv);
-		mMobileTv = (TextView) this.getActivity().findViewById(R.id.mobile_tv);
-		settingRL = (RelativeLayout) this.getView().findViewById(R.id.setting);
-		SettingListener mSettingListener = new SettingListener(
-				this.getActivity());
+	}
 
-		settingRL.setOnClickListener(mSettingListener);
+	@Override
+	public void setUserVisibleHint(boolean isVisibleToUser) {
+		super.setUserVisibleHint(isVisibleToUser);
 
-		avatarIv = (ImageView) this.getActivity()
-				.findViewById(R.id.portrait_iv);
+		if (this.getView() != null) {
 
-		name_current = app.getUser().getName();
-		if (name_current != null) {
-			mNameTv.setText(name_current);
+			isViewShown = true;
+
+			lazyLoad();
+
+			// 相当于Fragment的onResume
+		} else {
+			isViewShown = false;
+			// 相当于Fragment的onPause
 		}
-		phoneNum_current = app.getUser().getMobileNum();
-		if (app.getUser().getMobileNum() != null) {
-			mMobileTv.setText(phoneNum_current);
-		}
-		shipperUserRL = (RelativeLayout) this.getActivity().findViewById(
-				R.id.shipper_user);
-		shipperUserRL.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				startActivity(new Intent(getActivity(), PersonalActivity.class));
+	}
 
+	public void lazyLoad() {
+		if (isViewShown && isPrepared) {
+			Log.d(TAG, "lazyLoad");
+			mImageLoad = new ImageLoad(this.getActivity());
+			mNameTv = (TextView) this.getActivity().findViewById(R.id.name_tv);
+			mMobileTv = (TextView) this.getActivity().findViewById(
+					R.id.mobile_tv);
+			settingRL = (RelativeLayout) this.getView().findViewById(
+					R.id.setting);
+			SettingListener mSettingListener = new SettingListener(
+					this.getActivity());
+
+			settingRL.setOnClickListener(mSettingListener);
+
+			avatarIv = (ImageView) this.getActivity().findViewById(
+					R.id.portrait_iv);
+
+			name_current = app.getUser().getName();
+			if (name_current != null) {
+				mNameTv.setText(name_current);
 			}
-		});
-		portraitImageUrl = app.getUser().profileImageUrl;
-		if (portraitImageUrl != null && !portraitImageUrl.equals("")) {
-			showUserAvator(avatarIv, portraitImageUrl);
-		}
+			phoneNum_current = app.getUser().getMobileNum();
+			if (app.getUser().getMobileNum() != null) {
+				mMobileTv.setText(phoneNum_current);
+			}
+			shipperUserRL = (RelativeLayout) this.getActivity().findViewById(
+					R.id.shipper_user);
+			shipperUserRL.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					startActivity(new Intent(getActivity(),
+							PersonalActivity.class));
 
+				}
+			});
+			portraitImageUrl = app.getUser().profileImageUrl;
+			if (portraitImageUrl != null && !portraitImageUrl.equals("")) {
+				showUserAvator(avatarIv, portraitImageUrl);
+			}
+		}
 	}
 
 	class SettingListener implements View.OnClickListener {
@@ -115,20 +144,22 @@ public class MeFragment extends Fragment {
 	public void onResume() {
 		super.onResume();
 
-		String name = app.getUser().getName();
-		String phoneNum = app.getUser().getMobileNum();
-		if (name != null && !name.equals(name_current)) {
-			name_current = name;
-			mNameTv.setText(name);
-		}
-		if (phoneNum != null && !phoneNum.equals(phoneNum_current)) {
-			phoneNum_current = phoneNum;
-			mMobileTv.setText(phoneNum);
-		}
+		if (isViewShown && isPrepared) {
+			String name = app.getUser().getName();
+			String phoneNum = app.getUser().getMobileNum();
+			if (name != null && !name.equals(name_current)) {
+				name_current = name;
+				mNameTv.setText(name);
+			}
+			if (phoneNum != null && !phoneNum.equals(phoneNum_current)) {
+				phoneNum_current = phoneNum;
+				mMobileTv.setText(phoneNum);
+			}
 
-		String profileImageTmp = app.getUser().profileImageUrl;
-		if (!profileImageTmp.equals(portraitImageUrl)) {
-			showUserAvator(avatarIv, profileImageTmp);
+			String profileImageTmp = app.getUser().profileImageUrl;
+			if (!profileImageTmp.equals(portraitImageUrl)) {
+				showUserAvator(avatarIv, profileImageTmp);
+			}
 		}
 
 	}
@@ -137,6 +168,8 @@ public class MeFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.main_tab_me, container, false);
+		isPrepared = true;
+		lazyLoad();
 
 		return view;
 	}
