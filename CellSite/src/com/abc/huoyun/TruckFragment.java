@@ -73,7 +73,7 @@ public class TruckFragment extends Fragment {
 		View view = inflater
 				.inflate(R.layout.main_tab_trucks, container, false);
 		isPrepared = true;
-		lazyLoad();
+		//lazyLoad();
 
 		return view;
 	}
@@ -154,7 +154,7 @@ public class TruckFragment extends Fragment {
 							| DateUtils.FORMAT_ABBREV_ALL);
 			refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);// 加上时间
 			mTruckDownLoadTask = new TruckDownLoadTask();
-			mTruckDownLoadTask.execute(CellSiteConstants.NORMAL_OPERATION);
+			mTruckDownLoadTask.execute(CellSiteConstants.MORE_OPERATION);
 		}
 
 		@Override
@@ -166,7 +166,7 @@ public class TruckFragment extends Fragment {
 							| DateUtils.FORMAT_ABBREV_ALL);
 			refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);// 加上时间
 			mTruckDownLoadTask = new TruckDownLoadTask();
-			mTruckDownLoadTask.execute(CellSiteConstants.NORMAL_OPERATION);
+			mTruckDownLoadTask.execute(CellSiteConstants.MORE_OPERATION);
 		}
 	}
 

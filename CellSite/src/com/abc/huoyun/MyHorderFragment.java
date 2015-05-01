@@ -86,7 +86,7 @@ public class MyHorderFragment extends Fragment {
 		View view = inflater
 				.inflate(R.layout.main_tab_horder, container, false);
 		isPrepared = true;
-		lazyLoad();
+		//lazyLoad();
 
 		return view;
 	}
@@ -553,7 +553,7 @@ public class MyHorderFragment extends Fragment {
 			// mHorderTypes[mCurrRadioIdx] = new HorderType(mCurrRadioIdx);
 
 			mHorderDownLoadTask = new HorderDownLoadTask();
-			mHorderDownLoadTask.execute(CellSiteConstants.NORMAL_OPERATION);
+			mHorderDownLoadTask.execute(CellSiteConstants.MORE_OPERATION);
 		}
 
 		@Override
@@ -567,7 +567,7 @@ public class MyHorderFragment extends Fragment {
 			refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);// 加上时间
 
 			mHorderDownLoadTask = new HorderDownLoadTask();
-			mHorderDownLoadTask.execute(CellSiteConstants.NORMAL_OPERATION);
+			mHorderDownLoadTask.execute(CellSiteConstants.MORE_OPERATION);
 		}
 	}
 
