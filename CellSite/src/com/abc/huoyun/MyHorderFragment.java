@@ -86,7 +86,7 @@ public class MyHorderFragment extends Fragment {
 		View view = inflater
 				.inflate(R.layout.main_tab_horder, container, false);
 		isPrepared = true;
-		//lazyLoad();
+		// lazyLoad();
 
 		return view;
 	}
@@ -441,11 +441,11 @@ public class MyHorderFragment extends Fragment {
 						mHorder.put(
 								CellSiteConstants.SHIPPER_ADDRESS_NAME,
 								dbReader.getNameFromCode((resultObj)
-										.getString(CellSiteConstants.SHIPPER_ADDRESS_CODE_IN)));
+										.getString(CellSiteConstants.SHIPPER_ADDRESS_CODE)));
 						mHorder.put(
 								CellSiteConstants.CONSIGNEE_ADDRESS_NAME,
 								dbReader.getNameFromCode((resultObj)
-										.getString(CellSiteConstants.CONSIGNEE_ADDRESS_CODE2)));
+										.getString(CellSiteConstants.CONSIGNEE_ADDRESS_CODE)));
 						mHorder.put(CellSiteConstants.CARGO_TYPE, (resultObj)
 								.getString(CellSiteConstants.CARGO_TYPE));
 						mHorder.put(CellSiteConstants.CARGO_WEIGHT, (resultObj)
@@ -512,6 +512,22 @@ public class MyHorderFragment extends Fragment {
 
 							}
 						} else if (mCurrRadioIdx == 2) {
+
+							JSONObject driverObj = null;
+							try {
+								driverObj = resultObj
+										.getJSONObject(CellSiteConstants.DRIVER);
+								if (driverObj != null) {
+									mHorder.put(
+											CellSiteConstants.DRIVER_MOBILE,
+											(String) driverObj
+													.get(CellSiteConstants.MOBILE));
+								}
+
+							} catch (Exception e) {
+
+							}
+
 						}
 
 						// TODO :
@@ -744,7 +760,16 @@ public class MyHorderFragment extends Fragment {
 				mContactListener.setPhone((String) horderData
 						.get(CellSiteConstants.DRIVER_MOBILE));
 				holder.tv_request.setText(ctx.getResources().getString(
-						R.string.sending_cargo));
+						R.string.sent_cargo));
+				holder.tv_operation.setText(ctx.getResources().getString(
+						R.string.horder_arrive_confirm));
+				mHorderChangeListener.setHorderId((String) horderData
+						.get(CellSiteConstants.HORDER_ID));
+			} else if ((Integer) horderData.get(CellSiteConstants.STATUS) == CellSiteConstants.HORDER_CONFIRMED_CARGO) {
+				mContactListener.setPhone((String) horderData
+						.get(CellSiteConstants.DRIVER_MOBILE));
+				holder.tv_request.setText(ctx.getResources().getString(
+						R.string.confirmed_cargo));
 				holder.tv_operation.setText(ctx.getResources().getString(
 						R.string.horder_arrive_confirm));
 				mHorderChangeListener.setHorderId((String) horderData

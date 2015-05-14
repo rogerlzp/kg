@@ -25,6 +25,7 @@ public class MeFragment extends Fragment {
 	private TextView mMobileTv;
 	private RelativeLayout shipperUserRL;
 	private RelativeLayout settingRL;
+	private RelativeLayout verifyRL;
 
 	String name_current;
 	String phoneNum_current;
@@ -38,27 +39,111 @@ public class MeFragment extends Fragment {
 	private boolean isPrepared;
 
 	public static MeFragment newInstance() {
+		Log.d(TAG, "newInstance");
 		MeFragment mHCFragment = new MeFragment();
+
 		return mHCFragment;
 	}
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
+		Log.d(TAG, "onActivityCreated");
 		super.onActivityCreated(savedInstanceState);
 
 		app = (CellSiteApplication) this.getActivity().getApplication();
+		lazyLoad();
+	}
+
+	class SettingListener implements View.OnClickListener {
+		private Context ctx;
+
+		public SettingListener(Context _ctx) {
+			this.ctx = _ctx;
+		}
+
+		@Override
+		public void onClick(View v) {
+			Intent intent = new Intent(ctx, SettingActivity.class);
+			startActivity(intent);
+		}
+	}
+
+	class VerifyListener implements View.OnClickListener {
+		private Context ctx;
+
+		public VerifyListener(Context _ctx) {
+			this.ctx = _ctx;
+		}
+
+		@Override
+		public void onClick(View v) {
+			Intent intent = new Intent(ctx, VerifyActivity.class);
+			startActivity(intent);
+		}
+	}
+
+	private void showUserAvator(ImageView imageView, String avatar) {
+		imageView.setTag(avatar);
+		Bitmap bitmap = mImageLoad.loadImage(imageView, avatar,
+				new ImageDownloadedCallBack() {
+					@Override
+					public void onImageDownloaded(ImageView imageView,
+							Bitmap bitmap) {
+
+						imageView.setImageBitmap(bitmap);
+
+					}
+				});
+		if (bitmap != null) {
+			imageView.setImageBitmap(bitmap);
+		}
+	}
+
+	@Override
+	public void onResume() {
+		Log.d(TAG, "onResume");
+		super.onResume();
+		lazyLoad();
+
+		if (isViewShown && isPrepared) {
+			String name = app.getUser().getName();
+			String phoneNum = app.getUser().getMobileNum();
+			if (name != null && !name.equals(name_current)) {
+				name_current = name;
+				mNameTv.setText(name);
+			}
+			if (phoneNum != null && !phoneNum.equals(phoneNum_current)) {
+				phoneNum_current = phoneNum;
+				mMobileTv.setText(phoneNum);
+			}
+
+			String profileImageTmp = app.getUser().profileImageUrl;
+			if (profileImageTmp != null
+					&& !profileImageTmp.equals(portraitImageUrl)) {
+				showUserAvator(avatarIv, profileImageTmp);
+			}
+		}
 
 	}
 
 	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		Log.d(TAG, "onCreateView");
+		View view = inflater.inflate(R.layout.main_tab_me, container, false);
+		isPrepared = true;
+
+		return view;
+	}
+
+	@Override
 	public void setUserVisibleHint(boolean isVisibleToUser) {
+		Log.d(TAG, "setUserVisibleHint");
 		super.setUserVisibleHint(isVisibleToUser);
 
-		if (this.getView() != null) {
+		if (isVisibleToUser) {
 
 			isViewShown = true;
-
-			lazyLoad();
 
 			// 相当于Fragment的onResume
 		} else {
@@ -73,9 +158,9 @@ public class MeFragment extends Fragment {
 			mImageLoad = new ImageLoad(this.getActivity());
 			mNameTv = (TextView) this.getActivity().findViewById(R.id.name_tv);
 			mMobileTv = (TextView) this.getActivity().findViewById(
-					R.id.mobile_tv);
-			settingRL = (RelativeLayout) this.getView().findViewById(
-					R.id.setting);
+					R.id.me_mobile_tv);
+			settingRL = (RelativeLayout) this.getActivity().findViewById(
+					R.id.me_setting_rl);
 			SettingListener mSettingListener = new SettingListener(
 					this.getActivity());
 
@@ -83,6 +168,16 @@ public class MeFragment extends Fragment {
 
 			avatarIv = (ImageView) this.getActivity().findViewById(
 					R.id.portrait_iv);
+			verifyRL = (RelativeLayout) this.getActivity().findViewById(
+					R.id.verify_rl);
+			verifyRL.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					startActivity(new Intent(getActivity(),
+							VerifyActivity.class));
+
+				}
+			});
 
 			name_current = app.getUser().getName();
 			if (name_current != null) {
@@ -109,68 +204,4 @@ public class MeFragment extends Fragment {
 		}
 	}
 
-	class SettingListener implements View.OnClickListener {
-		private Context ctx;
-
-		public SettingListener(Context _ctx) {
-			this.ctx = _ctx;
-		}
-
-		@Override
-		public void onClick(View v) {
-			Intent intent = new Intent(ctx, SettingActivity.class);
-			startActivity(intent);
-		}
-	}
-
-	private void showUserAvator(ImageView imageView, String avatar) {
-		imageView.setTag(avatar);
-		Bitmap bitmap = mImageLoad.loadImage(imageView, avatar,
-				new ImageDownloadedCallBack() {
-					@Override
-					public void onImageDownloaded(ImageView imageView,
-							Bitmap bitmap) {
-
-						imageView.setImageBitmap(bitmap);
-
-					}
-				});
-		if (bitmap != null) {
-			imageView.setImageBitmap(bitmap);
-		}
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
-
-		if (isViewShown && isPrepared) {
-			String name = app.getUser().getName();
-			String phoneNum = app.getUser().getMobileNum();
-			if (name != null && !name.equals(name_current)) {
-				name_current = name;
-				mNameTv.setText(name);
-			}
-			if (phoneNum != null && !phoneNum.equals(phoneNum_current)) {
-				phoneNum_current = phoneNum;
-				mMobileTv.setText(phoneNum);
-			}
-
-			String profileImageTmp = app.getUser().profileImageUrl;
-			if (!profileImageTmp.equals(portraitImageUrl)) {
-				showUserAvator(avatarIv, profileImageTmp);
-			}
-		}
-
-	}
-
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.main_tab_me, container, false);
-		isPrepared = true;
-		lazyLoad();
-
-		return view;
-	}
 }

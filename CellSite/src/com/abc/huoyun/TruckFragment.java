@@ -212,8 +212,8 @@ public class TruckFragment extends Fragment {
 					CellSiteConstants.TRUCK_LICENSE_URL,
 					(String) aTrucks.get(position).get(
 							CellSiteConstants.TRUCK_LICENSE_URL));
-			intent.putExtra(CellSiteConstants.TRUCK_LICENSE, (String) aTrucks
-					.get(position).get(CellSiteConstants.TRUCK_LICENSE));
+			intent.putExtra(CellSiteConstants.TRUCK_PLATE, (String) aTrucks
+					.get(position).get(CellSiteConstants.TRUCK_PLATE));
 			intent.putExtra(
 					CellSiteConstants.TRUCK_MOBILE_NUM,
 					(String) aTrucks.get(position).get(
@@ -367,8 +367,8 @@ public class TruckFragment extends Fragment {
 								CellSiteConstants.TRUCK_LICENSE_URL,
 								(resultObj)
 										.getString(CellSiteConstants.TRUCK_LICENSE_URL));
-						mTruck.put(CellSiteConstants.TRUCK_LICENSE, (resultObj)
-								.getString(CellSiteConstants.TRUCK_LICENSE));
+						mTruck.put(CellSiteConstants.TRUCK_PLATE, (resultObj)
+								.getString(CellSiteConstants.TRUCK_PLATE));
 						mTruck.put(
 								CellSiteConstants.TRUCK_MOBILE_NUM,
 								(resultObj)

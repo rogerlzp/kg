@@ -12,6 +12,7 @@ public class CellSiteConstants {
 	public static final int DRIVER_ROLE_ID = 1;
 	public static final int HUOZHU_ROLE_ID = 2;
 
+	public static final String USER_AUDIT_STATUS = "ua_status";
 	public static final String USER = "user";
 	public static final String DRIVER = "driver";
 	public static final String PROFILE = "profile";
@@ -19,9 +20,21 @@ public class CellSiteConstants {
 	public static final String USER_ID = "user_id";
 	public static final String ROLE_ID = "role_id";
 	public static final String USER_PORTARIT = "portrait";
-	public static final String PROFILE_IMAGE_URL = "profile_image_url";
-	public static final String DRIVER_LICENSE_URL = "driver_license_image_url";
-	public static final String IDENTITY_CARD_IMAGE_URL = "identity_card_image_url";
+	public static final String PROFILE_IMAGE_URL = "p_image";
+	public static final String DRIVER_LICENSE_URL = "dl_image";
+	public static final String IDENTITY_FRONT_IMAGE_URL = "id_fimage";
+	public static final String IDENTITY_BACK_IMAGE_URL = "id_bimage";
+
+	public static final int USER_STATUS_NEW = 0; // 新建状态
+	public static final int USER_STATUS_IN_AUDIT = 1; // 提交审核状态
+	public static final int USER_STATUS_AUDIT_PASS = 2; // 审核通过
+	public static final int USER_STATUS_AUDIT_FAIL = 3; // 审核失败
+
+	public static final int TRUCK_STATUS_NEW = 0; // 新建状态
+	public static final int TRUCK_STATUS_IN_AUDIT = 1; // 提交审核状态
+	public static final int TRUCK_STATUS_AUDIT_PASS = 2; // 审核通过
+	public static final int TRUCK_STATUS_AUDIT_FAIL = 3; // 审核失败
+
 	// public static final String DRIVER_LICENSE_URL =
 	// "driver_license_image_url";
 
@@ -40,21 +53,20 @@ public class CellSiteConstants {
 	public static final String TRUCK_LENGTH = "truck_length";
 	public static final String TRUCK_WEIGHT = "trcuk_weight";
 	public static final String TRUCK_STATUS = "truck_status";
-	public static final String TRUCK_AUDIT_STATUS = "truck_audit_status";
-	public static final String TRUCK_LICENSE_URL = "tl_image_url";
-	public static final String TRUCK_MOBILE_NUM = "tmobile_num";
-	public static final String TRUCK_IMAGE_URL = "tphoto_image_url";
-	public static final String TRUCK_LICENSE = "truck_license";
+	public static final String TRUCK_AUDIT_STATUS = "ta_status";
+	public static final String TRUCK_LICENSE_URL = "tl_image";
+	public static final String TRUCK_MOBILE_NUM = "truck_mobile";
+	public static final String TRUCK_IMAGE_URL = "tp_image";
+	public static final String TRUCK_PLATE = "truck_plate";
+	public static final String TRUCK_PLAN_DESCRIPTION = "tplan_desc";
 
 	public static final String SHIPPER_ADDRESS_CODE = "sa_code";
 	public static final String SHIPPER_PHONE = "shipper_phone";
-	public static final String SHIPPER_ADDRESS_CODE_IN = "shipper_address_code";
 	public static final String SHIPPER_ADDRESS_NAME = "shipper_address_name";
 
 	public static final String SHIPPER_DATE = "shipper_date";
 	public static final String SHIPPER_USERNAME = "shipper_username";
 	public static final String CONSIGNEE_ADDRESS_CODE = "ca_code";
-	public static final String CONSIGNEE_ADDRESS_CODE2 = "consignee_address_code";
 	public static final String CONSIGNEE_ADDRESS_NAME = "consignee_address_name";
 	public static final String HORDER_DESCRIPTION = "horder_desc";
 
@@ -75,6 +87,8 @@ public class CellSiteConstants {
 	// RESULT
 	public final static String LOGIN_RESULT = "login_result";
 	public final static String FORGET_PASSWORD_RESULT = "forget_password_result";
+
+	public static final String IS_DRIVER_REPLIED = "is_driver_replied";
 
 	// driver
 	public static final String IS_SELECTED_DRIVER = "is_selected_driver";
@@ -113,12 +127,24 @@ public class CellSiteConstants {
 	public static final int IDENTITY_IMAGE_HEIGHT = 200;
 	public static final int IDENTITY_IMAGE_WIDTH = 360;
 
-	public final static int TAKE_IDENTITY = 1012;
-	public final static int PICK_IDENTITY = 1013;
-	public final static int TAKE_DRIVER_LICENSE = 1014;
-	public final static int PICK_DRIVER_LICENSE = 1015;
-	public final static int TAKE_USER_PORTRAIT = 1016;
-	public final static int PICK_USER_PORTRAIT = 1017;
+	public final static int TAKE_FRONT_IDENTITY = 1012;
+	public final static int PICK_FRONT_IDENTITY = 1013;
+	public final static int TAKE_BACK_IDENTITY = 1014;
+	public final static int PICK_BACK_IDENTITY = 1015;
+
+	public final static int TAKE_DRIVER_LICENSE = 1016;
+	public final static int PICK_DRIVER_LICENSE = 1017;
+	public final static int TAKE_USER_PORTRAIT = 1018;
+	public final static int PICK_USER_PORTRAIT = 1019;
+
+	public final static int TAKE_VEHICLE_LICENSE = 1020;
+	public final static int PICK_VEHICLE_LICENSE = 1021;
+
+	public final static int TAKE_VEHICLE_PHOTO = 1022;
+	public final static int PICK_VEHICLE_PHOTO = 1023;
+
+	public final static int TAKE_ACTION = 1024;
+	public final static int PICK_ACTION = 1025;
 
 	public final static String IMAGE_URL = "image_url";
 
@@ -135,8 +161,6 @@ public class CellSiteConstants {
 	public static final int HORDER_SENTTING_CARGO = 2;
 	public static final int HORDER_ARRIVED_CARGO = 3;
 	public static final int HORDER_CONFIRMED_CARGO = 4;
-	public static final int HORDER_COMMENTED_CARGO = 5;
-
 	// horder page count
 	public static final int PAGE_COUNT = 3;
 
@@ -165,19 +189,29 @@ public class CellSiteConstants {
 	public static final String GET_MY_HORDER_URL = HOST + "getMyHorder/fmobile";
 	public static final String GET_MY_WORKING_HORDER_URL = HOST
 			+ "getMyWorkingHorder/fmobile";
-	
-	public static final String  GET_MY_WORKED_HORDER_URL = HOST
-			+ "getMyWorkedHorder/fmobile";
 
+	public static final String GET_MY_WORKED_HORDER_URL = HOST
+			+ "getMyWorkedHorder/fmobile";
 	public static final String GET_HORDER_URL = HOST + "getHorder/fmobile";
 
 	public final static String USER_IMAGE_URL = HOST + "";// TOOD
 
 	public final static String USER_QUERY_URL = HOST + "getUserProfile/fmobile";
-
+	
 	// update horder
-	public final static String GET_HUOZHU_UPDATE_HORDER_URL = HOST
-			+ "updateHorderStatus/fmobile";
+		public final static String GET_HUOZHU_UPDATE_HORDER_URL = HOST
+				+ "updateHorderStatus/fmobile";
+
+	// 车主工作状态中的Horder
+	public final static String GET_DRIVER_WORKING_HORDER_URL = HOST
+			+ "getDriverWorkingHorder/fmobile";
+	public final static String GET_DRIVER_WORKED_HORDER_URL = HOST
+			+ "getDriverWorkedHorder/fmobile";
+
+	// 车主修改horder 状态为到达
+	public final static String HODER_ARRIVED_URL = HOST
+			+ "setHorderArrivedByDriver/fmobile";
+
 	// 用户注册
 	public static final String REGISTER_URL = HOST + "register/fmobile";
 
@@ -190,8 +224,12 @@ public class CellSiteConstants {
 	public static final String TOGGLE_DRIVER_FOR_HORDER_URL = HOST
 			+ "toggleDriverForHorder/fmobile";
 
-	public final static String UPDATE_USER_IDENTITY_URL = HOST
-			+ "updateUserIdentityImage/fmobile";
+	public final static String UPDATE_USER_IDENTITY_FRONT_URL = HOST
+			+ "updateUserIdentityFrontImage/fmobile";
+
+	public final static String UPDATE_USER_IDENTITY_BACK_URL = HOST
+			+ "updateUserIdentityBackImage/fmobile";
+
 	// driver     注册
 	// public static final String REGISTER_URL = HOST +
 	// "registerDriver/fmobile";
@@ -203,23 +241,43 @@ public class CellSiteConstants {
 
 	public static final String GET_TRUCKS_URL = HOST + "getTrucks/fmobile";
 
+	// truck plan
+	public static final String CREATE_TRUCK_PLAN_URL = HOST
+			+ "createTruckPlan/fmobile";
+
 	public static final String CREATE_HORDER_URL = HOST
 			+ "createHorder/fmobile";
+
+	public static final String GET_NEW_HORDER_URL = HOST
+			+ "getNewHorder/fmobile";
 	// public final static String REGISTER_RESULT = "register_result";
+
+	public static final String REQUEST_HODER_URL = HOST
+			+ "requestHorder/fmobile";
 
 	public static final String DELETE_HORDER_URL = HOST
 			+ "deleteHorder/fmobile";
 
 	// TRUCK
 	public static final String UPDATE_TRUCK_URL = HOST + "updateTruck/fmobile";
+
+	public static final String VERIFY_TRUCK_URL = HOST + "verifyTruck/fmobile";
+
 	public final static int REGISTER_USER_EXISTS = 10001; // bad username
 	public final static int REGISTER_INTEGRATION_ERROR = 10003; // bad username
+
+	public final static String UPDATE_VEHICLE_LICENSE_URL = HOST
+			+ "updateVehicleLicenseImage/fmobile";
+
+	public final static String UPDATE_VEHICLE_PHOTO_URL = HOST
+			+ "updateVehiclePhotoImage/fmobile";
 
 	public static final String VERIFY_PHONE_NUMBE_URL = "http://m.youhubst.com/phone_cz.php?phone=";
 
 	public final static String RESULT_CODE = "result_code";
 	public final static int RESULT_SUC = 0;
 	public final static int RESULT_CANCEL_DRIVER = 1; // 取消了选择司机
+	public final static int RESULT_REMOVE = 1;
 	public final static String RESULT = "result";
 
 	// Truck 类型
@@ -230,6 +288,10 @@ public class CellSiteConstants {
 	public final static String[] TruckLengths = { "4.2米", "5.2米", "5.8米",
 			"6.2米", "6.5米", "6.8米", "7.2米", "8米", "9.6米", "12米", "13米",
 			"13.5米", "15米", "16.5米", "17.5米", "18.5米", "20米", "22米", "24米" };
+
+	public final static String[] TruckWeights = { "1吨", "2吨", "3吨", "4吨", "5吨",
+			"6吨", "7吨", "8吨", "9吨", "10吨", "11吨", "12吨", "13吨", "14吨", "15吨",
+			"16吨", "17吨", "18吨", "19吨" };
 
 	public final static String[] CargoTypes = { "设备", "矿产", "建材", "食品", "蔬菜",
 			"生鲜", "药品", "化工", "木材", "家畜", "纺织品", "日用品", "电子电器", "农副产品", "其它类型" };

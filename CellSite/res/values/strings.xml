@@ -90,7 +90,7 @@
     <string name="horder_arrive">送达</string>
     <string name="horder_arrive_confirm">确认签收</string>
     <string name="getting_cargo">取货中</string>
-        <string name="confirm_sent_cargo">取货确认</string>
+    <string name="confirm_sent_cargo">取货确认</string>
     <string name="sending_cargo">送货中</string>
     <string name="sent_cargo">已送达</string>
     <string name="confirmed_cargo">已签收</string>
@@ -131,6 +131,8 @@
     <string name="updateName">更改名字</string>
     <string name="updateNameHint">你的姓名</string>
     <string name="check_version">检查更新</string>
+    <string name="verify">认证</string>
+    <string name="logistics">物流圈</string>
 
     <!-- Setting  start -->
 
@@ -188,5 +190,19 @@
     <string name="driver_detail">司机详情</string>
 
     <!-- choose driver end -->
+
+
+    <!-- verify Begin -->
+    <string name="user_verify">个人资料</string>
+    <string name="truck_verify">车辆资料</string>
+    <string name="identify_front">身份证正面</string>
+    <string name="identify_back">身份证反面</string>
+    <string name="driver_license">驾驶证照片</string>
+    <string name="truck_info">车辆信息</string>
+    <string name="license_plate">车牌号码</string>
+    <string name="vehicle_license">行驶证</string>
+    <string name="vehicle_photo">车头照片</string>
+    <string name="note_bitian">注：＊为必填项</string>
+    <string name="submit">提交</string>
 
 </resources>

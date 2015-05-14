@@ -151,6 +151,7 @@ public class CellSiteApplication extends Application {
 		mBitmapDecodeOption.inTempStorage = new byte[MEMORY_FOR_BITMAP_DECODE];
 	}
 
+	
 	public void initUser() {
 		SharedPreferences sp = getSharedPreferences(
 				CellSiteConstants.CELLSITE_CONFIG, MODE_PRIVATE);
@@ -160,8 +161,23 @@ public class CellSiteApplication extends Application {
 		String name = sp.getString(CellSiteConstants.NAME, null);
 		String profileImageUrl = sp.getString(
 				CellSiteConstants.PROFILE_IMAGE_URL, null);
-		String identityImageUrl = sp.getString(
-				CellSiteConstants.IDENTITY_CARD_IMAGE_URL, null);
+		String identityFrontImageUrl = sp.getString(
+				CellSiteConstants.IDENTITY_FRONT_IMAGE_URL, null);
+		String identityBackImageUrl = sp.getString(
+				CellSiteConstants.IDENTITY_BACK_IMAGE_URL, null);
+
+		int userAuditStatus = sp.getInt(CellSiteConstants.USER_AUDIT_STATUS, 0);
+
+		// for driver only
+		String dirverLicenseImageUrl = sp.getString(
+				CellSiteConstants.DRIVER_LICENSE_URL, null);
+		String vehicleLicenseImageUrl = sp.getString(
+				CellSiteConstants.TRUCK_LICENSE_URL, null);
+		String vehiclePhotoImageUrl = sp.getString(
+				CellSiteConstants.TRUCK_IMAGE_URL, null);
+		int truckId = sp.getInt(CellSiteConstants.TRUCK_ID, 0);
+		int truckAuditStatus = sp.getInt(CellSiteConstants.TRUCK_AUDIT_STATUS,
+				0);
 
 		user = new User();
 		if (username != null) {
@@ -173,7 +189,17 @@ public class CellSiteApplication extends Application {
 			user.setMobileNum(mobileNum);
 			user.setProfileImageUrl(profileImageUrl);
 			user.setName(name);
-			user.setIdentityImageUrl(identityImageUrl);
+			user.setIdentityFrontImageUrl(identityFrontImageUrl);
+			user.setIdentityBackImageUrl(identityBackImageUrl);
+
+			user.setUserAuditStatus(userAuditStatus);
+			// set user audit status
+
+			if (dirverLicenseImageUrl != null) {
+				user.setDriverLicenseImageUrl(dirverLicenseImageUrl);
+			}
+
+			
 			this.attachUser(user);
 		} else { // visitor mode
 			user.setId(User.INVALID_ID);
@@ -181,8 +207,8 @@ public class CellSiteApplication extends Application {
 		}
 
 		return;
-	}
-
+	} 
+	
 	boolean checkSDCardAvaible() {
 		if (Environment.getExternalStorageState().equals(
 				Environment.MEDIA_MOUNTED)) {

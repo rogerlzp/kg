@@ -168,22 +168,11 @@ public class LoginActivity extends BaseActivity {
 				int resultCode = Integer.parseInt(response.get(
 						CellSiteConstants.RESULT_CODE).toString());
 				if (resultCode == CellSiteConstants.RESULT_SUC) {
-					// store the username and password in sharedPreference
-
 					User normalUser = new User();
 					normalUser.setUsername(_username);
 
 					JSONObject userJson = response
 							.getJSONObject(CellSiteConstants.USER);
-					JSONObject profileJson = null;
-					try {
-						profileJson = response
-								.getJSONObject(CellSiteConstants.PROFILE);
-					} catch (JSONException e) {
-						Log.d(TAG, " The profile is not inited");
-						profileJson = null;
-						// response.get(CellSiteConstants.PROFILE);
-					}
 
 					normalUser.setId(userJson.getLong(CellSiteConstants.ID));
 					normalUser.setMobileNum(_username);
@@ -192,38 +181,64 @@ public class LoginActivity extends BaseActivity {
 							CellSiteConstants.CELLSITE_CONFIG, MODE_PRIVATE)
 							.edit();
 
-					if (profileJson != null) {
-						if (profileJson.getString(CellSiteConstants.NAME) != null) {
-							normalUser.setName(profileJson
-									.getString(CellSiteConstants.NAME));
-						}
-						sharedUser.putString(CellSiteConstants.NAME,
-								profileJson.getString(CellSiteConstants.NAME));
+					if (userJson.getString(CellSiteConstants.NAME) != null
+							&& !userJson.getString(CellSiteConstants.NAME)
+									.equals("null")) {
+						normalUser.setName(userJson
+								.getString(CellSiteConstants.NAME));
+					}
+					sharedUser.putString(CellSiteConstants.NAME,
+							userJson.getString(CellSiteConstants.NAME));
 
-						if (profileJson
-								.get(CellSiteConstants.PROFILE_IMAGE_URL) == null) {
-							Log.d(TAG, "portrait is NULL");
-						} else {
-							sharedUser
-									.putString(
-											CellSiteConstants.PROFILE_IMAGE_URL,
-											profileJson
-													.getString(CellSiteConstants.PROFILE_IMAGE_URL));
-							normalUser
-									.setProfileImageUrl(profileJson
-											.getString(CellSiteConstants.PROFILE_IMAGE_URL));
-						}
-						if (profileJson
-								.get(CellSiteConstants.IDENTITY_CARD_IMAGE_URL) != null) {
-							sharedUser
-									.putString(
-											CellSiteConstants.IDENTITY_CARD_IMAGE_URL,
-											profileJson
-													.getString(CellSiteConstants.IDENTITY_CARD_IMAGE_URL));
-							normalUser
-									.setIdentityImageUrl(profileJson
-											.getString(CellSiteConstants.IDENTITY_CARD_IMAGE_URL));
-						}
+					if (userJson.get(CellSiteConstants.PROFILE_IMAGE_URL) != null) {
+
+						sharedUser
+								.putString(
+										CellSiteConstants.PROFILE_IMAGE_URL,
+										userJson.getString(CellSiteConstants.PROFILE_IMAGE_URL));
+						normalUser
+								.setProfileImageUrl(userJson
+										.getString(CellSiteConstants.PROFILE_IMAGE_URL));
+					}
+					if (userJson
+							.get(CellSiteConstants.IDENTITY_FRONT_IMAGE_URL) != null) {
+						sharedUser
+								.putString(
+										CellSiteConstants.IDENTITY_FRONT_IMAGE_URL,
+										userJson.getString(CellSiteConstants.IDENTITY_FRONT_IMAGE_URL));
+						normalUser
+								.setIdentityFrontImageUrl(userJson
+										.getString(CellSiteConstants.IDENTITY_FRONT_IMAGE_URL));
+					}
+					if (userJson.get(CellSiteConstants.IDENTITY_BACK_IMAGE_URL) != null) {
+						sharedUser
+								.putString(
+										CellSiteConstants.IDENTITY_BACK_IMAGE_URL,
+										userJson.getString(CellSiteConstants.IDENTITY_BACK_IMAGE_URL));
+						normalUser
+								.setIdentityBackImageUrl(userJson
+										.getString(CellSiteConstants.IDENTITY_BACK_IMAGE_URL));
+					}
+
+					if (userJson.get(CellSiteConstants.DRIVER_LICENSE_URL) != null) {
+
+						sharedUser
+								.putString(
+										CellSiteConstants.DRIVER_LICENSE_URL,
+										userJson.getString(CellSiteConstants.DRIVER_LICENSE_URL));
+						normalUser
+								.setDriverLicenseImageUrl(userJson
+										.getString(CellSiteConstants.DRIVER_LICENSE_URL));
+					}
+
+					if (Integer.parseInt((String) userJson
+							.getString(CellSiteConstants.USER_AUDIT_STATUS)) != 0) {
+						int userAuditStatus = Integer
+								.parseInt((String) userJson
+										.getString(CellSiteConstants.USER_AUDIT_STATUS));
+						sharedUser.putInt(CellSiteConstants.USER_AUDIT_STATUS,
+								userAuditStatus);
+						normalUser.setUserAuditStatus(userAuditStatus);
 					}
 
 					sharedUser
