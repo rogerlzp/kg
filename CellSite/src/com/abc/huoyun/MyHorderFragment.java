@@ -54,6 +54,7 @@ public class MyHorderFragment extends Fragment {
 	int mCurrRadioIdx = 0;
 	private boolean isViewShown;
 	private boolean isPrepared;
+	private boolean isVisible;
 
 	LinearLayout waitLL, sentLL, historyLL;
 	View waitView, sentView, historyView;
@@ -78,6 +79,8 @@ public class MyHorderFragment extends Fragment {
 		mHorderTypes[0] = new HorderType(0, this.getActivity());
 		mHorderTypes[1] = new HorderType(1, this.getActivity());
 		mHorderTypes[2] = new HorderType(2, this.getActivity());
+
+		lazyLoad();
 	}
 
 	@Override
@@ -89,6 +92,45 @@ public class MyHorderFragment extends Fragment {
 		// lazyLoad();
 
 		return view;
+	}
+
+	@Override
+	public void setUserVisibleHint(boolean isVisibleToUser) {
+		super.setUserVisibleHint(isVisibleToUser);
+		if (isVisibleToUser) {
+			isVisible = true;
+		} else {
+			isVisible = false;
+		}
+
+		if (this.getView() != null) {
+
+			isViewShown = true;
+
+			lazyLoad();
+
+			// 相当于Fragment的onResume
+		} else {
+			isViewShown = false;
+			// 相当于Fragment的onPause
+		}
+	}
+
+	public void lazyLoad() {
+		if (isVisible && isPrepared) {
+			Log.d(TAG, "lazyLoad");
+			initHorders();
+
+			if (mProgressdialog == null || !mProgressdialog.isShowing()) {
+				mProgressdialog = new ProgressDialog(this.getActivity());
+				mProgressdialog.setMessage("正在加载数据");
+				mProgressdialog.setIndeterminate(true);
+				mProgressdialog.setCancelable(true);
+				mProgressdialog.show();
+			}
+
+			initChooseHorders();
+		}
 	}
 
 	// get horders
@@ -361,8 +403,8 @@ public class MyHorderFragment extends Fragment {
 
 		postParameters.add(new BasicNameValuePair(CellSiteConstants.USER_ID, ""
 				+ app.getUser().getId()));
-		postParameters.add(new BasicNameValuePair(
-				CellSiteConstants.HORDER_STATUS, "" + horder_status));
+	//	postParameters.add(new BasicNameValuePair(
+	//			CellSiteConstants.HORDER_STATUS, "" + horder_status));
 
 		postParameters.add(new BasicNameValuePair("offset", String
 				.valueOf(mHorderTypes[mCurrRadioIdx].nDisplayNum)));
@@ -602,14 +644,15 @@ public class MyHorderFragment extends Fragment {
 
 	}
 
-	public class HorderChangeTask extends AsyncTask<String, String, String> {
-		static final String TAG_FAIL = "FAIL";
-		static final String TAG_SUCC = "SUCCESS";
+	public class HorderChangeTask extends AsyncTask<String, String, Integer> {
 
-		List<HashMap<String, String>> nTmpNewsData;
+		String horderId;
+		int inputStatus;
 
 		@Override
-		protected String doInBackground(String... params) {
+		protected Integer doInBackground(String... params) {
+			horderId = params[0];
+			inputStatus = Integer.parseInt(params[1]);
 			ArrayList<NameValuePair> postParameters = new ArrayList<NameValuePair>();
 
 			postParameters.add(new BasicNameValuePair(
@@ -624,20 +667,47 @@ public class MyHorderFragment extends Fragment {
 						postParameters);
 
 				int resultCode = response.getInt(CellSiteConstants.RESULT_CODE);
-				if (CellSiteConstants.RESULT_SUC == resultCode) {
 
-					Log.d(TAG, "after download the horders: TAG_SUCC");
-				}
+				return resultCode;
 			} catch (Exception ex) {
 
 			}
-			return TAG_SUCC;
+			return -1;
 		}
 
 		@Override
-		protected void onPostExecute(String result) {
+		protected void onPostExecute(Integer result) {
 			super.onPostExecute(result);
 			// TODO: update UI status
+			if (CellSiteConstants.RESULT_SUC == result) {
+				for (HashMap<String, Object> mHorder : mHorderTypes[mCurrRadioIdx].nHorders) {
+					if (((String) mHorder.get(CellSiteConstants.HORDER_ID))
+							.equals(horderId)) {
+						switch (inputStatus) {
+						case CellSiteConstants.HORDER_WAITING: // 选择司机后，状态改为
+																// HORDER_GETTING_CARGO
+							mHorder.put(CellSiteConstants.STATUS,
+									CellSiteConstants.HORDER_GETTING_CARGO);
+							break;
+						case CellSiteConstants.HORDER_GETTING_CARGO: // 等待取货后，状态改为
+																		// HORDER_SENTTING_CARGO
+							mHorder.put(CellSiteConstants.STATUS,
+									CellSiteConstants.HORDER_SENTTING_CARGO);
+							break;
+						case CellSiteConstants.HORDER_SENTTING_CARGO:
+						case CellSiteConstants.HORDER_ARRIVED_CARGO:
+							mHorder.put(CellSiteConstants.STATUS,
+									CellSiteConstants.HORDER_CONFIRMED_CARGO);
+							break;
+
+						}
+					}
+					break;
+				}
+
+				mHorderTypes[mCurrRadioIdx].nHorderAdapter
+						.notifyDataSetChanged();
+			}
 
 		}
 	}
@@ -744,8 +814,9 @@ public class MyHorderFragment extends Fragment {
 						R.string.getting_cargo));
 				holder.tv_operation.setText(ctx.getResources().getString(
 						R.string.confirm_sent_cargo));
-				mHorderChangeListener.setHorderId((String) horderData
-						.get(CellSiteConstants.HORDER_ID));
+				mHorderChangeListener.setHorderId(
+						(String) horderData.get(CellSiteConstants.HORDER_ID),
+						"" + CellSiteConstants.HORDER_GETTING_CARGO);
 
 			} else if ((Integer) horderData.get(CellSiteConstants.STATUS) == CellSiteConstants.HORDER_SENTTING_CARGO) {
 				mContactListener.setPhone((String) horderData
@@ -754,8 +825,9 @@ public class MyHorderFragment extends Fragment {
 						R.string.sending_cargo));
 				holder.tv_operation.setText(ctx.getResources().getString(
 						R.string.horder_arrive_confirm));
-				mHorderChangeListener.setHorderId((String) horderData
-						.get(CellSiteConstants.HORDER_ID));
+				mHorderChangeListener.setHorderId(
+						(String) horderData.get(CellSiteConstants.HORDER_ID),
+						"" + CellSiteConstants.HORDER_SENTTING_CARGO);
 			} else if ((Integer) horderData.get(CellSiteConstants.STATUS) == CellSiteConstants.HORDER_ARRIVED_CARGO) {
 				mContactListener.setPhone((String) horderData
 						.get(CellSiteConstants.DRIVER_MOBILE));
@@ -763,17 +835,19 @@ public class MyHorderFragment extends Fragment {
 						R.string.sent_cargo));
 				holder.tv_operation.setText(ctx.getResources().getString(
 						R.string.horder_arrive_confirm));
-				mHorderChangeListener.setHorderId((String) horderData
-						.get(CellSiteConstants.HORDER_ID));
+				mHorderChangeListener.setHorderId(
+						(String) horderData.get(CellSiteConstants.HORDER_ID),
+						"" + CellSiteConstants.HORDER_ARRIVED_CARGO);
 			} else if ((Integer) horderData.get(CellSiteConstants.STATUS) == CellSiteConstants.HORDER_CONFIRMED_CARGO) {
 				mContactListener.setPhone((String) horderData
 						.get(CellSiteConstants.DRIVER_MOBILE));
 				holder.tv_request.setText(ctx.getResources().getString(
 						R.string.confirmed_cargo));
 				holder.tv_operation.setText(ctx.getResources().getString(
-						R.string.horder_arrive_confirm));
-				mHorderChangeListener.setHorderId((String) horderData
-						.get(CellSiteConstants.HORDER_ID));
+						R.string.waiting_comment));
+				mHorderChangeListener.setHorderId(
+						(String) horderData.get(CellSiteConstants.HORDER_ID),
+						"" + CellSiteConstants.HORDER_CONFIRMED_CARGO);
 			} else {
 				holder.tv_contact.setVisibility(View.GONE);
 				holder.tv_operation.setVisibility(View.GONE);
@@ -867,15 +941,17 @@ public class MyHorderFragment extends Fragment {
 
 	class HorderChangeListener implements View.OnClickListener {
 		private String horderId;
+		private String statusId;
 
-		public void setHorderId(String _horderId) {
+		public void setHorderId(String _horderId, String _statusId) {
 			horderId = _horderId;
+			statusId = _statusId;
 		}
 
 		@Override
 		public void onClick(View v) {
 			HorderChangeTask mHorderChangeTask = new HorderChangeTask();
-			mHorderChangeTask.execute(horderId);
+			mHorderChangeTask.execute(horderId, statusId);
 		}
 	}
 
@@ -903,37 +979,4 @@ public class MyHorderFragment extends Fragment {
 		}
 	}
 
-	@Override
-	public void setUserVisibleHint(boolean isVisibleToUser) {
-		super.setUserVisibleHint(isVisibleToUser);
-
-		if (this.getView() != null) {
-
-			isViewShown = true;
-
-			lazyLoad();
-
-			// 相当于Fragment的onResume
-		} else {
-			isViewShown = false;
-			// 相当于Fragment的onPause
-		}
-	}
-
-	public void lazyLoad() {
-		if (isViewShown && isPrepared) {
-			Log.d(TAG, "lazyLoad");
-			initHorders();
-
-			if (mProgressdialog == null || !mProgressdialog.isShowing()) {
-				mProgressdialog = new ProgressDialog(this.getActivity());
-				mProgressdialog.setMessage("正在加载数据");
-				mProgressdialog.setIndeterminate(true);
-				mProgressdialog.setCancelable(true);
-				mProgressdialog.show();
-			}
-
-			initChooseHorders();
-		}
-	}
 }

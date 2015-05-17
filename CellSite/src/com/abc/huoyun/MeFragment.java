@@ -37,6 +37,7 @@ public class MeFragment extends Fragment {
 
 	private boolean isViewShown;
 	private boolean isPrepared;
+	private boolean isVisible;
 
 	public static MeFragment newInstance() {
 		Log.d(TAG, "newInstance");
@@ -142,9 +143,16 @@ public class MeFragment extends Fragment {
 		super.setUserVisibleHint(isVisibleToUser);
 
 		if (isVisibleToUser) {
+			Log.d(TAG, "isVisibleToUser: true");
+			isVisible = true;
+		} else {
+			Log.d(TAG, "isVisibleToUser: false");
+			isVisible = false;
+		}
+		if (this.getView()!= null) {
 
 			isViewShown = true;
-
+			lazyLoad();
 			// 相当于Fragment的onResume
 		} else {
 			isViewShown = false;

@@ -180,65 +180,71 @@ public class LoginActivity extends BaseActivity {
 					Editor sharedUser = getSharedPreferences(
 							CellSiteConstants.CELLSITE_CONFIG, MODE_PRIVATE)
 							.edit();
+					try {
+						if (userJson.getString(CellSiteConstants.NAME) != null
+								&& !userJson.getString(CellSiteConstants.NAME)
+										.equals("null")) {
+							normalUser.setName(userJson
+									.getString(CellSiteConstants.NAME));
+						}
+						sharedUser.putString(CellSiteConstants.NAME,
+								userJson.getString(CellSiteConstants.NAME));
 
-					if (userJson.getString(CellSiteConstants.NAME) != null
-							&& !userJson.getString(CellSiteConstants.NAME)
-									.equals("null")) {
-						normalUser.setName(userJson
-								.getString(CellSiteConstants.NAME));
-					}
-					sharedUser.putString(CellSiteConstants.NAME,
-							userJson.getString(CellSiteConstants.NAME));
+						if (userJson.get(CellSiteConstants.PROFILE_IMAGE_URL) != null) {
 
-					if (userJson.get(CellSiteConstants.PROFILE_IMAGE_URL) != null) {
+							sharedUser
+									.putString(
+											CellSiteConstants.PROFILE_IMAGE_URL,
+											userJson.getString(CellSiteConstants.PROFILE_IMAGE_URL));
+							normalUser
+									.setProfileImageUrl(userJson
+											.getString(CellSiteConstants.PROFILE_IMAGE_URL));
+						}
+						if (userJson
+								.get(CellSiteConstants.IDENTITY_FRONT_IMAGE_URL) != null) {
+							sharedUser
+									.putString(
+											CellSiteConstants.IDENTITY_FRONT_IMAGE_URL,
+											userJson.getString(CellSiteConstants.IDENTITY_FRONT_IMAGE_URL));
+							normalUser
+									.setIdentityFrontImageUrl(userJson
+											.getString(CellSiteConstants.IDENTITY_FRONT_IMAGE_URL));
+						}
+						if (userJson
+								.get(CellSiteConstants.IDENTITY_BACK_IMAGE_URL) != null) {
+							sharedUser
+									.putString(
+											CellSiteConstants.IDENTITY_BACK_IMAGE_URL,
+											userJson.getString(CellSiteConstants.IDENTITY_BACK_IMAGE_URL));
+							normalUser
+									.setIdentityBackImageUrl(userJson
+											.getString(CellSiteConstants.IDENTITY_BACK_IMAGE_URL));
+						}
 
-						sharedUser
-								.putString(
-										CellSiteConstants.PROFILE_IMAGE_URL,
-										userJson.getString(CellSiteConstants.PROFILE_IMAGE_URL));
-						normalUser
-								.setProfileImageUrl(userJson
-										.getString(CellSiteConstants.PROFILE_IMAGE_URL));
-					}
-					if (userJson
-							.get(CellSiteConstants.IDENTITY_FRONT_IMAGE_URL) != null) {
-						sharedUser
-								.putString(
-										CellSiteConstants.IDENTITY_FRONT_IMAGE_URL,
-										userJson.getString(CellSiteConstants.IDENTITY_FRONT_IMAGE_URL));
-						normalUser
-								.setIdentityFrontImageUrl(userJson
-										.getString(CellSiteConstants.IDENTITY_FRONT_IMAGE_URL));
-					}
-					if (userJson.get(CellSiteConstants.IDENTITY_BACK_IMAGE_URL) != null) {
-						sharedUser
-								.putString(
-										CellSiteConstants.IDENTITY_BACK_IMAGE_URL,
-										userJson.getString(CellSiteConstants.IDENTITY_BACK_IMAGE_URL));
-						normalUser
-								.setIdentityBackImageUrl(userJson
-										.getString(CellSiteConstants.IDENTITY_BACK_IMAGE_URL));
-					}
+						if (userJson.get(CellSiteConstants.DRIVER_LICENSE_URL) != null) {
 
-					if (userJson.get(CellSiteConstants.DRIVER_LICENSE_URL) != null) {
+							sharedUser
+									.putString(
+											CellSiteConstants.DRIVER_LICENSE_URL,
+											userJson.getString(CellSiteConstants.DRIVER_LICENSE_URL));
+							normalUser
+									.setDriverLicenseImageUrl(userJson
+											.getString(CellSiteConstants.DRIVER_LICENSE_URL));
+						}
 
-						sharedUser
-								.putString(
-										CellSiteConstants.DRIVER_LICENSE_URL,
-										userJson.getString(CellSiteConstants.DRIVER_LICENSE_URL));
-						normalUser
-								.setDriverLicenseImageUrl(userJson
-										.getString(CellSiteConstants.DRIVER_LICENSE_URL));
-					}
-
-					if (Integer.parseInt((String) userJson
-							.getString(CellSiteConstants.USER_AUDIT_STATUS)) != 0) {
-						int userAuditStatus = Integer
+						if (Integer
 								.parseInt((String) userJson
-										.getString(CellSiteConstants.USER_AUDIT_STATUS));
-						sharedUser.putInt(CellSiteConstants.USER_AUDIT_STATUS,
-								userAuditStatus);
-						normalUser.setUserAuditStatus(userAuditStatus);
+										.getString(CellSiteConstants.USER_AUDIT_STATUS)) != 0) {
+							int userAuditStatus = Integer
+									.parseInt((String) userJson
+											.getString(CellSiteConstants.USER_AUDIT_STATUS));
+							sharedUser.putInt(
+									CellSiteConstants.USER_AUDIT_STATUS,
+									userAuditStatus);
+							normalUser.setUserAuditStatus(userAuditStatus);
+						}
+					} catch (Exception e) {
+
 					}
 
 					sharedUser

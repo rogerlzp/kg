@@ -91,6 +91,7 @@
     <string name="horder_arrive_confirm">确认签收</string>
     <string name="getting_cargo">取货中</string>
     <string name="confirm_sent_cargo">取货确认</string>
+    <string name="waiting_comment">待评价</string>
     <string name="sending_cargo">送货中</string>
     <string name="sent_cargo">已送达</string>
     <string name="confirmed_cargo">已签收</string>
