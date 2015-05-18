@@ -22,18 +22,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
 import android.widget.TextView;
 
-import com.abc.huoyun.MyHorderFragment.HorderDownLoadTask;
+import com.abc.huoyun.CityDialog.InputListener;
+import com.abc.huoyun.HorderCreateFragment.CityChooseListener;
 import com.abc.huoyun.cache.TruckType;
 import com.abc.huoyun.net.CellSiteHttpClient;
 import com.abc.huoyun.utility.CellSiteApplication;
 import com.abc.huoyun.utility.CellSiteConstants;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
-import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener2;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 public class TruckFragment extends Fragment {
 
@@ -50,21 +51,35 @@ public class TruckFragment extends Fragment {
 	TruckDownLoadTask mTruckDownLoadTask;
 	ProgressDialog mProgressdialogTruck;
 
+	CellSiteApplication app;
+
+	TextView mSSAtv, mSCAtv;
+	String mShipperAddressCode, mConsigneeAddressCode, mShipperAddressCode_Old,
+			mConsigneeAddressCode_Old;
+
+	CityDialog mCityDialog = null;
+	InputListener listener1;
+	CityChooseListener cityChooseListener1;
+
+	InputListener listener2;
+	CityChooseListener cityChooseListener2;
+
 	private boolean isViewShown;
 	private boolean isPrepared;
-
-	CellSiteApplication app;
+	private boolean isVisible;
 
 	public static TruckFragment newInstance() {
 		TruckFragment mHCFragment = new TruckFragment();
 		return mHCFragment;
+
 	}
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		app = (CellSiteApplication) this.getActivity().getApplication();
-		//initTrucks();
+		// initTrucks();
+		lazyLoad();
 	}
 
 	@Override
@@ -73,7 +88,7 @@ public class TruckFragment extends Fragment {
 		View view = inflater
 				.inflate(R.layout.main_tab_trucks, container, false);
 		isPrepared = true;
-		//lazyLoad();
+		// lazyLoad();
 
 		return view;
 	}
@@ -81,6 +96,11 @@ public class TruckFragment extends Fragment {
 	@Override
 	public void setUserVisibleHint(boolean isVisibleToUser) {
 		super.setUserVisibleHint(isVisibleToUser);
+		if (isVisibleToUser) {
+			isVisible = true;
+		} else {
+			isVisible = false;
+		}
 
 		if (this.getView() != null) {
 
@@ -96,7 +116,7 @@ public class TruckFragment extends Fragment {
 	}
 
 	public void lazyLoad() {
-		if (isViewShown && isPrepared) {
+		if (isVisible && isPrepared) {
 			Log.d(TAG, "lazyLoad");
 			initTrucks();
 
@@ -209,11 +229,16 @@ public class TruckFragment extends Fragment {
 			intent.putExtra(CellSiteConstants.TRUCK_IMAGE_URL, (String) aTrucks
 					.get(position).get(CellSiteConstants.TRUCK_IMAGE_URL));
 			intent.putExtra(
+					CellSiteConstants.PROFILE_IMAGE_URL,
+					(String) aTrucks.get(position).get(
+							CellSiteConstants.PROFILE_IMAGE_URL));
+			intent.putExtra(
 					CellSiteConstants.TRUCK_LICENSE_URL,
 					(String) aTrucks.get(position).get(
 							CellSiteConstants.TRUCK_LICENSE_URL));
 			intent.putExtra(CellSiteConstants.TRUCK_PLATE, (String) aTrucks
 					.get(position).get(CellSiteConstants.TRUCK_PLATE));
+
 			intent.putExtra(
 					CellSiteConstants.TRUCK_MOBILE_NUM,
 					(String) aTrucks.get(position).get(
@@ -350,7 +375,7 @@ public class TruckFragment extends Fragment {
 						JSONObject resultObj = (JSONObject) results.get(i);
 						mTruck = new HashMap<String, Object>();
 						mTruck.put(CellSiteConstants.TRUCK_ID,
-								resultObj.getString(CellSiteConstants.ID));
+								resultObj.getString(CellSiteConstants.TRUCK_ID));
 						mTruck.put(
 								CellSiteConstants.TRUCK_LENGTH,
 								Integer.parseInt((resultObj)
@@ -376,21 +401,23 @@ public class TruckFragment extends Fragment {
 						// down load image
 
 						// get Truck
-						JSONObject driverObj = (JSONObject) resultObj
-								.get(CellSiteConstants.DRIVER);
-						if (driverObj != null) {
-
+						if (resultObj.getString(CellSiteConstants.NAME) != null) {
+							mTruck.put(CellSiteConstants.NAME,
+									resultObj.getString(CellSiteConstants.NAME));
 						}
-						try {
-							JSONObject driverProfileObj = (JSONObject) resultObj
-									.get(CellSiteConstants.PROFILE);
-							if (driverProfileObj != null) {
-
-								mTruck.put(CellSiteConstants.NAME, driverObj
-										.getString(CellSiteConstants.NAME));
-							}
-						} catch (Exception e) {
-							e.printStackTrace();
+						if (resultObj
+								.getString(CellSiteConstants.TRUCK_IMAGE_URL) != null) {
+							mTruck.put(
+									CellSiteConstants.TRUCK_IMAGE_URL,
+									resultObj
+											.getString(CellSiteConstants.TRUCK_IMAGE_URL));
+						}
+						if (resultObj
+								.getString(CellSiteConstants.PROFILE_IMAGE_URL) != null) {
+							mTruck.put(
+									CellSiteConstants.PROFILE_IMAGE_URL,
+									resultObj
+											.getString(CellSiteConstants.PROFILE_IMAGE_URL));
 						}
 
 						mTruckTypes.nTrucks.add(mTruck);

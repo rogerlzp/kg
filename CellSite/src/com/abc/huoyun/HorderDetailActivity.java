@@ -33,9 +33,20 @@ public class HorderDetailActivity extends BaseActivity {
 	TextView mHSDtv; // 发送时间
 	TextView mHDtv; // 货源描述
 	TextView mHItv; // 货源id
+	
+	TextView mSCDTtv;// 货主选择车主时间
+	TextView mDCTtv; // 车主确认时间
+	TextView mDGTtv; // 货主确认货物被接受时间
+	TextView mDATtv; // 车主确认送达时间
+	TextView mHCATtv; // 货主确认送达时间
+	
+	//
+	TextView mDDtv; // 车主
 
 	RelativeLayout mCWrl;// 货物重量
 	RelativeLayout mCVrl;// 货物体积
+	
+	
 
 	ProgressDialog mProgressDialog;
 

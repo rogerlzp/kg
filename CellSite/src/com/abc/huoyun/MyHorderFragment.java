@@ -206,6 +206,7 @@ public class MyHorderFragment extends Fragment {
 		mHorderMore = (ViewGroup) LayoutInflater.from(this.getActivity())
 				.inflate(R.layout.more_list, null);
 		mHorderMore.setVisibility(View.GONE);
+
 		mEmptyHorderView = (ViewGroup) LayoutInflater.from(this.getActivity())
 				.inflate(R.layout.empty_horder, null);
 
@@ -366,7 +367,9 @@ public class MyHorderFragment extends Fragment {
 				mHorderTypes[mCurrRadioIdx].nHorderAdapter
 						.notifyDataSetChanged();
 				mHorderMore.setVisibility(View.VISIBLE);
-				mHorderLv.setEmptyView(mEmptyHorderView);
+				if (mCurrRadioIdx == 0) {
+					mHorderLv.setEmptyView(mEmptyHorderView);
+				}
 
 				if (mHorderTypes[mCurrRadioIdx].hasShowAllHorders) {
 
@@ -403,8 +406,8 @@ public class MyHorderFragment extends Fragment {
 
 		postParameters.add(new BasicNameValuePair(CellSiteConstants.USER_ID, ""
 				+ app.getUser().getId()));
-	//	postParameters.add(new BasicNameValuePair(
-	//			CellSiteConstants.HORDER_STATUS, "" + horder_status));
+		// postParameters.add(new BasicNameValuePair(
+		// CellSiteConstants.HORDER_STATUS, "" + horder_status));
 
 		postParameters.add(new BasicNameValuePair("offset", String
 				.valueOf(mHorderTypes[mCurrRadioIdx].nDisplayNum)));

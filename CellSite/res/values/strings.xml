@@ -96,6 +96,14 @@
     <string name="sent_cargo">已送达</string>
     <string name="confirmed_cargo">已签收</string>
     <!-- horder list end -->
+    <!-- horder detail start -->
+    <string name="hcd_date">货主选择车主</string>
+    <string name="dc_date">车主确认</string>
+    <string name="getCargo_date">接货时间</string>
+    <string name="sentCargo_date">货物送到</string>
+    <string name="confirmSentCargo_date">货主确认</string>
+
+    <!-- horder detail end -->
 
 
     <!-- TruckActivity  start -->
